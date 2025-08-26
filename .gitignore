@@ -1,0 +1,46 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# IntelliJ
+.idea/
+*.iml
+out/
+
+# Maven / Java
+target/
+**/target/
+*.class
+spring.log
+*.log
+hs_err_pid*
+replay_pid*
+*.hprof
+dependency-reduced-pom.xml
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+release.properties
+
+# Node / React / Vite / Tailwind
+node_modules/
+dist/
+.vite/
+.eslintcache
+*.tsbuildinfo
+
+# Coverage / tests
+coverage/
+.nyc_output/
+*.lcov
+
+# Env files
+.env
+.env.*
+!.env.example
+
+# Misc logs
+logs/
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+lerna-debug.log*
