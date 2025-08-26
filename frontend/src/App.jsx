@@ -8,27 +8,27 @@ import './App.css'
 import ProfilSeite from "./components/ProfilSeite.jsx";
 
 
-function App() {
-
-  return (
-      <BrowserRouter>
-          <AuthProvider>
-              <div className="flex min-h-screen flex-col bg-gray-50">
-                  <Header />
-                  <div className="flex-1">
-                      <Routes>
-                          <Route path="/" element={<MainPage />} />
-                          <Route path="/login" element={<RegistrationAndSignIn />} />
-                          <Route path="/anzeigen" element={<MainPage />} />
-                          <Route path="/erstellen" element={<div className="mx-auto max-w-6xl px-4 py-8">Formular kommt später…</div>} />
-                          <Route path="/profil" element={<ProfilSeite />} />
-                      </Routes>
-                  </div>
-                  <Footer />
-              </div>
-          </AuthProvider>
-      </BrowserRouter>
-  )
+export function App() {
+    return (
+        <BrowserRouter>
+            <AuthProvider>
+                <div className="flex min-h-screen flex-col bg-gray-50">
+                    <Header />
+                    <div className="flex-1">
+                        <Routes>
+                            <Route path="/" element={<MainPage />} />
+                            <Route path="/login" element={<RegistrationAndSignIn />} />
+                            <Route path="/anzeigen" element={<MainPage />} />
+                            <Route path="/erstellen" element={<div className="mx-auto max-w-6xl px-4 py-8">Formular kommt später…</div>} />
+                            <Route path="/profil" element={<ProfilSeite />} />
+                        </Routes>
+                    </div>
+                    <Footer />
+                </div>
+            </AuthProvider>
+        </BrowserRouter>
+    );
 }
 
 export default App
+
