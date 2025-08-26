@@ -1,6 +1,6 @@
 Local Connect: 
 - Backend: Java, SpringBoot
-- Frontend: React, Vite
+- Frontend: React, Vite and Tailwind ( npm install tailwindcss @tailwindcss/vite ) 
 
 Dependecies:
 - SpringWeb
@@ -8,4 +8,5 @@ Dependecies:
 - WebSocket
 - Lombok
 - Spring Web Dev Tool
+
   
