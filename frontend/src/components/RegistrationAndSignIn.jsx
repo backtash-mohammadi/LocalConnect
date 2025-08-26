@@ -1,10 +1,12 @@
-// File: src/RegistrationAndSignIn.jsx
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthKontext";
 
 export default function RegistrationAndSignIn() {
     const [modus, setModus] = useState("login"); // "login" | "registrierung"
     const [fehler, setFehler] = useState("");
-    const [lade, setLade] = useState(false);
+    const navigate = useNavigate();
+    const { einloggen, registrieren, laden } = useAuth();
 
     const [daten, setDaten] = useState({
         name: "",
@@ -22,42 +24,17 @@ export default function RegistrationAndSignIn() {
         e.preventDefault();
         setFehler("");
 
-        if (modus === "registrierung") {
-            if (!daten.name.trim()) {
-                setFehler("Bitte gib deinen Namen ein.");
-                return;
-            }
-            if (daten.passwort !== daten.passwortWiederholen) {
-                setFehler("Die Passwörter stimmen nicht überein.");
-                return;
-            }
-        }
-
         try {
-            setLade(true);
-            // TODO: Hier später die Spring-Boot-API anbinden.
-            // Endpunkte (Beispiel):
-            // POST /api/auth/login  { email, password }
-            // POST /api/auth/register { name, email, password }
-            if (modus === "login") {
-                console.log("Login mit:", {
-                    email: daten.emailAdresse,
-                    passwort: daten.passwort,
-                });
+            if (modus === "registrierung") {
+                if (!daten.name.trim()) throw new Error("Bitte gib deinen Namen ein.");
+                if (daten.passwort !== daten.passwortWiederholen) throw new Error("Die Passwörter stimmen nicht überein.");
+                await registrieren({ name: daten.name.trim(), emailAdresse: daten.emailAdresse.trim(), passwort: daten.passwort });
             } else {
-                console.log("Registrierung mit:", {
-                    name: daten.name,
-                    email: daten.emailAdresse,
-                    passwort: daten.passwort,
-                });
+                await einloggen({ emailAdresse: daten.emailAdresse.trim(), passwort: daten.passwort });
             }
-            // Simuliertes Ergebnis
-            await new Promise((r) => setTimeout(r, 500));
-            alert(modus === "login" ? "Erfolgreich angemeldet (Demo)" : "Registrierung erfolgreich (Demo)");
+            navigate("/");
         } catch (err) {
-            setFehler("Es ist ein Fehler aufgetreten. Versuche es erneut.");
-        } finally {
-            setLade(false);
+            setFehler(err.message || "Es ist ein Fehler aufgetreten.");
         }
     }
 
@@ -193,10 +170,10 @@ export default function RegistrationAndSignIn() {
 
                     <button
                         type="submit"
-                        disabled={lade}
+                        disabled={laden}
                         className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:opacity-60"
                     >
-                        {lade ? "Bitte warten…" : modus === "login" ? "Anmelden" : "Registrieren"}
+                        {laden ? "Bitte warten…" : modus === "login" ? "Anmelden" : "Registrieren"}
                     </button>
                 </form>
 

@@ -1,0 +1,25 @@
+server:
+  port: 8080
+
+spring:
+  datasource:
+    url: jdbc:mariadb://localhost:3308/localconnect?useUnicode=true&characterEncoding=utf8
+    username: appuser
+    password: JavaWinona2025!
+    driver-class-name: org.mariadb.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update  # dev only; в проде поменяй
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+app:
+  jwt:
+    geheimnis: "changeme-super-geheimes-base64-oder-lang-plain-secret"
+    ablaufMillis: 86400000 # 24h
+  admin:
+    emails: "admin@localconnect.test"
+  cors:
+    erlaubteUrspruenge: "http://localhost:5173"

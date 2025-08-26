@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-
+import { useAuth } from "../context/AuthKontext";
 
 function AnzeigeKarte({ titel, kategorie, ort, karmaKosten }) {
     return (
@@ -17,8 +17,9 @@ function AnzeigeKarte({ titel, kategorie, ort, karmaKosten }) {
     );
 }
 
-
 export default function MainPage() {
+    const { benutzer } = useAuth();
+
     const kategorien = [
         { name: "Werkzeuge", beschreibung: "Bohrmaschine, Leiter, Schraubenschlüssel…" },
         { name: "Nachhilfe", beschreibung: "Mathe, Deutsch, Programmieren…" },
@@ -27,16 +28,21 @@ export default function MainPage() {
         { name: "Sonstiges", beschreibung: "Alles, was sonst noch hilft." },
     ];
 
-
     const beispielAnzeigen = [
         { titel: "Brauche Bohrmaschine für 2h", kategorie: "Werkzeuge", ort: "Linden-Mitte", karmaKosten: 1 },
         { titel: "Biete Mathe-Nachhilfe (Kl. 5–8)", kategorie: "Nachhilfe", ort: "Nordstadt", karmaKosten: -1 },
         { titel: "Hilfe beim Umzug am Samstag", kategorie: "Transport", ort: "Calenberger Neustadt", karmaKosten: 1 },
     ];
 
-
     return (
         <main className="mx-auto max-w-6xl px-4">
+            {/* Willkommen-Hinweis */}
+            {benutzer && (
+                <div className="mt-4 rounded-2xl border border-green-200 bg-green-50 p-4 text-sm text-green-800">
+                    Willkommen, <strong>{benutzer.name}</strong>! Du bist eingeloggt. Dein aktuelles Karma: <strong>{benutzer.karma}</strong>.
+                </div>
+            )}
+
             {/* Hero */}
             <section className="my-8 grid gap-6 rounded-2xl bg-gradient-to-r from-indigo-50 to-blue-50 p-6 md:grid-cols-2">
                 <div>
@@ -48,7 +54,9 @@ export default function MainPage() {
                     <div className="flex flex-wrap gap-3">
                         <Link to="/anzeigen" className="rounded-xl bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700">Anzeigen ansehen</Link>
                         <Link to="/erstellen" className="rounded-xl border px-4 py-2 text-sm hover:bg-white">Anzeige erstellen</Link>
-                        <Link to="/login" className="rounded-xl border px-4 py-2 text-sm hover:bg-white">Registrieren</Link>
+                        {!benutzer && (
+                            <Link to="/login" className="rounded-xl border px-4 py-2 text-sm hover:bg-white">Registrieren</Link>
+                        )}
                     </div>
                 </div>
                 <ul className="grid gap-3">
@@ -63,7 +71,6 @@ export default function MainPage() {
                     ))}
                 </ul>
             </section>
-
 
             {/* Anzeigenliste (Demo) */}
             <section className="my-8">
@@ -83,7 +90,6 @@ export default function MainPage() {
                         </select>
                     </div>
                 </div>
-
 
                 <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                     {beispielAnzeigen.map((anzeige, idx) => (
