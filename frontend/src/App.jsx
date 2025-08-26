@@ -1,17 +1,14 @@
-import { useState } from 'react'
 
 import './App.css'
+import RegistrationAndSignIn from './components/RegistrationAndSignIn.jsx'
 
 function App() {
 
   return (
     <>
       <div>
-
+          <RegistrationAndSignIn/>
       </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
     </>
   )
 }
