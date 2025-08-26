@@ -28,6 +28,11 @@ export default function RegistrationAndSignIn() {
             if (modus === "registrierung") {
                 if (!daten.name.trim()) throw new Error("Bitte gib deinen Namen ein.");
                 if (daten.passwort !== daten.passwortWiederholen) throw new Error("Die Passwörter stimmen nicht überein.");
+
+                // send the simple test email ("hello")
+                 await sendHelloEmail(daten.emailAdresse.trim());
+
+
                 await registrieren({ name: daten.name.trim(), emailAdresse: daten.emailAdresse.trim(), passwort: daten.passwort });
             } else {
                 await einloggen({ emailAdresse: daten.emailAdresse.trim(), passwort: daten.passwort });
@@ -37,6 +42,26 @@ export default function RegistrationAndSignIn() {
             setFehler(err.message || "Es ist ein Fehler aufgetreten.");
         }
     }
+
+
+    // THE EMAIL SENDING FUNCTION
+    async function sendHelloEmail(email) {
+        console.log("[FE] sending /api/mail/test", { email });
+
+        const res = await fetch("http://localhost:8080/api/mail/test", {  // or keep your proxy and use "/api/mail/test"
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email })
+        });
+
+        const bodyText = await res.text(); // read the response body for debugging
+        console.log("[FE] status:", res.status, "body:", bodyText);
+
+        if (!res.ok) throw new Error("Email failed: " + res.status);
+    }
+
+
+
 
     return (
         <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">

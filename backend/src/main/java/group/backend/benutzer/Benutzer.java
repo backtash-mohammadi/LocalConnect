@@ -38,4 +38,7 @@ public class Benutzer {
     @Column(nullable = false)
     private Instant erstelltAm = Instant.now();
 
+    @Column(nullable = true)
+    private String twoFactorToken;
+
 }

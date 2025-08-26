@@ -41,7 +41,7 @@ export default function Footer() {
             </div>
             <div className="border-t py-4">
                 <p className="mx-auto max-w-6xl px-4 text-xs text-gray-500">
-                    © {aktuellesJahr} LocalConnect. Alle Rechte vorbehalten.
+                    © {aktuellesJahr} LocalConnect. Backtash, Volodymyr & Gabrielle.
                 </p>
             </div>
         </footer>
