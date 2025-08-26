@@ -1,15 +1,29 @@
-
+import Header from "./components/Header.jsx";
+import Footer from "./components/Footer.jsx";
+import MainPage from "./components/MainPage.jsx";
+import RegistrationAndSignIn from "./components/RegistrationAndSignIn.jsx"; // Falls im src/ liegt
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import './App.css'
-import RegistrationAndSignIn from './components/RegistrationAndSignIn.jsx'
+
 
 function App() {
 
   return (
-    <>
-      <div>
-          <RegistrationAndSignIn/>
-      </div>
-    </>
+      <BrowserRouter>
+          <div className="flex min-h-screen flex-col bg-gray-50">
+              <Header />
+              <div className="flex-1">
+                  <Routes>
+                      <Route path="/" element={<MainPage />} />
+                      <Route path="/login" element={<RegistrationAndSignIn />} />
+                      <Route path="/anzeigen" element={<MainPage />} />
+                      <Route path="/erstellen" element={<div className="mx-auto max-w-6xl px-4 py-8">Formular kommt später…</div>} />
+                      <Route path="/profil" element={<div className="mx-auto max-w-6xl px-4 py-8">Profil-Seite (WIP)</div>} />
+                  </Routes>
+              </div>
+              <Footer />
+          </div>
+      </BrowserRouter>
   )
 }
 
