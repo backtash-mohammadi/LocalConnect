@@ -11,7 +11,6 @@ export function AuthProvider({ children }) {
     const [laden, setLaden] = useState(false);
 
     useEffect(() => {
-        // Falls Token existiert, aber Benutzer nicht, lade /me
         if (token && !benutzer) {
             apiGet("/api/auth/me", token)
                 .then((b) => setBenutzer(b))
@@ -24,6 +23,11 @@ export function AuthProvider({ children }) {
         setToken(neuesToken);
         setBenutzer(neuerBenutzer);
         localStorage.setItem("lc_token", neuesToken);
+        localStorage.setItem("lc_benutzer", JSON.stringify(neuerBenutzer));
+    }
+
+    function aktualisiereBenutzer(neuerBenutzer){
+        setBenutzer(neuerBenutzer);
         localStorage.setItem("lc_benutzer", JSON.stringify(neuerBenutzer));
     }
 
@@ -56,7 +60,7 @@ export function AuthProvider({ children }) {
         localStorage.removeItem("lc_benutzer");
     }
 
-    const wert = useMemo(() => ({ benutzer, token, laden, einloggen, registrieren, ausloggen }), [benutzer, token, laden]);
+    const wert = useMemo(() => ({ benutzer, token, laden, einloggen, registrieren, ausloggen, aktualisiereBenutzer }), [benutzer, token, laden]);
     return <AuthKontext.Provider value={wert}>{children}</AuthKontext.Provider>;
 }
 

@@ -31,3 +31,15 @@ export async function apiGet(pfad, token) {
     });
     return handleAntwort(resp);
 }
+
+export async function apiPut(pfad, daten, token) {
+    const resp = await fetch(`${BASIS_URL}${pfad}`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify(daten),
+    });
+    return handleAntwort(resp);
+}

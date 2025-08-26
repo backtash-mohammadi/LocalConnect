@@ -5,6 +5,7 @@ import RegistrationAndSignIn from "./components/RegistrationAndSignIn.jsx"; // F
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./context/AuthKontext.jsx";
 import './App.css'
+import ProfilSeite from "./components/ProfilSeite.jsx";
 
 
 function App() {
@@ -20,7 +21,7 @@ function App() {
                           <Route path="/login" element={<RegistrationAndSignIn />} />
                           <Route path="/anzeigen" element={<MainPage />} />
                           <Route path="/erstellen" element={<div className="mx-auto max-w-6xl px-4 py-8">Formular kommt später…</div>} />
-                          <Route path="/profil" element={<div className="mx-auto max-w-6xl px-4 py-8">Profil-Seite (WIP)</div>} />
+                          <Route path="/profil" element={<ProfilSeite />} />
                       </Routes>
                   </div>
                   <Footer />
