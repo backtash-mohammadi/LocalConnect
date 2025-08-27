@@ -110,6 +110,13 @@ public class AnfrageController {
         return ResponseEntity.ok(dto);
     }
 
+    @PutMapping("/anfrage/{id}/fertig")
+// @PreAuthorize("isAuthenticated()") // enable if you use auth
+    public ResponseEntity<Void> markiereAlsFertig(@PathVariable("id") Long id) {
+        anfrageService.markiereAlsFertig(id);
+        return ResponseEntity.noContent().build();
+    }
+
     @DeleteMapping("/meine-anfragen")
 // @PreAuthorize("isAuthenticated()") // optional: re-enable if you use Spring Security
     public ResponseEntity<Void> loescheAnfrage(@RequestParam("id") Long id) {

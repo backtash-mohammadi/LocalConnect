@@ -57,6 +57,9 @@ export default function MainPage() {
                         {!benutzer && (
                             <Link to="/login" className="rounded-xl border px-4 py-2 text-sm hover:bg-white">Registrieren</Link>
                         )}
+                        {benutzer && (
+                            <Link to="/meine-anfragen" className="rounded-xl border px-4 py-2 text-sm hover:bg-white">Meine Anfragen</Link>
+                        )}
                     </div>
                 </div>
                 <ul className="grid gap-3">

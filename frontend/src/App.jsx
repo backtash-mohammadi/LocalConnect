@@ -10,6 +10,7 @@ import AdminBenutzerSeite from "./components/AdminBenutzerSeite.jsx";
 
 import AnfrageErstellenSeite from "./components/AnfrageErstellen.jsx";
 import MeineAnfragenSeite from "./components/MeineAnfragenSeite.jsx";
+import AnfrageBearbeitenSeite from "./components/AnfrageBearbeitenSeite.jsx";
 
 export function App() {
     return (
@@ -25,6 +26,8 @@ export function App() {
                             {/*<Route path="/erstellen" element={<div className="mx-auto max-w-6xl px-4 py-8">Formular kommt später…</div>} />*/}
                             <Route path="/erstellen" element={<AnfrageErstellenSeite />} />
                             <Route path="/meine-anfragen" element={<MeineAnfragenSeite />} />
+                            <Route path="/anfrage/:id/bearbeiten" element={<AnfrageBearbeitenSeite />} />
+
                             <Route path="/profil" element={<ProfilSeite />} />
                             <Route path="/admin" element={<AdminBenutzerSeite />} />
                         </Routes>

@@ -79,4 +79,13 @@ public class AnfrageService {
         anfrageRepository.deleteById(id);
     }
 
+    @Transactional
+    public void markiereAlsFertig(Long id){
+        Anfrage a = findeAnfrage(id);
+        // When and if the  status will be an enum:
+        // a.setStatus(AnfrageStatus.COMPLETED);
+
+        a.setStatus("fertig");
+        anfrageRepository.save(a);
+    }
 }

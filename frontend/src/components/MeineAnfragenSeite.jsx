@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthKontext';
-import {apiDelete, apiGet} from '../lib/apiClient';
+import {apiDelete, apiGet, apiPut} from '../lib/apiClient';
 
 export default function MeineAnfragenSeite(){
     // State for list, loading & error (German names, English comments)
@@ -58,6 +58,20 @@ export default function MeineAnfragenSeite(){
         }
     }
 
+    //mark request as completed in the backend, then go back to list
+    async function markiereAlsFertig(id){
+        // Call backend to set status = "fertig", then navigate back
+
+        // const id = e.target.value.post_id;
+        console.log("fertig id: " + id);
+        try{
+            await apiPut(`/anfrage/${id}/fertig`, {}, token);
+            await ladeDaten();
+            // navigate('/meine-anfragen');
+        }catch(err){
+            setFehler(err.message || 'Fehler beim Aktualisieren');
+        }
+    }
     if(!benutzer){
         // Redirect prompt for unauthenticated users
         return (
@@ -90,25 +104,19 @@ export default function MeineAnfragenSeite(){
             )}
 
             <ul className="space-y-4">
-                {!laden && anfragen.map((a, index) => {
+                {!laden && anfragen.map((a) => {
                     // Defensive fields in case backend returns different property names
 
                     // const id = a.id ?? a.post_id;
                     // Normalize id field across shapes returned by backend
                     const id = a.id ?? a.post_id ?? a.postId ?? null;
-                    console.log("sch: " + a.id);
-
-                    // *********************************************
-                    // Build a stable, unique key: prefer the real id; otherwise use a safe fallback
-                    // const schlussel = id != null
-                    //     ? `anfrage-idx-${String(id)}`
-                    //     : `${(a.created_at ?? a.titel ?? 'x')}-${index}`;
-                    // *******************************************************
+                    // console.log("sch: " + a.id);
 
                     const titel = a.titel ?? a.title ?? 'Ohne Titel';
                     const beschreibung = a.beschreibung ?? a.description;
                     const kategorie = a.kategorie ?? a.category;
                     const status = a.status ?? 'open';
+                    const istFertig = status === "fertig";
                     const stadt = a.stadt ?? a.city;
                     const strasse = a.strasse ?? a.street;
                     const plz = a.plz ?? a.postal_code;
@@ -129,8 +137,29 @@ export default function MeineAnfragenSeite(){
                                     </div>
                                 </div>
                                 <div className="flex shrink-0 items-center gap-2">
-                                    <button onClick={() => bearbeitenAnfrage(id)}
-                                            className="rounded-xl bg-amber-500 px-3 py-1.5 text-xs font-medium text-white hover:bg-amber-600">
+                                    <button
+                                        type="button"
+                                        onClick={() => markiereAlsFertig(id)}
+                                        className="rounded-xl bg-green-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-green-700">
+                                        Fertig
+                                    </button>
+
+                                    {/*<button onClick={() => bearbeitenAnfrage(id)}*/}
+                                    {/*        className="rounded-xl bg-amber-500 px-3 py-1.5 text-xs font-medium text-white hover:bg-amber-600">*/}
+                                    {/*    Bearbeiten*/}
+                                    {/*</button>*/}
+                                    <button
+                                        // Only trigger when not fertig
+                                        onClick={() => !istFertig && bearbeitenAnfrage(id)}
+                                        // Visually/semantically disable when fertig
+                                        disabled={istFertig}
+                                        aria-disabled={istFertig}
+                                        className={`rounded-xl px-3 py-1.5 text-xs font-medium text-white ${
+                                            istFertig
+                                                ? 'bg-amber-300 cursor-not-allowed opacity-60' // disabled look
+                                                : 'bg-amber-500 hover:bg-amber-600'
+                                        }`}
+                                    >
                                         Bearbeiten
                                     </button>
                                     <button onClick={() => loeschenAnfrage(id)}
