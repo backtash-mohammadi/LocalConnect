@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthKontext';
-import { apiGet } from '../lib/apiClient';
+import {apiDelete, apiGet} from '../lib/apiClient';
 
 export default function MeineAnfragenSeite(){
     // State for list, loading & error (German names, English comments)
@@ -51,7 +51,7 @@ export default function MeineAnfragenSeite(){
         const bestaetigt = window.confirm('Diese Anfrage wirklich löschen?');
         if(!bestaetigt) return;
         try{
-            await apiDelete(`/anfragen/${id}`, token);
+            await apiDelete(`/meine-anfragen?id=${id}`, token);
             await ladeDaten();
         }catch(err){
             setFehler(err.message || 'Fehler beim Löschen');
@@ -96,12 +96,13 @@ export default function MeineAnfragenSeite(){
                     // const id = a.id ?? a.post_id;
                     // Normalize id field across shapes returned by backend
                     const id = a.id ?? a.post_id ?? a.postId ?? null;
+                    console.log("sch: " + a.id);
 
                     // *********************************************
                     // Build a stable, unique key: prefer the real id; otherwise use a safe fallback
-                    const schlussel = id != null
-                        ? `anfrage-idx-${String(id)}`
-                        : `${(a.created_at ?? a.titel ?? 'x')}-${index}`;
+                    // const schlussel = id != null
+                    //     ? `anfrage-idx-${String(id)}`
+                    //     : `${(a.created_at ?? a.titel ?? 'x')}-${index}`;
                     // *******************************************************
 
                     const titel = a.titel ?? a.title ?? 'Ohne Titel';
@@ -112,7 +113,8 @@ export default function MeineAnfragenSeite(){
                     const strasse = a.strasse ?? a.street;
                     const plz = a.plz ?? a.postal_code;
                     return (
-                        <li key={schlussel} className="rounded-2xl border bg-white p-4">
+
+                        <li key={id} className="rounded-2xl border bg-white p-4">
                             {/*{console.log("schl:  " + schlussel)}*/}
                             <div className="flex items-start justify-between gap-4">
                                 <div>

@@ -13,6 +13,8 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 public class AnfrageErstellenDTO {
+
+    private long id;
 //    @NotBlank @Size(max = 150)
     private String titel;
 

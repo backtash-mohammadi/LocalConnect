@@ -21,25 +21,15 @@ public class AnfrageController {
 //        this.benutzerRepo = benutzerRepo;
     }
 
-    /**
-     * Endpoint: POST /erstellen – nur für eingeloggte Nutzer.
-     */
     @PostMapping(path = "/erstellen")
 //    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<AnfrageErstellenDTO> erstellen(@Valid @RequestBody AnfrageErstellenDTO body){
 
-//        Long userId = AktiverBenutzerResolver.tryExtractUserId(auth);
-//        if(userId == null){
-//            String username = AktiverBenutzerResolver.tryExtractUsername(auth);
-//            userId = benutzerRepo.findByEmail(username).map(u -> u.getId())
-//                    .orElseThrow(() -> new IllegalArgumentException("Benutzer nicht gefunden: " + username));
-//        }
-
         Long userId = body.getUserId();
-//        System.out.println("user id " + userId);
 
         Anfrage a = anfrageService.createAnfrage(userId, body);
         AnfrageErstellenDTO dto = new AnfrageErstellenDTO(
+                a.getId(),
                 a.getTitel(),
                 a.getBeschreibung(),
                 a.getKategorie(),
@@ -62,6 +52,7 @@ public class AnfrageController {
 
         for(Anfrage a : benutzerAnfragen){
             AnfrageErstellenDTO dto = new AnfrageErstellenDTO(
+                    a.getId(),
                     a.getTitel(),
                     a.getBeschreibung(),
                     a.getKategorie(),
@@ -78,35 +69,53 @@ public class AnfrageController {
         return ResponseEntity.ok(anfrageDTOs);
     }
 
-//    @GetMapping("/meine-anfragen")
-//    @PreAuthorize("isAuthenticated()")
-//    public ResponseEntity<List<AnfrageErstellenDTO>> getBenutzerAnfragen(Authentication auth) {
-//        // Extract userId from token/principal
-//        Long userId = AktiverBenutzerResolver.tryExtractUserId(auth);
-//        if (userId == null) {
-//            String username = AktiverBenutzerResolver.tryExtractUsername(auth);
-//            userId = benutzerRepository.findByEmail(username)
-//                    .map(u -> u.getId())
-//                    .orElseThrow(() -> new IllegalArgumentException("Benutzer nicht gefunden: " + username));
-//        }
-//
-//        // Load requests of this user
-//        List<Anfrage> benutzerAnfragen = anfrageService.getBenutzerAnfragen(userId);
-//        List<AnfrageErstellenDTO> anfrageDTOs = new ArrayList<>();
-//
-//        for (Anfrage a : benutzerAnfragen) {
-//            AnfrageErstellenDTO dto = new AnfrageErstellenDTO();
-//            dto.setTitel(a.getTitel());
-//            dto.setBeschreibung(a.getBeschreibung());
-//            dto.setKategorie(a.getKategorie());
-//            dto.setStadt(a.getStadt());
-//            dto.setStrasse(a.getStrasse());
-//            dto.setPlz(a.getPlz());
-//            // If your DTO needs more fields, set them here
-//            anfrageDTOs.add(dto);
-//        }
-//        return ResponseEntity.ok(anfrageDTOs);
-//    }
+    // Einzelne Anfrage laden (für Vorbefüllung im Frontend)
+    @GetMapping("/anfrage/{id}")
+// @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<AnfrageErstellenDTO> holeAnfrage(@PathVariable("id") Long id){
+        Anfrage a = anfrageService.findeAnfrage(id);
+        AnfrageErstellenDTO dto = new AnfrageErstellenDTO(
+                a.getId(),
+                a.getTitel(),
+                a.getBeschreibung(),
+                a.getKategorie(),
+                a.getStadt(),
+                a.getStrasse(),
+                a.getPlz(),
+                a.getErsteller().getId(),
+                0,
+                a.getStatus()
+        );
+        return ResponseEntity.ok(dto);
+    }
+
+    // Anfrage aktualisieren (Bearbeiten)
+    @PutMapping("/anfrage/{id}/bearbeiten")
+// @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<AnfrageErstellenDTO> bearbeiteAnfrage(@PathVariable("id") Long id,
+                                                                @Valid @RequestBody AnfrageErstellenDTO body){
+        Anfrage a = anfrageService.aktualisiereAnfrage(id, body);
+        AnfrageErstellenDTO dto = new AnfrageErstellenDTO(
+                a.getId(),
+                a.getTitel(),
+                a.getBeschreibung(),
+                a.getKategorie(),
+                a.getStadt(),
+                a.getStrasse(),
+                a.getPlz(),
+                a.getErsteller().getId(),
+                0,
+                a.getStatus()
+        );
+        return ResponseEntity.ok(dto);
+    }
+
+    @DeleteMapping("/meine-anfragen")
+// @PreAuthorize("isAuthenticated()") // optional: re-enable if you use Spring Security
+    public ResponseEntity<Void> loescheAnfrage(@RequestParam("id") Long id) {
+        anfrageService.loescheAnfrage(id);
+        return ResponseEntity.noContent().build();
+    }
 
 
 }

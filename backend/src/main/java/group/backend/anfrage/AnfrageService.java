@@ -54,7 +54,29 @@ public class AnfrageService {
         return anfrageList;
     }
 
+    @Transactional(readOnly = true)
+    public Anfrage findeAnfrage(Long id){
+        return anfrageRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Anfrage nicht gefunden: " + id));
+    }
 
+    @Transactional
+    public Anfrage aktualisiereAnfrage(Long id, AnfrageErstellenDTO dto){
+        Anfrage a = findeAnfrage(id);
+// Optional: Besitzprüfung hier einbauen (a.getErsteller().getId() == currentUserId)
+        if(dto.getTitel() != null) a.setTitel(dto.getTitel());
+        a.setBeschreibung(dto.getBeschreibung());
+        a.setKategorie(dto.getKategorie());
+        a.setStadt(dto.getStadt());
+        a.setStrasse(dto.getStrasse());
+        a.setPlz(dto.getPlz());
+        return anfrageRepository.save(a);
+    }
 
+    @Transactional
+    public void loescheAnfrage(Long id) {
+        // Optionally check ownership/authorization before delete
+        anfrageRepository.deleteById(id);
+    }
 
 }
