@@ -7,6 +7,10 @@ import group.backend.benutzer.BenutzerRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
 
 /**
  * Geschäftslogik für Anfragen.
@@ -38,4 +42,19 @@ public class AnfrageService {
 
         return anfrageRepository.save(a);
     }
+
+    @Transactional
+    public List<Anfrage> getBenutzerAnfragen(Long userId) {
+        Optional<List<Anfrage>> anfragenOptional = this.anfrageRepository.findByErstellerId(userId);
+        if(anfragenOptional.isEmpty()){
+            throw new IllegalArgumentException("Benutzer nicht gefunden: " + userId);
+        }
+        List<Anfrage> anfrageList = anfragenOptional.orElse(new ArrayList<>());
+
+        return anfrageList;
+    }
+
+
+
+
 }
