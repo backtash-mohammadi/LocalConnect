@@ -6,9 +6,13 @@ export default function Footer() {
         <footer className="mt-12 border-t bg-white">
             <div className="mx-auto grid max-w-6xl gap-6 px-4 py-8 md:grid-cols-3">
                 <div>
-                    <div className="mb-2 flex items-center gap-2">
-                        <span className="h-8 w-8 rounded-2xl bg-indigo-600 text-white grid place-items-center font-bold">LC</span>
-                        <span className="text-base font-semibold">LocalConnect</span>
+                    <div className="flex items-center">
+                        <img
+                            src="/logo.png"
+                            alt="LocalConnect Logo"
+                            className="h-8 w-8 mb-4"
+                        />
+                        <h3 className="text-xl font-bold text-indigo-700">LocalConnect</h3>
                     </div>
                     <p className="text-sm text-gray-600">
                         Nachbarschaftshilfe mit fairem Karma-System. Teile Zeit, Wissen und

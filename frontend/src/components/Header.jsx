@@ -28,8 +28,14 @@ export default function Header() {
         <header className="sticky top-0 z-40 w-full border-b bg-white/80 backdrop-blur">
             <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-3">
                 <Link to="/" className="flex items-center gap-2">
-                    <span className="h-8 w-8 rounded-2xl bg-indigo-600 text-white grid place-items-center font-bold">LC</span>
-                    <span className="text-lg font-semibold">LocalConnect</span>
+                    <div className="flex items-center">
+                        <img
+                            src="/logo.png"
+                            alt="LocalConnect Logo"
+                            className="h-16 w-16 mb-4"
+                        />
+                        <h1 className="text-3xl font-bold text-indigo-700">LocalConnect</h1>
+                    </div>
                 </Link>
 
                 <div className="flex flex-wrap items-center gap-3">

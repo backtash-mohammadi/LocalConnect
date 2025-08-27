@@ -66,11 +66,13 @@ export default function RegistrationAndSignIn() {
     return (
         <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
             <div className="sm:mx-auto sm:w-full sm:max-w-sm">
-                <img
-                    alt="LocalConnect"
-                    src="https://tailwindcss.com/plus-assets/img/logos/mark.svg?color=indigo&shade=600"
-                    className="mx-auto h-10 w-auto"
-                />
+                <div className="flex flex-col items-center">
+                    <img
+                        src="/logo.png"
+                        alt="LocalConnect Logo"
+                        className="h-32 w-32 mb-4"
+                    />
+                </div>
                 <h2 className="mt-6 text-center text-2xl font-bold tracking-tight text-gray-900">
                     {modus === "login" ? "Anmelden" : "Registrieren"}
                 </h2>
