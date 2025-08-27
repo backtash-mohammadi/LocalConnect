@@ -10,6 +10,10 @@ export default function MeineAnfragenSeite(){
     const [anfragen, setAnfragen] = useState([]);
     const [laden, setLaden] = useState(true);
     const [fehler, setFehler] = useState('');
+
+    // ⚠️ NEU: Such-State
+    const [suche, setSuche] = useState('');
+
     const navigate = useNavigate();
 
     async function ladeDaten(){
@@ -25,7 +29,6 @@ export default function MeineAnfragenSeite(){
 
             const parameter = new URLSearchParams({
                 userID: String(benutzerId)
-
             });
 
             const daten = await apiGet(`/meine-anfragen?${parameter.toString()}`, token);
@@ -58,7 +61,7 @@ export default function MeineAnfragenSeite(){
         }
     }
 
-    //mark request as completed in the backend, then go back to list
+    // mark request as completed in the backend, then go back to list
     async function markiereAlsFertig(id){
         // Call backend to set status = "fertig", then navigate back
 
@@ -72,6 +75,7 @@ export default function MeineAnfragenSeite(){
             setFehler(err.message || 'Fehler beim Aktualisieren');
         }
     }
+
     if(!benutzer){
         // Redirect prompt for unauthenticated users
         return (
@@ -83,6 +87,19 @@ export default function MeineAnfragenSeite(){
         );
     }
 
+    // ⚠️ NEU: Clientseitige Filterung
+    const gefiltert = anfragen.filter((a) => {
+        if (!suche.trim()) return true;
+        const q = suche.toLowerCase();
+        const titel = (a.titel ?? a.title ?? '').toLowerCase();
+        const beschr = (a.beschreibung ?? a.description ?? '').toLowerCase();
+        const kat = (a.kategorie ?? a.category ?? '').toLowerCase();
+        const status = (a.status ?? '').toLowerCase();
+        const addr = [a.strasse ?? a.street ?? '', a.plz ?? a.postal_code ?? '', a.stadt ?? a.city ?? '']
+            .filter(Boolean).join(' ').toLowerCase();
+        return [titel, beschr, kat, status, addr].some(s => s.includes(q));
+    });
+
     return (
         <div className="mx-auto max-w-3xl px-4 py-8">
             <h1 className="mb-4 text-xl font-bold">Meine Anfragen</h1>
@@ -92,6 +109,16 @@ export default function MeineAnfragenSeite(){
                         className="rounded-xl bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-60">
                     {laden ? 'Aktualisiere…' : 'Aktualisieren'}
                 </button>
+
+                {/* ⚠️ NEU: Suchfeld neben „Aktualisieren“ */}
+                <input
+                    type="search"
+                    placeholder="Suchen (Titel, Text, Kategorie, Adresse)…"
+                    value={suche}
+                    onChange={(e) => setSuche(e.target.value)}
+                    className="flex-1 rounded-xl border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-600"
+                />
+
                 {fehler && <span className="text-sm text-red-700">{fehler}</span>}
             </div>
 
@@ -99,12 +126,14 @@ export default function MeineAnfragenSeite(){
                 <div className="rounded-2xl border bg-white p-4 text-sm text-gray-700">Lade…</div>
             )}
 
-            {!laden && anfragen.length === 0 && !fehler && (
-                <div className="rounded-2xl border bg-white p-4 text-sm text-gray-700">Keine Anfragen gefunden.</div>
+            {!laden && gefiltert.length === 0 && !fehler && (
+                <div className="rounded-2xl border bg-white p-4 text-sm text-gray-700">
+                    Keine Anfragen gefunden{suche.trim() ? ' – Suchbegriff anpassen?' : '.'}
+                </div>
             )}
 
             <ul className="space-y-4">
-                {!laden && anfragen.map((a) => {
+                {!laden && gefiltert.map((a) => {
                     // Defensive fields in case backend returns different property names
 
                     // const id = a.id ?? a.post_id;
@@ -120,13 +149,21 @@ export default function MeineAnfragenSeite(){
                     const stadt = a.stadt ?? a.city;
                     const strasse = a.strasse ?? a.street;
                     const plz = a.plz ?? a.postal_code;
-                    return (
 
+                    return (
                         <li key={id} className="rounded-2xl border bg-white p-4">
                             {/*{console.log("schl:  " + schlussel)}*/}
                             <div className="flex items-start justify-between gap-4">
                                 <div>
-                                    <h2 className="text-base font-semibold text-gray-900">{titel}</h2>
+                                    {/* ⚠️ NEU: Titel klickbar -> öffnet Detailseite */}
+                                    <button
+                                        onClick={() => navigate(`/anfrage/${id}`)}
+                                        className="text-left text-base font-semibold text-indigo-700 underline underline-offset-2 hover:text-indigo-900"
+                                        title="Details öffnen"
+                                    >
+                                        {titel}
+                                    </button>
+
                                     <p className="mt-1 text-sm text-gray-700">{beschreibung}</p>
                                     <div className="mt-2 flex flex-wrap gap-2 text-xs text-gray-600">
                                         {kategorie && <span className="rounded-full border px-2 py-0.5">{kategorie}</span>}
@@ -175,4 +212,3 @@ export default function MeineAnfragenSeite(){
         </div>
     );
 }
-
