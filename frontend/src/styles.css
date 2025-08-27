@@ -12,15 +12,14 @@ body {
     font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
 }
 
-/* Die Map-Seite an das allgemeine Seitenlayout angleichen */
 .app {
     display: grid;
     grid-template-rows: auto auto 1fr auto;
     min-height: 40dvh;
-    /* Neu: auf gleiche Breite wie andere Seiten begrenzen & zentrieren */
-    max-width: 72rem;            /* ~ Tailwind: max-w-6xl */
-    margin-inline: auto;         /* zentriert */
-    padding-inline: 1rem;        /* ~ Tailwind: px-4 (auf großen Screens skaliert) */
+
+    max-width: 72rem;
+    margin-inline: auto;
+    padding-inline: 1rem;
 }
 
 .app__header {
@@ -101,7 +100,6 @@ body {
     font-weight: 600;
 }
 
-/* Address search styles */
 .search {
     position: relative;
     padding: 12px 14px;

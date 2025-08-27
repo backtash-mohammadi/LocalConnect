@@ -44,6 +44,36 @@ public class AnfrageController {
         return ResponseEntity.ok(dto);
     }
 
+    @GetMapping("/stadt-anfragen")
+    public ResponseEntity<List<AnfrageErstellenDTO>> ladeAnfragenNachStadt(
+            @RequestParam("city") String stadt) {
+
+        List<Anfrage> anfragen = anfrageService.findeAnfragenNachStadt(stadt);
+
+        System.out.println(" test anf. : " + anfragen.toString());
+
+        // This method might need to be changed later, depending on what we need to do.
+        List<AnfrageErstellenDTO> anfrageDTOs = new ArrayList<>();
+        for(Anfrage a : anfragen){
+            long helferId = a.getHelfer() == null ? 0 : a.getHelfer().getId();
+            AnfrageErstellenDTO dto = new AnfrageErstellenDTO(
+                    a.getId(),
+                    a.getTitel(),
+                    a.getBeschreibung(),
+                    a.getKategorie(),
+                    a.getStadt(),
+                    a.getStrasse(),
+                    a.getPlz(),
+                    a.getErsteller().getId(),
+                    helferId,
+                    a.getStatus()
+            );
+            anfrageDTOs.add(dto);
+        }
+
+        return ResponseEntity.ok(anfrageDTOs);
+    }
+
     @GetMapping("/meine-anfragen")
     public ResponseEntity<List<AnfrageErstellenDTO>> getBenutzerAnfragen(@RequestParam("userID")  Long userId){
 

@@ -45,6 +45,7 @@ public class SicherheitsKonfiguration {
                         .requestMatchers("/erstellen").permitAll()    // <--- eingefügt.
                         .requestMatchers(("/meine-anfragen")).permitAll() // <--- eingefügt.
                         .requestMatchers("/anfrage/**").permitAll() // <--- eingefügt.
+                        .requestMatchers("stadt-anfragen").permitAll() //  <--- eingefügt. 28/08.
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
