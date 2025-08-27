@@ -43,3 +43,25 @@ export async function apiPut(pfad, daten, token) {
     });
     return handleAntwort(resp);
 }
+
+export async function apiDelete(pfad, token) {
+    const resp = await fetch(`${BASIS_URL}${pfad}`, {
+        method: "DELETE",
+        headers: {
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+    });
+    return handleAntwort(resp);
+}
+
+export async function apiPatch(pfad, daten, token) {
+    const resp = await fetch(`${BASIS_URL}${pfad}`, {
+        method: "PATCH",
+        headers: {
+            "Content-Type": "application/json",
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify(daten),
+    });
+    return handleAntwort(resp);
+}
