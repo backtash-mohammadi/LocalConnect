@@ -1,8 +1,26 @@
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthKontext";
+import { useEffect, useState } from "react";
+import { apiGet } from "../lib/apiClient";
 
 export default function Header() {
-    const { benutzer, ausloggen } = useAuth();
+    const { benutzer, ausloggen, token } = useAuth();
+    const [istAdmin, setIstAdmin] = useState(false);
+
+    useEffect(() => {
+        let abbruch = false;
+        async function check() {
+            if (!token) { setIstAdmin(false); return; }
+            try {
+                const r = await apiGet("/api/admin/ping", token);
+                if (!abbruch) setIstAdmin(!!r?.ok);
+            } catch {
+                if (!abbruch) setIstAdmin(false);
+            }
+        }
+        check();
+        return () => { abbruch = true; };
+    }, [token]);
 
     return (
         <header className="sticky top-0 z-40 w-full border-b bg-white/80 backdrop-blur">
@@ -13,15 +31,10 @@ export default function Header() {
                 </Link>
 
                 <div className="flex flex-wrap items-center gap-3">
-                    {benutzer && (
-                        <div className="flex items-center gap-2 rounded-xl bg-green-50 px-3 py-1.5 text-sm text-green-700">
-                            <span className="inline-block h-2 w-2 rounded-full bg-green-500" />
-                            <span>
-                Eingeloggt als <strong className="font-semibold">{benutzer.name}</strong>
-                <span className="mx-1">·</span>
-                Karma: <strong className="font-semibold">{benutzer.karma}</strong>
-              </span>
-                        </div>
+                    {istAdmin && (
+                        <Link to="/admin" className="rounded-xl border px-3 py-1.5 text-sm hover:bg-gray-50">
+                            Admin
+                        </Link>
                     )}
 
                     {benutzer ? (
