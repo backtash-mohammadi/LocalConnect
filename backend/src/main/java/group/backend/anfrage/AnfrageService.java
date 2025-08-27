@@ -94,7 +94,7 @@ public class AnfrageService {
         if (stadt == null || stadt.isBlank()){
             return new ArrayList<>();
         }
-        return this.anfrageRepository.findByStadt(stadt);
+        return this.anfrageRepository.findByStadtIgnoreCase(stadt);
 
     }
 }

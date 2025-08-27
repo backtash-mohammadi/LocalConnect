@@ -7,5 +7,5 @@ import java.util.Optional;
 
 public interface AnfrageRepository extends JpaRepository<Anfrage, Long> {
     Optional<List<Anfrage>> findByErstellerId(Long userId);
-    List<Anfrage> findByStadt(String stadt);
+    List<Anfrage> findByStadtIgnoreCase(String stadt);
 }
