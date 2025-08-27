@@ -2,7 +2,7 @@ import Header from "./components/Header.jsx";
 import Footer from "./components/Footer.jsx";
 import MainPage from "./components/MainPage.jsx";
 import RegistrationAndSignIn from "./components/RegistrationAndSignIn.jsx"; // Falls im src/ liegt
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import {BrowserRouter, Routes, Route, useParams, useNavigate} from "react-router-dom";
 import { AuthProvider } from "./context/AuthKontext.jsx";
 import './App.css'
 import ProfilSeite from "./components/ProfilSeite.jsx";
@@ -12,8 +12,18 @@ import AdminAnzeigenSeite from "./components/AdminAnzeigenSeite.jsx";
 import AnfrageErstellenSeite from "./components/AnfrageErstellen.jsx";
 import MeineAnfragenSeite from "./components/MeineAnfragenSeite.jsx";
 import AnfrageBearbeitenSeite from "./components/AnfrageBearbeitenSeite.jsx";
+import CommentSection from "./components/CommentSection.jsx";
 
 export function App() {
+
+
+    function AnfragePage() {
+     const { id } = useParams();
+     const navigate = useNavigate();
+     return <CommentSection postId={id} onBack={() => navigate(-1)} />;
+     }
+
+
     return (
         <BrowserRouter>
             <AuthProvider>
@@ -32,6 +42,7 @@ export function App() {
                             <Route path="/profil" element={<ProfilSeite />} />
                             <Route path="/admin" element={<AdminBenutzerSeite />} />
                             <Route path="/admin/anzeigen" element={<AdminAnzeigenSeite />} />
+                            <Route path="/anfrage/:id" element={<AnfragePage />} />
                         </Routes>
                     </div>
                     <Footer />
