@@ -38,19 +38,35 @@ export default function Header() {
                     </div>
                 </Link>
 
-                <div className="flex flex-wrap items-center gap-3">
-                    {istAdmin && (
-                        <Link to="/admin" className="rounded-xl border px-3 py-1.5 text-sm hover:bg-gray-50">
-                            Admin
+                {/* Admin-Navigation */}
+                {istAdmin && (
+                    <div className="flex items-center gap-4">
+                        <Link
+                            to="/admin"
+                            className="rounded-xl border px-3 py-1.5 text-sm hover:bg-gray-50"
+                        >
+                            Admin-Dashboard
                         </Link>
-                    )}
+                        <Link
+                            to="/admin/anzeigen"
+                            className="font-semibold text-red-600 hover:text-red-700"
+                        >
+                            Admin · Anzeigen
+                        </Link>
+                    </div>
+                )}
 
+                <div className="flex flex-wrap items-center gap-3">
                     {benutzer ? (
                         <>
-                            <Link to="/profil" className="rounded-xl border px-3 py-1.5 text-sm hover:bg-gray-50">Profil</Link>
+                            <Link
+                                to="/profil"
+                                className="rounded-xl border px-3 py-1.5 text-sm hover:bg-gray-50"
+                            >
+                                Profil
+                            </Link>
                             <button
                                 onClick={() => {
-                                    // Nach dem Ausloggen sofort zur Startseite navigieren.
                                     ausloggen();
                                     navigate("/");
                                 }}
@@ -58,10 +74,14 @@ export default function Header() {
                             >
                                 Abmelden
                             </button>
-
                         </>
                     ) : (
-                        <Link to="/login" className="rounded-xl border px-3 py-1.5 text-sm hover:bg-gray-50">Login / Registrierung</Link>
+                        <Link
+                            to="/login"
+                            className="rounded-xl border px-3 py-1.5 text-sm hover:bg-gray-50"
+                        >
+                            Login / Registrierung
+                        </Link>
                     )}
                 </div>
             </div>

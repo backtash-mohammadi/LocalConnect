@@ -7,6 +7,7 @@ import { AuthProvider } from "./context/AuthKontext.jsx";
 import './App.css'
 import ProfilSeite from "./components/ProfilSeite.jsx";
 import AdminBenutzerSeite from "./components/AdminBenutzerSeite.jsx";
+import AdminAnzeigenSeite from "./components/AdminAnzeigenSeite.jsx";
 
 import AnfrageErstellenSeite from "./components/AnfrageErstellen.jsx";
 import MeineAnfragenSeite from "./components/MeineAnfragenSeite.jsx";
@@ -30,6 +31,7 @@ export function App() {
 
                             <Route path="/profil" element={<ProfilSeite />} />
                             <Route path="/admin" element={<AdminBenutzerSeite />} />
+                            <Route path="/admin/anzeigen" element={<AdminAnzeigenSeite />} />
                         </Routes>
                     </div>
                     <Footer />
