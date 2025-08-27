@@ -52,6 +52,7 @@ public class AdminAnzeigenDienst {
         AdminAnfrageDto dto = new AdminAnfrageDto();
         dto.setId(a.getId());
         // Falls Feldnamen in eurer Entity leicht anders heißen, bitte diese Zeilen anpassen:
+        try { dto.setTitle(a.getTitel()); } catch (Exception ignored) {}
         try { dto.setBeschreibung(a.getBeschreibung()); } catch (Exception ignored) {}
         try { dto.setKategorie(a.getKategorie()); } catch (Exception ignored) {}
         try { dto.setStadt(a.getStadt()); } catch (Exception ignored) {}

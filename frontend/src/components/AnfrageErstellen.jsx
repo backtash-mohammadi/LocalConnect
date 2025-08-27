@@ -42,7 +42,7 @@ export default function AnfrageErstellenSeite(){
         try{
             const payload = {
                 userId: benutzer?.id,
-                titel: form.titel.trim(),
+                title: form.title.trim(),
                 beschreibung: form.beschreibung.trim() || null,
                 kategorie: form.kategorie,
                 stadt: form.stadt.trim(),

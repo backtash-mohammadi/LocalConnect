@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class AdminAnfrageDto {
     private Long id;
+    private String title;
     private String beschreibung;
     private String kategorie;
     private String stadt;

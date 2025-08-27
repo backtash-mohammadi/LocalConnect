@@ -1,9 +1,22 @@
 import { useEffect, useState } from "react";
-import { apiGet } from "../lib/apiClient";
-import { baueQuery } from "../lib/apiClient";
+import { apiGet, baueQuery } from "../lib/apiClient";
 import { useAuth } from "../context/AuthKontext";
 
-/** Admin – Liste aller Anzeigen/Anfragen (einfach) mit Modal-Löschbestätigung. */
+/** Пытаемся достать название поста из разных возможных полей; НИКОГДА не берём описания */
+function leseTitel(a) {
+    if (!a) return "-";
+    const kandidaten = [
+        a.title,         // твоё поле в БД -> JSON
+        a.titel,         // вдруг где-то приходит по-немецки
+        a.name,
+        a.ueberschrift,
+        a.anzeigeTitel,
+    ].filter(Boolean);
+    if (kandidaten.length > 0) return String(kandidaten[0]);
+    return `Beitrag #${a.id}`;
+}
+
+/** Admin – Liste aller Anzeigen/Anfragen (einfach) mit Modal & Toast */
 export default function AdminAnzeigenSeite() {
     const { token } = useAuth();
     const BASIS_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
@@ -13,21 +26,24 @@ export default function AdminAnzeigenSeite() {
     const [laden, setLaden] = useState(true);
     const [fehler, setFehler] = useState("");
 
-    // Paging (behalte deine deutschen Param-Namen)
+    // Paging (немецкие имена под твой бэкенд)
     const [seite, setSeite] = useState(0);
     const [groesse, setGroesse] = useState(10);
     const [gesamtSeiten, setGesamtSeiten] = useState(0);
     const [gesamtElemente, setGesamtElemente] = useState(0);
 
-    // Modal-Zustand
+    // Modal: показываем выбранный пост целиком
     const [zeigeModal, setZeigeModal] = useState(false);
-    const [loeschId, setLoeschId] = useState(null);
+    const [loeschEintrag, setLoeschEintrag] = useState(null); // {id, title, beschreibung, ...}
+
+    // Toast
+    const [toast, setToast] = useState(""); // текст тоста
 
     async function lade() {
         setLaden(true);
         setFehler("");
         try {
-            const q = baueQuery({ seite, groesse }); // <-- bleiben wie у тебя
+            const q = baueQuery({ seite, groesse });
             const res = await apiGet(`/api/admin/anzeigen${q}`, token);
             setListe(res.inhalte || []);
             setGesamtSeiten(res.gesamtSeiten ?? 0);
@@ -44,22 +60,21 @@ export default function AdminAnzeigenSeite() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [seite, groesse]);
 
-    // Открыть модалку с выбранным id
-    function bestaetigungOeffnen(id) {
-        setLoeschId(id);
+    // Открыть/закрыть модалку
+    function bestaetigungOeffnen(eintrag) {
+        setLoeschEintrag(eintrag);
         setZeigeModal(true);
     }
-
     function bestaetigungSchliessen() {
         setZeigeModal(false);
-        setLoeschId(null);
+        setLoeschEintrag(null);
     }
 
-    // Удаление по подтверждению из модалки
+    // Удаление с подтверждением
     async function loescheAnfrageEndgueltig() {
-        if (!loeschId) return;
+        if (!loeschEintrag) return;
         try {
-            const resp = await fetch(`${BASIS_URL}/api/admin/anzeigen/${loeschId}`, {
+            const resp = await fetch(`${BASIS_URL}/api/admin/anzeigen/${loeschEintrag.id}`, {
                 method: "DELETE",
                 headers: {
                     Authorization: token ? `Bearer ${token}` : "",
@@ -67,26 +82,43 @@ export default function AdminAnzeigenSeite() {
             });
             if (!resp.ok) {
                 const payload = await (async () => {
-                    try {
-                        return await resp.json();
-                    } catch (_) {
-                        return null;
-                    }
+                    try { return await resp.json(); } catch (_) { return null; }
                 })();
                 const msg = payload?.nachricht || payload?.fehler || resp.statusText;
                 throw new Error(msg || "Löschen fehlgeschlagen");
             }
             // локально обновить список
-            setListe((prev) => prev.filter((a) => a.id !== loeschId));
+            setListe(prev => prev.filter(a => a.id !== loeschEintrag.id));
             bestaetigungSchliessen();
+
+            // toast
+            setToast("Anzeige gelöscht");
         } catch (e) {
             setFehler(e.message || "Fehler beim Löschen");
             bestaetigungSchliessen();
         }
     }
 
+    // Авто-скрытие тоста
+    useEffect(() => {
+        if (!toast) return;
+        const t = setTimeout(() => setToast(""), 3000);
+        return () => clearTimeout(t);
+    }, [toast]);
+
     return (
-        <div className="p-6 max-w-6xl mx-auto">
+        <div className="p-6 max-w-6xl mx-auto relative">
+            {/* Toast */}
+            {toast && (
+                <div
+                    className="fixed right-4 top-4 z-50 rounded-xl bg-green-600 px-4 py-2 text-white shadow-lg"
+                    role="status"
+                    aria-live="polite"
+                >
+                    {toast}
+                </div>
+            )}
+
             <h1 className="text-2xl font-bold mb-4">Admin · Alle Anzeigen</h1>
 
             {/* Kopfzeile mit Paging */}
@@ -95,7 +127,7 @@ export default function AdminAnzeigenSeite() {
                 <button
                     className="px-3 py-1 border rounded disabled:opacity-50"
                     disabled={seite <= 0}
-                    onClick={() => setSeite((s) => Math.max(0, s - 1))}
+                    onClick={() => setSeite(s => Math.max(0, s - 1))}
                 >
                     ← Zurück
                 </button>
@@ -105,7 +137,7 @@ export default function AdminAnzeigenSeite() {
                 <button
                     className="px-3 py-1 border rounded disabled:opacity-50"
                     disabled={seite >= gesamtSeiten - 1}
-                    onClick={() => setSeite((s) => s + 1)}
+                    onClick={() => setSeite(s => s + 1)}
                 >
                     Weiter →
                 </button>
@@ -113,16 +145,9 @@ export default function AdminAnzeigenSeite() {
                 <select
                     className="ml-auto border rounded px-2 py-1"
                     value={groesse}
-                    onChange={(e) => {
-                        setSeite(0);
-                        setGroesse(parseInt(e.target.value, 10));
-                    }}
+                    onChange={e => { setSeite(0); setGroesse(parseInt(e.target.value, 10)); }}
                 >
-                    {[10, 20, 50].map((n) => (
-                        <option key={n} value={n}>
-                            {n} / Seite
-                        </option>
-                    ))}
+                    {[10, 20, 50].map(n => <option key={n} value={n}>{n} / Seite</option>)}
                 </select>
             </div>
 
@@ -136,6 +161,7 @@ export default function AdminAnzeigenSeite() {
                         <thead className="bg-gray-50">
                         <tr>
                             <th className="text-left px-3 py-2">ID</th>
+                            <th className="text-left px-3 py-2">Titel</th>
                             <th className="text-left px-3 py-2">Kategorie</th>
                             <th className="text-left px-3 py-2">Beschreibung</th>
                             <th className="text-left px-3 py-2">Stadt</th>
@@ -147,9 +173,10 @@ export default function AdminAnzeigenSeite() {
                         </tr>
                         </thead>
                         <tbody>
-                        {liste.map((a) => (
+                        {liste.map(a => (
                             <tr key={a.id} className="border-t">
                                 <td className="px-3 py-2">{a.id}</td>
+                                <td className="px-3 py-2">{leseTitel(a)}</td>
                                 <td className="px-3 py-2">{a.kategorie || "-"}</td>
                                 <td
                                     className="px-3 py-2 max-w-[28rem] truncate"
@@ -172,7 +199,7 @@ export default function AdminAnzeigenSeite() {
                                 </td>
                                 <td className="px-3 py-2">
                                     <button
-                                        onClick={() => bestaetigungOeffnen(a.id)}
+                                        onClick={() => bestaetigungOeffnen(a)} // передаём весь объект
                                         className="rounded-xl border border-red-300 px-2 py-1 text-sm text-red-700 hover:bg-red-50"
                                     >
                                         Löschen
@@ -186,14 +213,36 @@ export default function AdminAnzeigenSeite() {
             )}
 
             {/* Modal */}
-            {zeigeModal && (
+            {zeigeModal && loeschEintrag && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
                     <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl">
                         <h3 className="mb-3 text-lg font-semibold">Löschung bestätigen</h3>
+
+                        {/* Детали поста: ТОЛЬКО реальный Titel + описание со скроллом */}
+                        <div className="mb-4 rounded-lg border bg-gray-50 p-3">
+                            <div className="text-sm text-gray-500">Titel</div>
+                            <div
+                                className="font-medium text-gray-900 truncate"
+                                title={leseTitel(loeschEintrag)}
+                            >
+                                {leseTitel(loeschEintrag)}
+                            </div>
+
+                            {loeschEintrag.beschreibung && (
+                                <>
+                                    <div className="mt-3 text-sm text-gray-500">Beschreibung</div>
+                                    <div className="max-h-60 overflow-y-auto break-words whitespace-pre-line text-gray-800">
+                                        {loeschEintrag.beschreibung}
+                                    </div>
+                                </>
+                            )}
+                        </div>
+
                         <p className="mb-6 text-sm text-gray-700">
                             Willst du diese Anzeige wirklich löschen? Diese Aktion kann nicht
                             rückgängig gemacht werden.
                         </p>
+
                         <div className="flex justify-end gap-3">
                             <button
                                 onClick={bestaetigungSchliessen}
