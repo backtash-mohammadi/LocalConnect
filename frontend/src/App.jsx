@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./context/AuthKontext.jsx";
 import './App.css'
 import ProfilSeite from "./components/ProfilSeite.jsx";
+import AdminBenutzerSeite from "./components/AdminBenutzerSeite.jsx";
 
 
 export function App() {
@@ -21,6 +22,7 @@ export function App() {
                             <Route path="/anzeigen" element={<MainPage />} />
                             <Route path="/erstellen" element={<div className="mx-auto max-w-6xl px-4 py-8">Formular kommt später…</div>} />
                             <Route path="/profil" element={<ProfilSeite />} />
+                            <Route path="/admin" element={<AdminBenutzerSeite />} />
                         </Routes>
                     </div>
                     <Footer />
