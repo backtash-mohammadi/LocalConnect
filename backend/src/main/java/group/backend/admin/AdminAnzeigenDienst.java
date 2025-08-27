@@ -42,6 +42,11 @@ public class AdminAnzeigenDienst {
         );
     }
 
+    @Transactional
+    public void loeschen(Long id) {
+        anfrageRepository.deleteById(id);
+    }
+
     /** Einfache Abbildung Entity -> DTO (nur Felder, die die Liste benötigt). */
     private AdminAnfrageDto toDto(Anfrage a) {
         AdminAnfrageDto dto = new AdminAnfrageDto();

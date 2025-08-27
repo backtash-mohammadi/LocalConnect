@@ -4,10 +4,7 @@ import group.backend.admin.dto.AdminAnfrageDto;
 import group.backend.common.dto.SeiteDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * Admin-Endpunkte für Anzeigen/Anfragen.
@@ -27,5 +24,11 @@ public class AdminAnzeigenController {
             @RequestParam(defaultValue = "10") int groesse
     ) {
         return adminAnzeigenDienst.holeAlle(seite, groesse);
+    }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public void loeschen(@PathVariable Long id) {
+        adminAnzeigenDienst.loeschen(id);
     }
 }
