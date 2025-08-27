@@ -65,3 +65,12 @@ export async function apiPatch(pfad, daten, token) {
     });
     return handleAntwort(resp);
 }
+
+export function baueQuery(params = {}) {
+    const sp = new URLSearchParams();
+    Object.entries(params).forEach(([k, v]) => {
+        if (v !== undefined && v !== null && v !== "") sp.append(k, v);
+    });
+    const str = sp.toString();
+    return str ? `?${str}` : "";
+}
