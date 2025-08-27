@@ -42,6 +42,8 @@ public class SicherheitsKonfiguration {
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/erstellen").permitAll()    // <--- eingefügt.
+                        .requestMatchers(("/meine-anfragen")).permitAll() // <--- eingefügt.
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
