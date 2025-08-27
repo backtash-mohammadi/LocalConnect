@@ -41,4 +41,7 @@ public class Benutzer {
     @Column(nullable = true)
     private String twoFactorToken;
 
+    @Column(nullable = false)
+    private boolean gesperrt = false;
+
 }
