@@ -3,6 +3,8 @@ import { apiDelete, apiGet, apiPatch } from "../lib/apiClient";
 import { baueQuery } from "../lib/apiClient";
 import { useAuth } from "../context/AuthKontext";
 import BestaetigungModal from "./BestaetigungModal";
+import { useNavigate } from "react-router-dom";
+
 
 /** Admin – Benutzerliste mit Suche, Pagination und Lösch-Bestätigung. */
 export default function AdminBenutzerSeite() {
@@ -81,6 +83,25 @@ export default function AdminBenutzerSeite() {
         const ende = Math.min(gesamtSeiten, start + max);
         return Array.from({ length: Math.max(ende - start, 0) }, (_, i) => start + i);
     }, [seite, gesamtSeiten]);
+
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        let abbruch = false;
+        async function check() {
+            try {
+                await apiGet("/api/admin/ping", token);
+                // ok: nichts tun
+            } catch {
+                if (!abbruch) {
+                    // Kein Admin (oder ausgeloggt) → zurück zur Startseite.
+                    navigate("/", { replace: true });
+                }
+            }
+        }
+        check();
+        return () => { abbruch = true; };
+    }, [token, navigate]);
 
     return (
         <div className="mx-auto max-w-6xl px-4 py-8">

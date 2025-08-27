@@ -2,10 +2,12 @@ import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthKontext";
 import { useEffect, useState } from "react";
 import { apiGet } from "../lib/apiClient";
+import { useNavigate } from "react-router-dom";
 
 export default function Header() {
     const { benutzer, ausloggen, token } = useAuth();
     const [istAdmin, setIstAdmin] = useState(false);
+    const navigate = useNavigate();
 
     useEffect(() => {
         let abbruch = false;
@@ -40,7 +42,17 @@ export default function Header() {
                     {benutzer ? (
                         <>
                             <Link to="/profil" className="rounded-xl border px-3 py-1.5 text-sm hover:bg-gray-50">Profil</Link>
-                            <button onClick={ausloggen} className="rounded-xl border px-3 py-1.5 text-sm hover:bg-gray-50">Abmelden</button>
+                            <button
+                                onClick={() => {
+                                    // Nach dem Ausloggen sofort zur Startseite navigieren.
+                                    ausloggen();
+                                    navigate("/");
+                                }}
+                                className="rounded-xl border px-3 py-1.5 text-sm hover:bg-gray-50"
+                            >
+                                Abmelden
+                            </button>
+
                         </>
                     ) : (
                         <Link to="/login" className="rounded-xl border px-3 py-1.5 text-sm hover:bg-gray-50">Login / Registrierung</Link>
