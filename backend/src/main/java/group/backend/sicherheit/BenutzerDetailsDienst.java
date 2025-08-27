@@ -33,6 +33,11 @@ public class BenutzerDetailsDienst implements UserDetailsService {
         Benutzer b = benutzerRepository.findByEmailAdresse(email)
                 .orElseThrow(() -> new UsernameNotFoundException("Benutzer nicht gefunden"));
 
+        // Benutzer darf sich nicht anmelden, wenn gesperrt
+        if (b.isGesperrt()) {
+            throw new UsernameNotFoundException("Benutzer ist gesperrt");
+        }
+
         List<GrantedAuthority> rollen = new ArrayList<>();
         rollen.add(new SimpleGrantedAuthority("ROLE_USER"));
         if (adminEmails.contains(b.getEmailAdresse().toLowerCase())) {
