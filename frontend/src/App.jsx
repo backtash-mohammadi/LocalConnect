@@ -12,6 +12,7 @@ import AdminAnzeigenSeite from "./components/AdminAnzeigenSeite.jsx";
 import AnfrageErstellenSeite from "./components/AnfrageErstellen.jsx";
 import MeineAnfragenSeite from "./components/MeineAnfragenSeite.jsx";
 import AnfrageBearbeitenSeite from "./components/AnfrageBearbeitenSeite.jsx";
+import KarteAnzeigen from "./components/KarteAnzeigenSeite.jsx";
 
 export function App() {
     return (
@@ -32,6 +33,8 @@ export function App() {
                             <Route path="/profil" element={<ProfilSeite />} />
                             <Route path="/admin" element={<AdminBenutzerSeite />} />
                             <Route path="/admin/anzeigen" element={<AdminAnzeigenSeite />} />
+                            <Route path={"/karte"} element={<KarteAnzeigen />} />
+
                         </Routes>
                     </div>
                     <Footer />

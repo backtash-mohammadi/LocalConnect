@@ -1,4 +1,16 @@
-/* src/styles.css */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@import "./styles.css"; /* src/styles.css */
+
+/*.leaflet-container {*/
+/*    height: 100vh;*/
+/*    width: 100vw;*/
+/*}*/
+/* Wichtig: Keine globale Vollbild-Größe mehr erzwingen.
+   Leaflet-Größe wird gezielt über .leaflet-container-custom gesetzt. */
+/*.leaflet-container {*/
+/*    !* Optional defensiv: stelle sicher, dass Maps im Layout bleiben *!*/
+/*    width: 100%;*/
+/*    height: 100%;*/
+/*}*/

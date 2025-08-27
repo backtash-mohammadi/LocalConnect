@@ -3,6 +3,7 @@ import { useAuth } from "../context/AuthKontext";
 import { useEffect, useState } from "react";
 import { apiGet } from "../lib/apiClient";
 import { useNavigate } from "react-router-dom";
+import { FaMapMarkedAlt } from "react-icons/fa";
 
 export default function Header() {
     const { benutzer, ausloggen, token } = useAuth();
@@ -35,6 +36,11 @@ export default function Header() {
                             className="h-16 w-16 mb-4"
                         />
                         <h1 className="text-3xl font-bold text-indigo-700">LocalConnect</h1>
+                    </div>
+                </Link>
+                <Link to="/karte" className="flex items-center gap-2">
+                    <div className="flex items-center">
+                        <h2 className="text-2xl font-bold text-indigo-700">Karte <FaMapMarkedAlt /></h2>
                     </div>
                 </Link>
 
