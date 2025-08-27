@@ -6,6 +6,8 @@ import group.backend.benutzer.BenutzerRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -40,6 +42,17 @@ public class AdminDienst {
             throw new IllegalArgumentException("Benutzer nicht gefunden");
         }
         benutzerRepository.deleteById(id);
+    }
+
+    /** Liefert Benutzer seitenweise, optional gefiltert nach Suchtext (Name/Email). */
+    @Transactional(readOnly = true)
+    public Page<AdminBenutzerDto> benutzerSeite(String suchtext, Pageable pageable) {
+        Page<Benutzer> seite = (suchtext == null || suchtext.isBlank())
+                ? benutzerRepository.findAll(pageable)
+                : benutzerRepository.findByNameContainingIgnoreCaseOrEmailAdresseContainingIgnoreCase(
+                suchtext.trim(), suchtext.trim(), pageable
+        );
+        return seite.map(this::inDto);
     }
 
     private AdminBenutzerDto inDto(Benutzer b) {
