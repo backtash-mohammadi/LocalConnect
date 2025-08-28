@@ -42,9 +42,10 @@ public class SicherheitsKonfiguration {
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/erstellen").permitAll()    // <--- eingefügt.
+                        .requestMatchers("/erstellen").permitAll()        // <--- eingefügt.
                         .requestMatchers(("/meine-anfragen")).permitAll() // <--- eingefügt.
-                        .requestMatchers("/anfrage/**").permitAll() // <--- eingefügt.
+                        .requestMatchers("/anfrage/**").permitAll()       // <--- eingefügt.
+                        .requestMatchers("stadt-anfragen").permitAll()    //  <--- eingefügt. 28/08.
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);

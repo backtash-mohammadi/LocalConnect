@@ -88,4 +88,13 @@ public class AnfrageService {
         a.setStatus("fertig");
         anfrageRepository.save(a);
     }
+
+    @Transactional
+    public List<Anfrage> findeAnfragenNachStadt(String stadt){
+        if (stadt == null || stadt.isBlank()){
+            return new ArrayList<>();
+        }
+        return this.anfrageRepository.findByStadtIgnoreCase(stadt);
+
+    }
 }

@@ -14,6 +14,7 @@ import MeineAnfragenSeite from "./components/MeineAnfragenSeite.jsx";
 import AnfrageBearbeitenSeite from "./components/AnfrageBearbeitenSeite.jsx";
 import CommentSection from "./components/CommentSection.jsx";
 import AnfrageDetailSeite from "./components/AnfrageDetailSeite.jsx";
+import KarteAnzeigen from "./components/KarteAnzeigenSeite.jsx";
 
 export function App() {
 
@@ -39,6 +40,8 @@ export function App() {
                             <Route path="/admin" element={<AdminBenutzerSeite />} />
                             <Route path="/admin/anzeigen" element={<AdminAnzeigenSeite />} />
                             <Route path="/anfrage/:id" element={<AnfrageDetailSeite />} />
+                            <Route path={"/karte"} element={<KarteAnzeigen />} />
+
                         </Routes>
                     </div>
                     <Footer />

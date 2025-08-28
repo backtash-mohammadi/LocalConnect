@@ -39,6 +39,9 @@ public class AnfrageErstellenDTO {
 
     private String status;
 
+    public AnfrageErstellenDTO(Long id, String titel, String stadt, String strasse, String plz) {
+    }
+
 //    public AnfrageErstellenDTO(String beschreibung, String kategorie, String stadt) {
 //    }
 }

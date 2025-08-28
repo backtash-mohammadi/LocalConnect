@@ -1,0 +1,186 @@
+/*// --- file: src/styles.css ---*/
+:root {
+    /*color-scheme: light dark;*/
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+}
+
+.app {
+    display: grid;
+    grid-template-rows: auto auto 1fr auto;
+    min-height: 40dvh;
+
+    max-width: 72rem;
+    margin-inline: auto;
+    padding-inline: 1rem;
+}
+
+.app__header {
+    padding: 16px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.app__footer {
+    padding: 8px 20px;
+    opacity: 0.85;
+}
+
+/* Suchleiste und Map-Bereich zentrieren und ~70% Breite ab md-Screens */
+.search-wrap,
+.map-wrap {
+    width: 100%;
+    margin-inline: auto;
+}
+
+.map-wrap {
+    display: grid;
+    grid-template-rows: auto 1fr;
+    gap: 10px;
+    padding: 12px 20px 20px;
+    /*padding: 1px 2px 2px;*/
+}
+
+.card {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(6px);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 16px;
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.08);
+}
+
+.controls {
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.controls__row {
+    display: flex;
+    /*align-content: start;*/
+    align-items: center;
+    gap: 12px;
+}
+
+.controls__buttons {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.controls__status {
+    font-size: 0.9rem;
+    opacity: 0.9;
+}
+
+.btn {
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    border-radius: 999px;
+    padding: 6px 12px;
+    background: white;
+    cursor: pointer;
+}
+
+.btn:hover {
+    filter: brightness(0.98);
+}
+
+.btn--active {
+    background: #f0f0f0;
+    border-color: rgba(0, 0, 0, 0.3);
+    font-weight: 600;
+}
+
+.search {
+    position: relative;
+    padding: 12px 14px;
+}
+
+.search__row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.search__input {
+    flex: 1;
+    padding: 10px 12px;
+    border-radius: 12px;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    background: white;
+}
+
+.search__list {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 12px;
+    right: 12px;
+    max-height: 260px;
+    overflow: auto;
+    background: white;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+    z-index: 1000;
+}
+
+.search__item {
+    width: 100%;
+    text-align: left;
+    padding: 10px 12px;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.search__item:hover {
+    background: #f6f6f6;
+}
+
+.search__error, .search__empty {
+    padding: 6px 2px;
+    font-size: 0.9rem;
+    opacity: 0.9;
+}
+
+.leaflet-container-custom {
+    width: 100%;
+    height: calc(10dvh - 260px);
+    min-height: 300px;
+    max-height: 500px;
+    border-radius: 16px;
+}
+
+/* Karte soll innerhalb des Layouts bleiben: zentriert, moderat hoch */
+/*.leaflet-container-custom {*/
+/*    width: 100%;*/
+/*    !* Reaktionsfähig, aber nicht zu groß: min 320px, ~50% der Viewport-Höhe, max 560px *!*/
+/*    height: clamp(320px, 50vh, 560px);*/
+/*    border-radius: 16px;*/
+/*}*/
+/* Ensure Leaflet controls render above our glassmorphism */
+.leaflet-control-container .leaflet-control {
+    backdrop-filter: blur(2px);
+}
+
+@media (min-width: 768px) {      /* md */
+    .search-wrap,
+    .map-wrap {
+        max-width: 70vw;         /* ~70% der Bildschirmbreite */
+    }
+}
+@media (min-width: 1280px) {     /* xl */
+    .search-wrap,
+    .map-wrap {
+        max-width: 56rem;        /* feste Obergrenze, optisch ruhiger */
+    }
+}
