@@ -36,6 +36,7 @@ export default function OpenStreetMap() {
         stadt: obj.city ?? obj.stadt ?? '',
         strasse: obj.street ?? obj.strasse ?? '',
         plz: obj.zipCode ?? obj.zip ?? obj.postalCode ?? obj.plz ?? '',
+        kategorie: obj.cactegory ?? obj.kategorie ?? '',
     })
 
     // Einzelne Anfrage-Adresse → Koordinaten (Forward Geocoding via Nominatim)

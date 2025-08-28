@@ -4,6 +4,22 @@ import { MapContainer, TileLayer, Circle, CircleMarker, Tooltip, useMap } from '
 import 'leaflet/dist/leaflet.css'
 import { FcOk } from "react-icons/fc";
 
+// Category → bg class mapping (explicit strings so Tailwind won't purge)
+const kategorieFarben = {
+    Werkzeuge: 'bg-blue-100',
+    Nachhilfe: 'bg-green-100',
+    Transport: 'bg-orange-100',
+    Haushalt:  'bg-pink-100',
+    Sonstiges: 'bg-lightblue-100'
+};
+
+// Return a Tailwind bg class for a given category (fallback to gray)
+function kategorieKlasse(kategorieWert) {
+    if (!kategorieWert) return 'bg-gray-100';            // defensive fallback
+    const key = String(kategorieWert).trim();
+    return kategorieFarben[key] || 'bg-gray-100';        // fallback if unknown category
+}
+
 // Keep map centered when `center` changes
 function Recenter({ center }) {
     const map = useMap()
@@ -14,12 +30,12 @@ function Recenter({ center }) {
 }
 
 export default function RadiusMap({ center, onGeolocated, posts = [] }) {
-    // German names; English comments
+    // Deutsche Namen; English comments
     const [radiusKm, setRadiusKm] = useState(1)
     const [geoStatus, setGeoStatus] = useState('')
     const [geoMessage, setGeoMessage] = useState('')
 
-    // Request geolocation only on user action (browser rules)
+    // Ask for geolocation on user action only
     const requestGeolocation = () => {
         if (!('geolocation' in navigator)) {
             setGeoStatus('error')
@@ -74,13 +90,19 @@ export default function RadiusMap({ center, onGeolocated, posts = [] }) {
                 <Recenter center={center} />
                 <Circle center={center} radius={radiusMeters} />
 
-                {/* Markers for requests: small point + permanent, interactive tooltip */}
+                {/* Markers for requests: point + permanent, interactive tooltip */}
                 {Array.isArray(posts) && posts
                     .filter(p => Number.isFinite(p.lat) && Number.isFinite(p.lon))
                     .map((p, i) => {
-                        // Normalize id across possible shapes
-                        const id   = p.id ?? p.post_id ?? p.postId ?? i
-                        const pfad = `/anfrage/${id}` // your endpoint structure
+                        // Normalize id & category across possible shapes
+                        const id        = p.id ?? p.post_id ?? p.postId ?? i
+                        const pfad      = `/anfrage/${id}`
+
+                        const kategorie = p.kategorie ?? p.category
+                        console.log("kat: " + Object.keys(p));
+
+                        const bgKlasse  = kategorieKlasse(kategorie)   // <- compute bg class from category
+                        const titel     = p.titel || 'Anfrage'
 
                         return (
                             <CircleMarker
@@ -88,23 +110,21 @@ export default function RadiusMap({ center, onGeolocated, posts = [] }) {
                                 center={[p.lat, p.lon]}
                                 radius={6}
                                 pathOptions={{ weight: 2, opacity: 0.9 }}
-                                // Optional: also open new tab when the POINT itself is clicked
+                                // Optional: open in new tab when marker is clicked
                                 eventHandlers={{ click: () => window.open(pfad, '_blank', 'noopener,noreferrer') }}
                             >
-                                {/* ⬅️ interactive makes the tooltip clickable */}
+                                {/* interactive: tooltip content is clickable */}
                                 <Tooltip permanent direction="top" offset={[0, -8]} interactive>
-                                    {/* Make the entire label a link that opens in new tab */}
+                                    {/* Make the whole label a link with a category-colored background */}
                                     <a
                                         href={pfad}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="underline bg-white text-indigo-600 text-sm block px-1 py-0.5 rounded"
-                                        onClick={(e) => {
-                                            // optional: ensure new tab even if a router/link handler exists
-                                            e.stopPropagation();
-                                        }}
+                                        onClick={(e) => e.stopPropagation()} // prevent also triggering marker click
+                                        className={`block px-1 py-0.5 rounded underline text-gray-900 text-lg ${bgKlasse}`}
+                                        title={kategorie ? `Kategorie: ${kategorie}` : undefined}
                                     >
-                                        {p.titel || 'Anfrage'}
+                                        {titel}
                                     </a>
                                 </Tooltip>
                             </CircleMarker>
@@ -115,6 +135,11 @@ export default function RadiusMap({ center, onGeolocated, posts = [] }) {
         </div>
     )
 }
+
+/* Ensure clickable tooltips:
+.leaflet-tooltip.leaflet-tooltip-interactive { pointer-events: auto; }
+*/
+
 
 /* If your global CSS overrides Leaflet defaults, ensure this exists somewhere:
 .leaflet-tooltip.leaflet-tooltip-interactive { pointer-events: auto; }
