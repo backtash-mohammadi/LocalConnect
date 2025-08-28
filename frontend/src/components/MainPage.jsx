@@ -1,5 +1,10 @@
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthKontext";
+import haushalt from "../assets/haushalt.png";
+import nachhilfe from "../assets/nachhilfe.png";
+import sonstiges from "../assets/sonstiges.png";
+import transport from "../assets/transport.png";
+import werkzeuge from "../assets/werkzeuge.png";
 
 function AnzeigeKarte({ titel, kategorie, ort, karmaKosten }) {
     return (
@@ -27,6 +32,7 @@ export default function MainPage() {
         { name: "Haushalt", beschreibung: "Garten, Putzen, Einkaufen…" },
         { name: "Sonstiges", beschreibung: "Alles, was sonst noch hilft." },
     ];
+    const categoryIconMap = { "Haushalt": haushalt, "Nachhilfe": nachhilfe, "Sonstiges": sonstiges, "Transport": transport, "Werkzeuge": werkzeuge, };
 
     const beispielAnzeigen = [
         { titel: "Brauche Bohrmaschine für 2h", kategorie: "Werkzeuge", ort: "Linden-Mitte", karmaKosten: 1 },
@@ -52,8 +58,8 @@ export default function MainPage() {
                         nutze Karma, wenn dir geholfen wird. Transparent, lokal, community-getrieben.
                     </p>
                     <div className="flex flex-wrap gap-3">
-                        <Link to="/anzeigen" className="rounded-xl bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700">Anzeigen ansehen</Link>
-                        <Link to="/erstellen" className="rounded-xl border px-4 py-2 text-sm hover:bg-white">Anzeige erstellen</Link>
+                        <Link to="/anzeigen" className="rounded-xl bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700">Anfragen ansehen</Link>
+                        <Link to="/erstellen" className="rounded-xl border px-4 py-2 text-sm hover:bg-white">Anfrage erstellen</Link>
                         {!benutzer && (
                             <Link to="/login" className="rounded-xl border px-4 py-2 text-sm hover:bg-white">Registrieren</Link>
                         )}
@@ -65,7 +71,9 @@ export default function MainPage() {
                 <ul className="grid gap-3">
                     {kategorien.map((kat) => (
                         <li key={kat.name} className="flex items-start gap-3 rounded-xl border bg-white p-3">
-                            <div className="h-8 w-8 shrink-0 rounded-lg bg-indigo-100" />
+                            <img src={categoryIconMap[kat.name]} alt={kat.name} className="h-8 w-8 shrink-0 rounded-lg object-cover" />
+
+                            {/*<div className="h-8 w-8 shrink-0 rounded-lg bg-indigo-100" />*/}
                             <div>
                                 <div className="text-sm font-semibold">{kat.name}</div>
                                 <div className="text-xs text-gray-600">{kat.beschreibung}</div>

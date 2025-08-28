@@ -7,6 +7,7 @@ import group.backend.benutzer.BenutzerRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -86,12 +87,14 @@ public class AnfrageService {
         // a.setStatus(AnfrageStatus.COMPLETED);
 
         a.setStatus("fertig");
+        a.setAbgeschlossenAm(LocalDateTime.now());
         anfrageRepository.save(a);
     }
 
     @Transactional
     public List<Anfrage> findeAnfragenNachStadt(String stadt){
         if (stadt == null || stadt.isBlank()){
+            System.out.println("Stadt name nicht gefunden: " + stadt);
             return new ArrayList<>();
         }
         return this.anfrageRepository.findByStadtIgnoreCase(stadt);
