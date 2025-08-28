@@ -1,5 +1,6 @@
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import { createContext, useContext, useMemo, useState } from "react";
 import { apiGet, apiPost } from "../lib/apiClient";
+import { holeOderErzeugeGeraeteId, geraeteName } from "../lib/geraeteId";
 
 const AuthKontext = createContext(null);
 
@@ -10,47 +11,81 @@ export function AuthProvider({ children }) {
     const [token, setToken] = useState(() => localStorage.getItem("lc_token"));
     const [laden, setLaden] = useState(false);
 
-    useEffect(() => {
-        if (token && !benutzer) {
-            apiGet("/api/auth/me", token)
-                .then((b) => setBenutzer(b))
-                .catch(() => ausloggen());
+    async function ladeMich() {
+        if (token && !benutzer && !laden) {
+            setLaden(true);
+            try {
+                const b = await apiGet("/api/auth/me", token);
+                setBenutzer(b);
+                localStorage.setItem("lc_benutzer", JSON.stringify(b));
+            } catch {
+                // токен протух/невалиден
+                setBenutzer(null);
+                setToken(null);
+                localStorage.removeItem("lc_benutzer");
+                localStorage.removeItem("lc_token");
+            } finally {
+                setLaden(false);
+            }
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }
+    if (token && !benutzer && !laden) { ladeMich(); }
 
-    function speichereSession(neuesToken, neuerBenutzer) {
+    function setzeAngemeldet(neuesToken, b) {
         setToken(neuesToken);
-        setBenutzer(neuerBenutzer);
+        setBenutzer(b);
         localStorage.setItem("lc_token", neuesToken);
-        localStorage.setItem("lc_benutzer", JSON.stringify(neuerBenutzer));
+        localStorage.setItem("lc_benutzer", JSON.stringify(b));
     }
 
-    function aktualisiereBenutzer(neuerBenutzer){
-        setBenutzer(neuerBenutzer);
-        localStorage.setItem("lc_benutzer", JSON.stringify(neuerBenutzer));
+    // === Registrierung ===
+    async function registrieren(daten) {
+        // Ожидаем, что бэкенд вернёт 202 + {status:"VERIFIKATION_ERFORDERLICH"} или просто 202
+        const r = await apiPost("/api/auth/registrierung/start", daten);
+        return { verifikationErforderlich: true, ...r };
     }
 
-    async function einloggen({ emailAdresse, passwort }) {
-        setLaden(true);
+    async function bestaetigeRegistrierung(emailAdresse, code) {
+        await apiPost("/api/auth/registrierung/bestaetigen", { emailAdresse, code });
+    }
+
+    // === Login mit 2FA per neuem Gerät ===
+    async function starteLogin(emailAdresse, passwort) {
+        const geraeteHash = holeOderErzeugeGeraeteId();
         try {
-            const res = await apiPost("/api/auth/login", { emailAdresse, passwort });
-            speichereSession(res.token, res.benutzer);
-            return res.benutzer;
-        } finally {
-            setLaden(false);
+            // 200 => сразу получаем token, 202 => требуется 2FA
+            const resp = await apiPost("/api/auth/login/start", {
+                emailAdresse, passwort,
+                geraeteHash, geraeteName: geraeteName()
+            });
+
+            // Если сервер вернул сразу токен/пользователя
+            if (resp?.token && resp?.benutzer) {
+                setzeAngemeldet(resp.token, resp.benutzer);
+                return { zweiFaktor: false };
+            }
+
+            // 202 Accepted (или просто тело без токена) => требуется код
+            return { zweiFaktor: true, emailAdresse, geraeteHash };
+
+        } catch (err) {
+            // Если почта не подтверждена – сервер отдаёт 403
+            if (err.status === 403 && ("" + err.message).toLowerCase().includes("bestätigt")) {
+                // Пусть компонент решит, что делать (переход на /verifizieren)
+                const e = new Error("E-Mail ist noch nicht bestätigt");
+                e.status = 403;
+                throw e;
+            }
+            throw err;
         }
     }
 
-    async function registrieren({ name, emailAdresse, passwort }) {
-        setLaden(true);
-        try {
-            const res = await apiPost("/api/auth/register", { name, emailAdresse, passwort });
-            speichereSession(res.token, res.benutzer);
-            return res.benutzer;
-        } finally {
-            setLaden(false);
-        }
+    async function bestaetigeLogin(emailAdresse, code) {
+        const geraeteHash = holeOderErzeugeGeraeteId();
+        const resp = await apiPost("/api/auth/login/bestaetigen", {
+            emailAdresse, code, geraeteHash, geraeteName: geraeteName()
+        });
+        setzeAngemeldet(resp.token, resp.benutzer);
     }
 
     function ausloggen() {
@@ -60,7 +95,13 @@ export function AuthProvider({ children }) {
         localStorage.removeItem("lc_benutzer");
     }
 
-    const wert = useMemo(() => ({ benutzer, token, laden, einloggen, registrieren, ausloggen, aktualisiereBenutzer }), [benutzer, token, laden]);
+    const wert = useMemo(() => ({
+        benutzer, token, laden,
+        registrieren, bestaetigeRegistrierung,
+        starteLogin, bestaetigeLogin,
+        ausloggen
+    }), [benutzer, token, laden]);
+
     return <AuthKontext.Provider value={wert}>{children}</AuthKontext.Provider>;
 }
 

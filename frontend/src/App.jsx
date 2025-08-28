@@ -15,6 +15,8 @@ import AnfrageBearbeitenSeite from "./components/AnfrageBearbeitenSeite.jsx";
 import CommentSection from "./components/CommentSection.jsx";
 import AnfrageDetailSeite from "./components/AnfrageDetailSeite.jsx";
 import KarteAnzeigen from "./components/KarteAnzeigenSeite.jsx";
+import EmailBestaetigenSeite from "./components/EmailBestaetigenSeite.jsx";
+import ZweiFaktorSeite from "./components/ZweiFaktorSeite.jsx";
 
 export function App() {
 
@@ -41,7 +43,8 @@ export function App() {
                             <Route path="/admin/anzeigen" element={<AdminAnzeigenSeite />} />
                             <Route path="/anfrage/:id" element={<AnfrageDetailSeite />} />
                             <Route path={"/karte"} element={<KarteAnzeigen />} />
-
+                            <Route path="/verifizieren" element={<EmailBestaetigenSeite />} />
+                            <Route path="/2fa" element={<ZweiFaktorSeite />} />
                         </Routes>
                     </div>
                     <Footer />

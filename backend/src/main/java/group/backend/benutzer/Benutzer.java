@@ -44,4 +44,7 @@ public class Benutzer {
     @Column(nullable = false)
     private boolean gesperrt = false;
 
+    @Column(name="email_bestaetigt", nullable = false)
+    private boolean emailBestaetigt = false;
+
 }

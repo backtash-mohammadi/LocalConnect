@@ -14,12 +14,30 @@ spring:
     properties:
       hibernate:
         format_sql: true
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: sep.gruppe.6@gmail.com
+    password: fynfzxorwiufbkas
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.starttls.enable: true
+    default-encoding: UTF-8
+
 
 app:
   jwt:
     geheimnis: "changeme-super-geheimes-base64-oder-lang-plain-secret"
     ablaufMillis: 86400000 # 24h
   admin:
-    emails: "admin@localconnect.test"
+    emails: "admin@localconnect.test, voznenko7@gmail.com"
   cors:
     erlaubteUrspruenge: "http://localhost:5173"
+  debug-mail: false
+  mail:
+    from: "LocalConnect <sep.gruppe.6@gmail.com>"
+
+logging:
+  level:
+    group.backend.mail: DEBUG
+    group.backend.auth: DEBUG
