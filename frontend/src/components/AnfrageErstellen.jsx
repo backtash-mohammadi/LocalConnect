@@ -10,14 +10,21 @@ export default function AnfrageErstellenSeite(){
     const { token, benutzer } = useAuth();
     const navigate = useNavigate();
 
+    // const [form, setForm] = useState({
+    //     titel: '',                 // added
+    //     beschreibung: '',
+    //     kategorie: 'Sonstiges',
+    //     stadt: '',
+    //     strasse: '',               // added
+    //     plz: ''                    // added
+    // });
     const [form, setForm] = useState({
-        titel: '',                 // added
+        titel: '',
         beschreibung: '',
         kategorie: 'Sonstiges',
         stadt: '',
-        strasse: '',               // added
-        plz: ''                    // added
-    });
+        strasse: '',
+        plz: ''});
 
     const [laden, setLaden] = useState(false);
     const [fehler, setFehler] = useState('');
@@ -41,16 +48,17 @@ export default function AnfrageErstellenSeite(){
     async function submit(e){
         e.preventDefault(); setFehler(''); setOk(''); setLaden(true);
         try{
+
             const payload = {
                 userId: benutzer?.id,
-                title: form.titel.trim(),                     // <-- use "titel" consistently
+                titel: form.titel.trim(),
                 beschreibung: form.beschreibung.trim() || null,
                 kategorie: form.kategorie,
                 stadt: form.stadt.trim(),
                 strasse: form.strasse.trim(),
                 plz: form.plz.trim()
             };
-            console.log('payload:', payload);
+            // console.log('payload:', payload);
             await apiPost('/erstellen', payload, token);
             setOk('Anfrage erstellt');
             setTimeout(()=> navigate('/anzeigen'), 500);
