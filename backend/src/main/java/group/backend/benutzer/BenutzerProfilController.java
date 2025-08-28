@@ -2,6 +2,7 @@ package group.backend.benutzer;
 
 import group.backend.benutzer.dto.*;
 import jakarta.validation.Valid;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -22,4 +23,13 @@ public class BenutzerProfilController {
         var b = dienst.aktualisiereProfil(u.getUsername(), req.name, req.fotoUrl, req.faehigkeiten);
         return BenutzerMapper.toProfilDto(b);
     }
+
+    @PatchMapping("/passwort")
+    public void passwortAendern(
+            @AuthenticationPrincipal org.springframework.security.core.userdetails.User u,
+            @Valid @RequestBody PasswortAendernAnfrage req
+    ){
+        dienst.passwortAendern(u.getUsername(), req.getAktuellesPasswort(), req.getNeuesPasswort());
+    }
+
 }
