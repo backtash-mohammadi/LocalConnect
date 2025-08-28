@@ -3,6 +3,11 @@ import React, { useMemo, useState } from 'react'
 import { MapContainer, TileLayer, Circle, CircleMarker, Tooltip, useMap } from 'react-leaflet'
 import 'leaflet/dist/leaflet.css'
 import { FcOk } from "react-icons/fc";
+import haushalt from "../assets/haushalt.png";
+import nachhilfe from "../assets/nachhilfe.png";
+import sonstiges from "../assets/sonstiges.png";
+import transport from "../assets/transport.png";
+import werkzeuge from "../assets/werkzeuge.png";
 
 // Category → bg class mapping (explicit strings so Tailwind won't purge)
 const kategorieFarben = {
@@ -59,20 +64,62 @@ export default function RadiusMap({ center, onGeolocated, posts = [] }) {
 
     const radiusMeters = useMemo(() => radiusKm * 100, [radiusKm])
 
+    const kategorieZaehler = useMemo(() => {
+        const acc = {};
+        if (!Array.isArray(posts)) return acc;
+
+        for (const p of posts) {
+            const raw = p.kategorie ?? p.category ?? 'Unbekannt';
+            const key = String(raw).trim().toLowerCase() || 'unbekannt';
+            acc[key] = (acc[key] || 0) + 1;
+        }
+        return acc;
+    }, [posts]);
+
+    const kategorieListe = useMemo(
+        () => Object.entries(kategorieZaehler).sort((a, b) => a[0].localeCompare(b[0])),
+        [kategorieZaehler]
+    );
+    const categoryIconMap = { "haushalt": haushalt, "nachhilfe": nachhilfe, "sonstiges": sonstiges, "transport": transport, "werkzeuge": werkzeuge, };
+
+
     return (
         <div className="map-wrap bg-gray-100 text-gray-700">
             <div className="controls card">
-                <div className="controls__row" style={{ justifyContent: 'right', flexWrap: 'wrap' }}>
-                    <div style={{ display: 'flex', gap: 1, alignItems: 'left' }}>
+                <div
+                    className="controls__row"
+                    style={{ justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 8 }}
+                >
+                    {/* Linke Seite: Button */}
+                    <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                        {/* Status (optional; kann auch links bleiben, wenn gewünscht) */}
+                        <div className="controls__status">
+                            {geoStatus === 'locating' && <span>Standort wird angefragt… </span>}
+                            {geoStatus === 'denied'   && <span>Zugriff auf Standort verweigert.</span>}
+                            {geoStatus === 'error'    && <span>{geoMessage}</span>}
+                            {geoStatus === 'granted'  && <span><FcOk /></span>}
+                        </div>
                         <button className="btn" type="button" onClick={requestGeolocation}>
                             Meinen Standort verwenden
                         </button>
                     </div>
-                    <div className="controls__status">
-                        {geoStatus === 'locating' && <span>Standort wird angefragt… </span>}
-                        {geoStatus === 'denied'   && <span>Zugriff auf Standort verweigert.</span>}
-                        {geoStatus === 'error'    && <span>{geoMessage}</span>}
-                        {geoStatus === 'granted'  && <span><FcOk /></span>}
+
+                    {/* Rechte Seite: Kategorien + Anzahl */}
+                    <div className="flex flex-wrap items-center gap-2 text-sm text-gray-700">
+                        {kategorieListe.length === 0 ? (
+                            <span className="opacity-70"></span>
+                        ) : (
+                            kategorieListe.map(([name, count]) => (
+                                <div key={name} className="rounded border-b-gray-300 px-4 py-0.5 flex">
+                                {/*<span key={name} >*/}
+                                {/*    {console.log("name " + name)}*/}
+                                    <img src={categoryIconMap[name]} alt={name} className="h-8 w-8 shrink-0 rounded-lg object-cover" />
+
+                                 {/*</span>*/}
+                                <strong className=" text-lg p-1 text-red-800">{count}</strong>
+                                </div>
+                            ))
+                        )}
                     </div>
                 </div>
             </div>
@@ -99,7 +146,7 @@ export default function RadiusMap({ center, onGeolocated, posts = [] }) {
                         const pfad      = `/anfrage/${id}`
 
                         const kategorie = p.kategorie ?? p.category
-                        console.log("kat: " + Object.keys(p));
+                        // console.log("kat: " + Object.keys(p));
 
                         const bgKlasse  = kategorieKlasse(kategorie)   // <- compute bg class from category
                         const titel     = p.titel || 'Anfrage'
