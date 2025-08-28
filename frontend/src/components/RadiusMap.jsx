@@ -57,7 +57,7 @@ export default function RadiusMap({ center, onGeolocated, posts = [] }) {
         )
     }
 
-    const radiusMeters = useMemo(() => radiusKm * 1000, [radiusKm])
+    const radiusMeters = useMemo(() => radiusKm * 100, [radiusKm])
 
     return (
         <div className="map-wrap bg-gray-100 text-gray-700">

@@ -87,7 +87,8 @@ export default function OpenStreetMap() {
     }
 
     return (
-        <main className="app mx-auto max-w-6xl px-4 my-8">
+        //  min-w-full max-w-6xl - removed max-w-6xl, so components are centered.
+        <main className="app mx-auto px-4 my-8">
             <div className="search-wrap mx-auto w-full md:w-4/5 lg:w-3/4">
                 <AddressSearch onSelect={handleSelectAddress} />
             </div>

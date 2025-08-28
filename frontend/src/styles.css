@@ -16,8 +16,8 @@ body {
     display: grid;
     grid-template-rows: auto auto 1fr auto;
     min-height: 60dvh;
-
-    max-width: 72rem;
+    /*min-width:  150rem;*/
+    /*max-width: 150rem;*/
     margin-inline: auto;
     padding-inline: 1rem;
 }
@@ -37,7 +37,7 @@ body {
 /* Suchleiste und Map-Bereich zentrieren und ~70% Breite ab md-Screens */
 .search-wrap,
 .map-wrap {
-    width: 100%;
+    width: 95%;
     margin-inline: auto;
 }
 
@@ -154,9 +154,10 @@ body {
 
 .leaflet-container-custom {
     width: 100%;
-    height: calc(10dvh - 260px);
-    min-height: 300px;
-    max-height: 500px;
+    /*height: clamp(360px, 55dvh, 800px);*/
+    height: calc(20dvh - 260px);
+    min-height: 400px;
+    max-height: 600px;
     border-radius: 16px;
 }
 
@@ -175,7 +176,8 @@ body {
 @media (min-width: 768px) {      /* md */
     .search-wrap,
     .map-wrap {
-        max-width: 70vw;         /* ~70% der Bildschirmbreite */
+        min-width: 65vw;
+        max-width: 80vw;         /* ~70% der Bildschirmbreite */
     }
 }
 @media (min-width: 1280px) {     /* xl */
