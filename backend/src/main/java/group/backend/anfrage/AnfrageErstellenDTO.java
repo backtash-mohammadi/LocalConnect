@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
  */
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class AnfrageErstellenDTO {
 
     private long id;
@@ -33,14 +34,12 @@ public class AnfrageErstellenDTO {
     private String plz;
 
     @NotNull
+    @jakarta.validation.constraints.Positive
     private long userId;
 
     private long helperId;
 
     private String status;
-
-    public AnfrageErstellenDTO(Long id, String titel, String stadt, String strasse, String plz) {
-    }
 
 //    public AnfrageErstellenDTO(String beschreibung, String kategorie, String stadt) {
 //    }
