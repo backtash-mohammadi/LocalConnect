@@ -1,34 +1,46 @@
 package group.backend.auth;
 
-import group.backend.benutzer.Benutzer;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "verifikations_code")
+@Getter @Setter
 public class VerifikationsCode {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(optional = false)
-    private Benutzer benutzer;
-
-    @Enumerated(EnumType.STRING)
-    private VerifikationsTyp typ;
-
-    @Column(length = 6, nullable = false)
+    @Column(nullable = false, length = 16)
     private String code;
 
-    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 32)
+    private VerifikationsTyp typ;
+
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "benutzer_id", nullable = false)
+    private group.backend.benutzer.Benutzer benutzer;
+
+    @Column(name = "ablauf_zeit", nullable = false)
     private LocalDateTime ablaufZeit;
 
-    @Column(nullable = false)
+    @CreationTimestamp
+    @Column(name = "erstellt_am", nullable = false, updatable = false)
+    private LocalDateTime erstelltAm;
+
+    @Column(name = "verwendet", nullable = false)
     private boolean verwendet = false;
 
-    @Column(nullable = false)
-    private LocalDateTime erstelltAm = LocalDateTime.now();
-
+    @PrePersist
+    void initDefaults() {
+        if (ablaufZeit == null) {
+            ablaufZeit = LocalDateTime.now().plusMinutes(15);
+        }
+    }
 }
-

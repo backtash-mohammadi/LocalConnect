@@ -5,10 +5,13 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -32,8 +35,34 @@ public class SicherheitsKonfiguration {
         this.jwtFilter = jwtFilter;
     }
 
+    // === Password-Encoder
     @Bean
-    public SecurityFilterChain sicherheitsFilterKette(HttpSecurity http) throws Exception {
+    public PasswordEncoder passwortEncoder() {
+        return new BCryptPasswordEncoder(); // {bcrypt}
+    }
+
+    // === DaoAuthenticationProvider
+    @Bean
+    public AuthenticationProvider authProvider(
+            UserDetailsService benutzerDetailsDienst,
+            PasswordEncoder passwortEncoder
+    ) {
+        DaoAuthenticationProvider p = new DaoAuthenticationProvider();
+        p.setUserDetailsService(benutzerDetailsDienst);
+        p.setPasswordEncoder(passwortEncoder);
+        return p;
+    }
+
+    // === AuthenticationManager
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
+        return configuration.getAuthenticationManager();
+    }
+
+
+    @Bean
+    public SecurityFilterChain sicherheitsFilterKette(HttpSecurity http,
+                                                      AuthenticationProvider authProvider) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.configurationSource(corsKonfiguration()))
@@ -42,26 +71,24 @@ public class SicherheitsKonfiguration {
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/erstellen").permitAll()        // <--- eingefügt.
-                        .requestMatchers(("/meine-anfragen")).permitAll() // <--- eingefügt.
-                        .requestMatchers("/anfrage/**").permitAll()       // <--- eingefügt.
-                        .requestMatchers("stadt-anfragen").permitAll()    //  <--- eingefügt. 28/08.
+                        .requestMatchers("/erstellen").permitAll()
+                        .requestMatchers("/meine-anfragen").permitAll()
+                        .requestMatchers("/anfrage/**").permitAll()
+                        .requestMatchers("stadt-anfragen").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/geocode/**").permitAll()
+                        .requestMatchers(HttpMethod.POST,
+                                "/api/auth/registrieren",
+                                "/api/auth/registrieren/bestaetigen",
+                                "/api/auth/login/start",
+                                "/api/auth/login/bestaetigen",
+                                "/api/auth/login/code-erneut"
+                        ).permitAll()
                         .anyRequest().authenticated()
                 )
+                .authenticationProvider(authProvider)
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
-    }
-
-    @Bean
-    public PasswordEncoder passwortEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-
-    @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
-        return configuration.getAuthenticationManager();
     }
 
     private CorsConfigurationSource corsKonfiguration() {

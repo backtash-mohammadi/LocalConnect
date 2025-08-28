@@ -1,76 +1,116 @@
 const BASIS_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
 
-async function handleAntwort(resp) {
-    let payload = null;
-    try { payload = await resp.json(); } catch (_) { /* kann leer sein */ }
-    if (!resp.ok) {
-        const msg = payload?.nachricht || payload?.message || payload?.fehler || "Unbekannter Fehler";
-        const felder = payload?.felder ? Object.entries(payload.felder).map(([k,v]) => `${k}: ${v}`).join("; ") : "";
-        throw new Error([msg, felder].filter(Boolean).join(" – "));
-    }
-    return payload;
+async function parseAntwort(res) {
+    const text = await res.text();
+    let data = null;
+    try { data = text ? JSON.parse(text) : null; } catch {}
+    return { status: res.status, ok: res.ok, data, text };
 }
 
-export async function apiPost(pfad, daten, token) {
-    const resp = await fetch(`${BASIS_URL}${pfad}`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-        body: JSON.stringify(daten),
-    });
-    return handleAntwort(resp);
+function buildError(ans) {
+    const msg = ans?.data?.message || ans?.data?.error || ans.text || `HTTP ${ans.status}`;
+    const err = new Error(msg);
+    err.status = ans.status;
+    err.body = ans.data ?? ans.text;
+    return err;
 }
 
 export async function apiGet(pfad, token) {
-    const resp = await fetch(`${BASIS_URL}${pfad}`, {
+    const res = await fetch(BASIS_URL + pfad, {
+        method: "GET",
         headers: {
-            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+            "Accept": "application/json",
+            ...(token ? { "Authorization": "Bearer " + token } : {})
         },
+        credentials: "include"
     });
-    return handleAntwort(resp);
+    const ans = await parseAntwort(res);
+    if (!ans.ok) throw buildError(ans);
+    return ans.data;
 }
 
-export async function apiPut(pfad, daten, token) {
-    const resp = await fetch(`${BASIS_URL}${pfad}`, {
+export async function apiPost(pfad, body, token) {
+    const res = await fetch(BASIS_URL + pfad, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+            ...(token ? { "Authorization": "Bearer " + token } : {})
+        },
+        body: body ? JSON.stringify(body) : null,
+        credentials: "include"
+    });
+    const ans = await parseAntwort(res);
+    if (ans.status === 204) return null;
+    if (ans.status === 202) return ans.data || {};
+    if (!ans.ok) throw buildError(ans);
+    return ans.data;
+}
+
+export async function apiPut(pfad, body, token) {
+    const res = await fetch(BASIS_URL + pfad, {
         method: "PUT",
         headers: {
             "Content-Type": "application/json",
-            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+            "Accept": "application/json",
+            ...(token ? { "Authorization": "Bearer " + token } : {})
         },
-        body: JSON.stringify(daten),
+        body: body ? JSON.stringify(body) : null,
+        credentials: "include"
     });
-    return handleAntwort(resp);
+    const ans = await parseAntwort(res);
+    if (ans.status === 204) return null;
+    if (!ans.ok) throw buildError(ans);
+    return ans.data;
 }
 
 export async function apiDelete(pfad, token) {
-    const resp = await fetch(`${BASIS_URL}${pfad}`, {
+    const res = await fetch(BASIS_URL + pfad, {
         method: "DELETE",
         headers: {
-            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+            "Accept": "application/json",
+            ...(token ? { "Authorization": "Bearer " + token } : {})
         },
+        credentials: "include"
     });
-    return handleAntwort(resp);
+    const ans = await parseAntwort(res);
+    if (ans.status === 204) return null;
+    if (!ans.ok) throw buildError(ans);
+    return ans.data;
 }
 
-export async function apiPatch(pfad, daten, token) {
-    const resp = await fetch(`${BASIS_URL}${pfad}`, {
+export async function apiPatch(pfad, body, token) {
+    const res = await fetch(BASIS_URL + pfad, {
         method: "PATCH",
         headers: {
             "Content-Type": "application/json",
-            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+            "Accept": "application/json",
+            ...(token ? { "Authorization": "Bearer " + token } : {})
         },
-        body: JSON.stringify(daten),
+        body: body ? JSON.stringify(body) : null,
+        credentials: "include"
     });
-    return handleAntwort(resp);
+    const ans = await parseAntwort(res);
+    if (ans.status === 204) return null;
+    if (!ans.ok) throw buildError(ans);
+    return ans.data;
 }
 
-export function baueQuery(params = {}) {
-    const sp = new URLSearchParams();
-    Object.entries(params).forEach(([k, v]) => {
-        if (v !== undefined && v !== null && v !== "") sp.append(k, v);
-    });
-    const str = sp.toString();
-    return str ? `?${str}` : "";
+export function baueQuery(params) {
+    const usp = new URLSearchParams();
+    if (params && typeof params === "object") {
+        Object.entries(params).forEach(([k, v]) => {
+            if (v === undefined || v === null || v === "") return;
+            if (Array.isArray(v)) {
+                v.forEach((item) => {
+                    if (item !== undefined && item !== null && item !== "")
+                        usp.append(k, String(item));
+                });
+            } else {
+                usp.append(k, String(v));
+            }
+        });
+    }
+    const qs = usp.toString();
+    return qs ? `?${qs}` : "";
 }

@@ -6,7 +6,7 @@ export default function RegistrationAndSignIn() {
     const [modus, setModus] = useState("login"); // "login" | "registrierung"
     const [fehler, setFehler] = useState("");
     const navigate = useNavigate();
-    const { einloggen, registrieren, laden } = useAuth();
+    const { starteLogin, registrieren, laden } = useAuth();
 
     const [daten, setDaten] = useState({
         name: "",
@@ -26,52 +26,54 @@ export default function RegistrationAndSignIn() {
 
         try {
             if (modus === "registrierung") {
-                if (!daten.name.trim()) throw new Error("Bitte gib deinen Namen ein.");
-                if (daten.passwort !== daten.passwortWiederholen) throw new Error("Die Passwörter stimmen nicht überein.");
+                const name = daten.name.trim();
+                const emailAdresse = daten.emailAdresse.trim();
+                const passwort = daten.passwort;
 
-                // send the simple test email ("hello")
-                 await sendHelloEmail(daten.emailAdresse.trim());
+                if (!name) throw new Error("Bitte gib deinen Namen ein.");
+                if (passwort !== daten.passwortWiederholen)
+                    throw new Error("Die Passwörter stimmen nicht überein.");
 
+                // Schritt 1: Registrierung starten (отправляем код на почту)
+                await registrieren({ name, emailAdresse, passwort });
 
-                await registrieren({ name: daten.name.trim(), emailAdresse: daten.emailAdresse.trim(), passwort: daten.passwort });
+                // Переходим на страницу подтверждения e-mail
+                navigate("/verifizieren?email=" + encodeURIComponent(emailAdresse));
             } else {
-                await einloggen({ emailAdresse: daten.emailAdresse.trim(), passwort: daten.passwort });
+                const emailAdresse = daten.emailAdresse.trim();
+                const passwort = daten.passwort;
+
+                // Шаг 1 логина: либо сразу токен, либо потребуется 2FA
+                let r;
+                try {
+                    r = await starteLogin(emailAdresse, passwort);
+                    } catch (err) {
+                    if (err.status === 403) {
+                        setFehler("Deine E-Mail ist noch nicht bestätigt. Bitte gib den Code ein.");
+                        navigate("/verifizieren?email=" + encodeURIComponent(emailAdresse));
+                        return;
+                        }
+                    throw err;
+                    }
+
+                if (r?.zweiFaktor) {
+                    // Новый девайс/браузер — просим ввести код
+                    navigate("/2fa", { state: { emailAdresse } });
+                } else {
+                    // Доверенное устройство — сразу в приложение
+                    navigate("/");
+                }
             }
-            navigate("/");
         } catch (err) {
             setFehler(err.message || "Es ist ein Fehler aufgetreten.");
         }
     }
 
-
-    // THE EMAIL SENDING FUNCTION
-    async function sendHelloEmail(email) {
-        console.log("[FE] sending /api/mail/test", { email });
-
-        const res = await fetch("http://localhost:8080/api/mail/test", {  // or keep your proxy and use "/api/mail/test"
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email })
-        });
-
-        const bodyText = await res.text(); // read the response body for debugging
-        console.log("[FE] status:", res.status, "body:", bodyText);
-
-        if (!res.ok) throw new Error("Email failed: " + res.status);
-    }
-
-
-
-
     return (
         <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
             <div className="sm:mx-auto sm:w-full sm:max-w-sm">
                 <div className="flex flex-col items-center">
-                    <img
-                        src="/logo.png"
-                        alt="LocalConnect Logo"
-                        className="h-32 w-32 mb-4"
-                    />
+                    <img src="/logo.png" alt="LocalConnect Logo" className="h-32 w-32 mb-4" />
                 </div>
                 <h2 className="mt-6 text-center text-2xl font-bold tracking-tight text-gray-900">
                     {modus === "login" ? "Anmelden" : "Registrieren"}
@@ -125,7 +127,7 @@ export default function RegistrationAndSignIn() {
 
                     <div>
                         <label htmlFor="emailAdresse" className="block text-sm font-medium text-gray-900">
-                            E‑Mail‑Adresse
+                            E-Mail-Adresse
                         </label>
                         <div className="mt-2">
                             <input

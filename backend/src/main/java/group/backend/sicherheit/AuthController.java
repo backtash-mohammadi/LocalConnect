@@ -1,6 +1,7 @@
 package group.backend.sicherheit;
 
 import group.backend.benutzer.Benutzer;
+import group.backend.benutzer.BenutzerDienst;
 import group.backend.sicherheit.dto.*;
 import jakarta.validation.Valid;
 import org.springframework.security.authentication.AuthenticationManager;
