@@ -56,19 +56,22 @@ public class AnfrageController {
         List<AnfrageErstellenDTO> anfrageDTOs = new ArrayList<>();
         for(Anfrage a : anfragen){
             long helferId = a.getHelfer() == null ? 0 : a.getHelfer().getId();
-            AnfrageErstellenDTO dto = new AnfrageErstellenDTO(
-                    a.getId(),
-                    a.getTitel(),
-                    a.getBeschreibung(),
-                    a.getKategorie(),
-                    a.getStadt(),
-                    a.getStrasse(),
-                    a.getPlz(),
-                    a.getErsteller().getId(),
-                    helferId,
-                    a.getStatus()
-            );
-            anfrageDTOs.add(dto);
+
+            if(!a.getStatus().equalsIgnoreCase("fertig")) {
+                AnfrageErstellenDTO dto = new AnfrageErstellenDTO(
+                        a.getId(),
+                        a.getTitel(),
+                        a.getBeschreibung(),
+                        a.getKategorie(),
+                        a.getStadt(),
+                        a.getStrasse(),
+                        a.getPlz(),
+                        a.getErsteller().getId(),
+                        helferId,
+                        a.getStatus()
+                );
+                anfrageDTOs.add(dto);
+            }
         }
 
         return ResponseEntity.ok(anfrageDTOs);

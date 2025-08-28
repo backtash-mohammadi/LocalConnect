@@ -120,6 +120,8 @@ export default function MeineAnfragenSeite(){
                     const stadt = a.stadt ?? a.city;
                     const strasse = a.strasse ?? a.street;
                     const plz = a.plz ?? a.postal_code;
+
+
                     return (
 
                         <li key={id} className="rounded-2xl border bg-white p-4">

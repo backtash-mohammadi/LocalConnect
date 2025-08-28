@@ -98,7 +98,7 @@ export default function OpenStreetMap() {
                     disabled={ladeAnfragen}
                     aria-busy={ladeAnfragen}
                 >
-                    {ladeAnfragen ? 'Lade Anfragen…' : 'Anfragen in ' + stadt + ' laden'}
+                    {ladeAnfragen ? 'Lade Anfragen…' : 'Anfragen in deiner Stadt laden'}
                 </button>
                 {stadt && <span className="text-sm text-gray-600">Stadt: <strong>{stadt}</strong></span>}
             </div>
