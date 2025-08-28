@@ -2,7 +2,7 @@
 import React, { useMemo, useState } from 'react'
 import { MapContainer, TileLayer, Circle, CircleMarker, Tooltip, useMap } from 'react-leaflet'
 import 'leaflet/dist/leaflet.css'
-import { Link, useNavigate } from 'react-router-dom'
+import { FcOk } from "react-icons/fc";
 
 // Keep map centered when `center` changes
 function Recenter({ center }) {
@@ -15,11 +15,9 @@ function Recenter({ center }) {
 
 export default function RadiusMap({ center, onGeolocated, posts = [] }) {
     // German names; English comments
-    // Default radius: 1 km
     const [radiusKm, setRadiusKm] = useState(1)
-    const [geoStatus, setGeoStatus] = useState('idle')
+    const [geoStatus, setGeoStatus] = useState('')
     const [geoMessage, setGeoMessage] = useState('')
-    const navigate = useNavigate()
 
     // Request geolocation only on user action (browser rules)
     const requestGeolocation = () => {
@@ -44,46 +42,21 @@ export default function RadiusMap({ center, onGeolocated, posts = [] }) {
     }
 
     const radiusMeters = useMemo(() => radiusKm * 1000, [radiusKm])
-    const quickOptions = [
-        { km: 0.5, label: '500 m' },
-        { km: 1,   label: '1 km'   },
-        { km: 2,   label: '2 km'   },
-    ]
-    const formatRadius = (km) => (km < 1 ? `${Math.round(km * 1000)} m` : `${km} km`)
 
     return (
         <div className="map-wrap bg-gray-100 text-gray-700">
             <div className="controls card">
-                <div className="controls__row" style={{ justifyContent: 'space-between', flexWrap: 'wrap' }}>
-                    <div className="flex gap-2">
-                        <label htmlFor="radius">
-                            Radius: <strong>{formatRadius(radiusKm)}</strong>
-                        </label>
-                        <div className="controls__buttons">
-                            {quickOptions.map((opt) => (
-                                <button
-                                    key={opt.km}
-                                    className={`btn ${radiusKm === opt.km ? 'btn--active' : ''}`}
-                                    onClick={() => setRadiusKm(opt.km)}
-                                    type="button"
-                                >
-                                    {opt.label}
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-
-                    <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                <div className="controls__row" style={{ justifyContent: 'right', flexWrap: 'wrap' }}>
+                    <div style={{ display: 'flex', gap: 1, alignItems: 'left' }}>
                         <button className="btn" type="button" onClick={requestGeolocation}>
                             Meinen Standort verwenden
                         </button>
                     </div>
-
                     <div className="controls__status">
-                        {geoStatus === 'locating' && <span>Standort wird angefragt…</span>}
+                        {geoStatus === 'locating' && <span>Standort wird angefragt… </span>}
                         {geoStatus === 'denied'   && <span>Zugriff auf Standort verweigert.</span>}
                         {geoStatus === 'error'    && <span>{geoMessage}</span>}
-                        {geoStatus === 'granted'  && <span>Standort gesetzt.</span>}
+                        {geoStatus === 'granted'  && <span><FcOk /></span>}
                     </div>
                 </div>
             </div>
@@ -101,13 +74,13 @@ export default function RadiusMap({ center, onGeolocated, posts = [] }) {
                 <Recenter center={center} />
                 <Circle center={center} radius={radiusMeters} />
 
-                {/* Markers for requests: small point + permanent title tooltip */}
+                {/* Markers for requests: small point + permanent, interactive tooltip */}
                 {Array.isArray(posts) && posts
                     .filter(p => Number.isFinite(p.lat) && Number.isFinite(p.lon))
                     .map((p, i) => {
                         // Normalize id across possible shapes
                         const id   = p.id ?? p.post_id ?? p.postId ?? i
-                        const pfad = `/anfrage/${id}` // required endpoint structure: /anfrage{id}
+                        const pfad = `/anfrage/${id}` // your endpoint structure
 
                         return (
                             <CircleMarker
@@ -115,23 +88,24 @@ export default function RadiusMap({ center, onGeolocated, posts = [] }) {
                                 center={[p.lat, p.lon]}
                                 radius={6}
                                 pathOptions={{ weight: 2, opacity: 0.9 }}
-                                // Navigate SPA-style when marker is clicked
-                                eventHandlers={{ click: () => navigate(pfad) }}
+                                // Optional: also open new tab when the POINT itself is clicked
+                                eventHandlers={{ click: () => window.open(pfad, '_blank', 'noopener,noreferrer') }}
                             >
-                                <Tooltip permanent direction="top" offset={[0, -8]}>
-                                    <div className="flex flex-col gap-0.5">
-                    <span >
-
-                                        <a href={pfad}
-                                           target="_blank"
-                                            // to={pfad}
-                                            // rel="noopener noreferrer"
-                                           className="underline bg-white text-indigo-600 text-sm">
-                                            {p.titel || 'Anfrage'}
-                                        </a>
-                    </span>
-                                        {/* Visible link element per marker */}
-                                    </div>
+                                {/* ⬅️ interactive makes the tooltip clickable */}
+                                <Tooltip permanent direction="top" offset={[0, -8]} interactive>
+                                    {/* Make the entire label a link that opens in new tab */}
+                                    <a
+                                        href={pfad}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="underline bg-white text-indigo-600 text-sm block px-1 py-0.5 rounded"
+                                        onClick={(e) => {
+                                            // optional: ensure new tab even if a router/link handler exists
+                                            e.stopPropagation();
+                                        }}
+                                    >
+                                        {p.titel || 'Anfrage'}
+                                    </a>
                                 </Tooltip>
                             </CircleMarker>
                         )
@@ -141,6 +115,11 @@ export default function RadiusMap({ center, onGeolocated, posts = [] }) {
         </div>
     )
 }
+
+/* If your global CSS overrides Leaflet defaults, ensure this exists somewhere:
+.leaflet-tooltip.leaflet-tooltip-interactive { pointer-events: auto; }
+*/
+
 
 // import React, { useMemo, useState } from 'react'
 // import { MapContainer, TileLayer, Circle, CircleMarker, Tooltip, useMap } from 'react-leaflet'

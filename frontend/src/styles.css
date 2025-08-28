@@ -15,7 +15,7 @@ body {
 .app {
     display: grid;
     grid-template-rows: auto auto 1fr auto;
-    min-height: 40dvh;
+    min-height: 60dvh;
 
     max-width: 72rem;
     margin-inline: auto;
@@ -45,7 +45,7 @@ body {
     display: grid;
     grid-template-rows: auto 1fr;
     gap: 10px;
-    padding: 12px 20px 20px;
+    padding: 5px 10px 10px;
     /*padding: 1px 2px 2px;*/
 }
 
@@ -136,7 +136,7 @@ body {
 .search__item {
     width: 100%;
     text-align: left;
-    padding: 10px 12px;
+    padding: 5px 6px;
     background: none;
     border: none;
     cursor: pointer;

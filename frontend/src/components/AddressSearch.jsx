@@ -1,5 +1,6 @@
 // --- file: src/components/AddressSearch.jsx ---
 import React, { useEffect, useRef, useState } from 'react'
+import { AiOutlineReload } from "react-icons/ai";
 
 export default function AddressSearch({ onSelect }) {
     // Such-Status
@@ -27,7 +28,9 @@ export default function AddressSearch({ onSelect }) {
         // 2) Debounce: warte kurz, bis der Nutzer aufhört zu tippen
         setLoading(true)
         setError('')
-        if (timeoutRef.current) clearTimeout(timeoutRef.current)
+        if (timeoutRef.current){
+            clearTimeout(timeoutRef.current);
+        }
 
         timeoutRef.current = setTimeout(async () => {
             try {
@@ -116,7 +119,7 @@ export default function AddressSearch({ onSelect }) {
                     disabled={loading}
                     aria-busy={loading}
                 >
-                    {loading ? 'Lädt…' : 'Suchen'}
+                    {loading ? <AiOutlineReload /> : 'Suchen'}
                 </button>
             </form>
 

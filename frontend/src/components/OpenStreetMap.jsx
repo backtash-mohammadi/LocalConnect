@@ -60,8 +60,10 @@ export default function OpenStreetMap() {
         setLadeAnfragen(true)
         try {
             const s = await ermittleStadtVomCenter(center)
-            if (!s) throw new Error('Stadt konnte aus der Kartenposition nicht ermittelt werden.')
-            setStadt(s)
+            if (!s) {
+                throw new Error('Stadt konnte aus der Kartenposition nicht ermittelt werden.');
+            }
+            setStadt(s);
 
             // Backend: alle Anfragen für diese Stadt laden
             const daten = await apiGet(`${PFAD_ANFRAGEN}${baueQuery({ city: s })}`)
@@ -89,8 +91,9 @@ export default function OpenStreetMap() {
                 <AddressSearch onSelect={handleSelectAddress} />
             </div>
 
-            {/* Aktionen: Anfragen laden */}
-            <div className="mx-auto w-full md:w-4/5 lg:w-3/4 mb-3 flex items-center gap-3">
+            {/* Button für "Anfragen laden" */}
+            <div className="search-wrap mx-auto mt-8 w-full md:w-4/5 lg:w-3/4">
+                {stadt && <span className="text-sm text-gray-600"> Stadt: <strong>{stadt}</strong></span>}
                 <button
                     type="button"
                     className="btn"
@@ -98,15 +101,14 @@ export default function OpenStreetMap() {
                     disabled={ladeAnfragen}
                     aria-busy={ladeAnfragen}
                 >
-                    {ladeAnfragen ? 'Lade Anfragen…' : 'Anfragen in deiner Stadt laden'}
+                    {ladeAnfragen ? 'Lade Anfragen…' : 'Anfragen in der Nähe laden'}
                 </button>
-                {stadt && <span className="text-sm text-gray-600">Stadt: <strong>{stadt}</strong></span>}
             </div>
             {fehlermeldung && (
                 <div className="mx-auto w-full md:w-4/5 lg:w-3/4 mb-3 text-sm text-red-600">{fehlermeldung}</div>
             )}
 
-            {/* Karte */}
+            {/* Karte Component*/}
             <div className="mx-auto w-full md:w-4/5 lg:w-3/4">
                 <RadiusMap
                     center={center}
