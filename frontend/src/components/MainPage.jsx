@@ -59,12 +59,15 @@ export default function MainPage() {
                     </p>
                     <div className="flex flex-wrap gap-3">
                         <Link to="/anzeigen" className="rounded-xl bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700">Anfragen ansehen</Link>
-                        <Link to="/erstellen" className="rounded-xl border px-4 py-2 text-sm hover:bg-white">Anfrage erstellen</Link>
+
                         {!benutzer && (
                             <Link to="/login" className="rounded-xl border px-4 py-2 text-sm hover:bg-white">Registrieren</Link>
                         )}
                         {benutzer && (
+                            <>
+                            <Link to="/erstellen" className="rounded-xl border px-4 py-2 text-sm hover:bg-white">Anfrage erstellen</Link>
                             <Link to="/meine-anfragen" className="rounded-xl border px-4 py-2 text-sm hover:bg-white">Meine Anfragen</Link>
+                            </>
                         )}
                     </div>
                 </div>

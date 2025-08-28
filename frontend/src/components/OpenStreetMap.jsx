@@ -76,7 +76,7 @@ export default function OpenStreetMap() {
                 const coords = await geocodeAdresse(item)
                 if (coords) result.push({ ...item, ...coords })
                 // höfliche Rate-Limitierung (Nominatim-Richtlinien)
-                await new Promise(r => setTimeout(r, 1100))
+                await new Promise(r => setTimeout(r, 100))
             }
             setAnfragen(result)
         } catch (e) {

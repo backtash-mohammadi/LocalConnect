@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthKontext';
 import {apiDelete, apiGet, apiPut} from '../lib/apiClient';
+import { FcOk } from "react-icons/fc";
 
 export default function MeineAnfragenSeite(){
     // State for list, loading & error (German names, English comments)
@@ -179,8 +180,15 @@ export default function MeineAnfragenSeite(){
                                     <button
                                         type="button"
                                         onClick={() => markiereAlsFertig(id)}
-                                        className="rounded-xl bg-green-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-green-700">
-                                        Fertig
+                                        disabled={istFertig}
+                                        aria-disabled={istFertig}
+                                        className={`rounded-xl bg-green-600  font-medium text-white hover:bg-green-700" ${
+                                            istFertig 
+                                                ? 'bg-green-300 text-xl cursor-not-allowed opacity-60' 
+                                                : 'bg-green-500 hover:bg-green-700 px-3 py-1.5 text-xs' 
+                                        }`}
+                                    >
+                                        {istFertig ? <FcOk /> : "Fertig"}
                                     </button>
 
                                     {/*<button onClick={() => bearbeitenAnfrage(id)}*/}
