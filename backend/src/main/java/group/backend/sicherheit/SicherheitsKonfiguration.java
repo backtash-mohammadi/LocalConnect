@@ -46,6 +46,7 @@ public class SicherheitsKonfiguration {
                         .requestMatchers(("/meine-anfragen")).permitAll() // <--- eingefügt.
                         .requestMatchers("/anfrage/**").permitAll()       // <--- eingefügt.
                         .requestMatchers("stadt-anfragen").permitAll()    //  <--- eingefügt. 28/08.
+                        .requestMatchers(HttpMethod.GET, "/api/geocode/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);

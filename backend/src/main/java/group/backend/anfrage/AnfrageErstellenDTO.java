@@ -34,7 +34,7 @@ public class AnfrageErstellenDTO {
     private String plz;
 
     @NotNull
-    @jakarta.validation.constraints.Positive
+    //@jakarta.validation.constraints.Positive
     private long userId;
 
     private long helperId;
