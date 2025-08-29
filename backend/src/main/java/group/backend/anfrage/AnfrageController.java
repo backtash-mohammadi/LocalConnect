@@ -3,6 +3,7 @@ import group.backend.benutzer.Benutzer;
 import group.backend.benutzer.BenutzerDienst;
 import group.backend.benutzer.BenutzerRepository;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -13,15 +14,12 @@ import java.util.List;
 
 
 @RestController
+@RequiredArgsConstructor
 public class AnfrageController {
 
     private final AnfrageService anfrageService;
     private final BenutzerDienst benutzerDienst;
-
-    public AnfrageController(AnfrageService anfrageService, BenutzerDienst benutzerDienst){
-        this.anfrageService = anfrageService;
-        this.benutzerDienst = benutzerDienst;
-    }
+    private final AnfrageRepository anfrageRepository;
 
     @PostMapping(path = "/erstellen")
 //    @PreAuthorize("isAuthenticated()")
@@ -165,6 +163,46 @@ public class AnfrageController {
         return ResponseEntity.noContent().build();
     }
 
+    @PreAuthorize("true")
+    @GetMapping({"/anfragen/aktuell", "/api/anfragen/aktuell"})
+    public ResponseEntity<List<AnfrageErstellenDTO>> ladeAktuelleAnfragen(
+            @RequestParam(value = "kategorie", required = false) String kategorie,
+            @RequestParam(value = "limit", required = false, defaultValue = "12") int limit
+    ) {
+// Alles außer „fertig“ zeigen
+        final String FERTIG = "fertig";
+
+        List<Anfrage> rohListe = (kategorie != null && !kategorie.isBlank())
+                ? anfrageRepository.findTop100ByStatusNotIgnoreCaseAndKategorieIgnoreCaseOrderByErstelltAmDesc(FERTIG, kategorie)
+                : anfrageRepository.findTop100ByStatusNotIgnoreCaseOrderByErstelltAmDesc(FERTIG);
+
+
+// In DTOs abbilden und auf gewünschte Anzahl begrenzen
+        List<AnfrageErstellenDTO> dtoListe = new ArrayList<>();
+        for (Anfrage a : rohListe) {
+            if (dtoListe.size() >= Math.max(1, limit)) break;
+            if (a.getStatus() != null && a.getStatus().equalsIgnoreCase(FERTIG)) continue;
+
+
+            long helferId = (a.getHelfer() == null) ? 0 : a.getHelfer().getId();
+            AnfrageErstellenDTO dto = new AnfrageErstellenDTO(
+                    a.getId(),
+                    a.getTitel(),
+                    a.getBeschreibung(),
+                    a.getKategorie(),
+                    a.getStadt(),
+                    a.getStrasse(),
+                    a.getPlz(),
+                    a.getErsteller() != null ? a.getErsteller().getId() : 0,
+                    helferId,
+                    a.getStatus()
+            );
+            dtoListe.add(dto);
+        }
+
+
+        return ResponseEntity.ok(dtoListe);
+    }
 
 }
 
