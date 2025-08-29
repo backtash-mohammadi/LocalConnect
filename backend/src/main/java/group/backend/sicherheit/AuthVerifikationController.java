@@ -46,7 +46,7 @@ public class AuthVerifikationController {
         this.loginGeraetRepo = loginGeraetRepo;
     }
 
-    // === Регистрация: шаг 1 — отправка кода
+
     @PostMapping("/registrierung/start")
     @ResponseStatus(HttpStatus.ACCEPTED)
     public SimpleAntwort registrierungStart(@Valid @RequestBody RegistrierungAnfrage anfrage) {
@@ -58,7 +58,7 @@ public class AuthVerifikationController {
         return SimpleAntwort.status("VERIFIKATION_ERFORDERLICH");
     }
 
-    // === Регистрация: шаг 2 — подтверждение кода
+
     @PostMapping("/registrierung/bestaetigen")
     public SimpleAntwort registrierungBestaetigen(@Valid @RequestBody VerifikationsEingabe req) {
         Benutzer b = benutzerDienst.findePerEmail(req.getEmailAdresse());
@@ -68,10 +68,26 @@ public class AuthVerifikationController {
         }
         b.setEmailBestaetigt(true);
         benutzerDienst.speichern(b);
+
+        if (req.getGeraeteHash() != null &&
+                !req.getGeraeteHash().isBlank() &&
+                !loginGeraetRepo.existsByBenutzerIdAndGeraeteHash(b.getId(), req.getGeraeteHash())) {
+
+            String name = req.getGeraeteName();
+            if (name == null || name.isBlank()) name = "Unbekanntes Gerät";
+            if (name.length() > 255) name = name.substring(0, 255);
+
+            LoginGeraet g = new LoginGeraet();
+            g.setBenutzer(b);
+            g.setGeraeteHash(req.getGeraeteHash());
+            g.setBezeichnung(name);
+            loginGeraetRepo.save(g);
+        }
+
         return SimpleAntwort.ok();
     }
 
-    // === Логин: шаг 1 — проверяем пароль и устройство
+
     @PostMapping("/login/start")
     public Object loginStart(@Valid @RequestBody AnmeldungMitGeraetAnfrage req) {
         try {
@@ -85,18 +101,40 @@ public class AuthVerifikationController {
         if (!b.isEmailBestaetigt()) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "E-Mail ist noch nicht bestätigt");
         }
-        if (req.getGeraeteHash() != null &&
-                loginGeraetRepo.existsByBenutzerIdAndGeraeteHash(b.getId(), req.getGeraeteHash())) {
-            UserDetails details = benutzerDetailsDienst.loadUserByUsername(b.getEmailAdresse());
-            String token = jwtDienst.erzeugeToken(details);
-            BenutzerKurzDto dto = BenutzerKonverter.inKurzDto(b);
-            return new AuthAntwort(token, dto);
+        if (req.getGeraeteHash() != null) {
+
+            if (loginGeraetRepo.existsByBenutzerIdAndGeraeteHash(b.getId(), req.getGeraeteHash())) {
+                UserDetails details = benutzerDetailsDienst.loadUserByUsername(b.getEmailAdresse());
+                String token = jwtDienst.erzeugeToken(details);
+                return new AuthAntwort(token, BenutzerKonverter.inKurzDto(b));
+            }
+
+
+            long anzahl = loginGeraetRepo.countByBenutzer_Id(b.getId());
+            if (anzahl == 0) {
+                String name = req.getGeraeteName();
+                if (name == null || name.isBlank()) name = "Unbekanntes Gerät";
+                if (name.length() > 255) name = name.substring(0, 255);
+
+                LoginGeraet g = new LoginGeraet();
+                g.setBenutzer(b);
+                g.setGeraeteHash(req.getGeraeteHash());
+                g.setBezeichnung(name);
+                loginGeraetRepo.save(g);
+
+                UserDetails details = benutzerDetailsDienst.loadUserByUsername(b.getEmailAdresse());
+                String token = jwtDienst.erzeugeToken(details);
+                return new AuthAntwort(token, BenutzerKonverter.inKurzDto(b));
+            }
         }
+
+
         verifikationsDienst.sendeCode(b, VerifikationsTyp.LOGIN);
-        return ResponseEntity.status(HttpStatus.ACCEPTED).body(SimpleAntwort.status("ZWEI_FAKTOR_ERFORDERLICH"));
+        return ResponseEntity.status(HttpStatus.ACCEPTED)
+                .body(SimpleAntwort.status("ZWEI_FAKTOR_ERFORDERLICH"));
     }
 
-    // === Логин: шаг 2 — подтверждаем код, сохраняем устройство, выдаём JWT
+
     @PostMapping("/login/bestaetigen")
     public AuthAntwort loginBestaetigen(@Valid @RequestBody AnmeldungBestaetigenEingabe req) {
         Benutzer b = benutzerDienst.findePerEmail(req.getEmailAdresse());
@@ -123,7 +161,7 @@ public class AuthVerifikationController {
         return new AuthAntwort(token, BenutzerKonverter.inKurzDto(b));
     }
 
-    // === Повторная отправка кодов (опционально)
+
     @PostMapping("/registrierung/code-erneut")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void registrierungCodeErneut(@Valid @RequestBody EmailEingabe req) {
@@ -139,7 +177,8 @@ public class AuthVerifikationController {
     }
 
     // ===== DTOs =====
-    @Data public static class VerifikationsEingabe { private String emailAdresse; private String code; }
+    @Data public static class VerifikationsEingabe { private String emailAdresse; private String code;     private String geraeteHash;
+        private String geraeteName;}
     @Data public static class AnmeldungMitGeraetAnfrage { private String emailAdresse; private String passwort; private String geraeteHash; private String geraeteName; }
     @Data public static class AnmeldungBestaetigenEingabe { private String emailAdresse; private String code; private String geraeteHash; private String geraeteName; }
     @Data public static class EmailEingabe { private String emailAdresse; }

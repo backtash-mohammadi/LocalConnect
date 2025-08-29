@@ -1,5 +1,6 @@
 package group.backend.benutzer;
 
+import group.backend.benutzer.dto.PasswortAendernAnfrage;
 import group.backend.sicherheit.dto.RegistrierungAnfrage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -46,4 +47,27 @@ public class BenutzerDienst {
         b.setKarma(0);
         return repo.save(b);
     }
+
+    /**
+     * Ändert das eigene Passwort des aktuell authentifizierten Nutzers.
+     */
+    public void aendereEigenesPasswort(long benutzerId, PasswortAendernAnfrage eingabe) {
+        Benutzer benutzer = repo.findById(benutzerId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Benutzer nicht gefunden"));
+
+        // aktuelles Passwort prüfen
+        if (!passwortEncoder.matches(eingabe.getAktuellesPasswort(), benutzer.getPasswortHash())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Aktuelles Passwort ist falsch.");
+        }
+
+        // neues Passwort setzen (Hash)
+        String neuerHash = passwortEncoder.encode(eingabe.getNeuesPasswort());
+        benutzer.setPasswortHash(neuerHash);
+
+        // optional: Zeitstempel setzen (falls Feld vorhanden)
+        // benutzer.setPasswortGeaendertAm(Instant.now());
+
+        repo.save(benutzer);
+    }
+
 }
