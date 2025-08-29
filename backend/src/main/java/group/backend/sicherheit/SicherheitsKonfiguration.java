@@ -69,7 +69,7 @@ public class SicherheitsKonfiguration {
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/comments").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/comments/**").permitAll()
                         .requestMatchers(HttpMethod.GET,  "/comments/**").permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
