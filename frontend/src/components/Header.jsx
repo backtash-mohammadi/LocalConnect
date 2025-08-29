@@ -10,7 +10,8 @@ import {
     FiSettings,
     FiList,
     FiPlusCircle,
-    FiClipboard
+    FiClipboard,
+    FiKey
 } from "react-icons/fi";
 
 export default function Header() {
@@ -157,7 +158,7 @@ export default function Header() {
                   {benutzer.name || benutzer.emailAdresse}
                 </span>
 
-                                {/* BEI ADMIN: kleiner Badge neben dem Namen */}
+                                {/* Admin-Badge neben dem Namen */}
                                 {istAdmin && (
                                     <span className="ml-1 rounded-full border border-amber-300 bg-amber-100 px-2 py-0.5 text-[10px] font-semibold text-amber-800">
                     Admin
@@ -175,8 +176,7 @@ export default function Header() {
                                         <div className="truncate font-medium text-gray-800">
                                             {benutzer.emailAdresse}
                                         </div>
-
-                                        {/* Aktive Rolle im Kopf des Menüs */}
+                                        {/* Aktive Rolle */}
                                         {istAdmin && (
                                             <div className="mt-2 inline-flex items-center gap-1 rounded-full border border-amber-300 bg-amber-50 px-2 py-0.5 text-[10px] font-semibold text-amber-800">
                                                 Aktive Rolle: Admin
@@ -193,6 +193,16 @@ export default function Header() {
                                     >
                                         <FiUser className="opacity-80" />
                                         Mein Profil
+                                    </Link>
+
+                                    {/* NEU: Passwort ändern */}
+                                    <Link
+                                        to="/profil/passwort"
+                                        onClick={() => setMenueOffen(false)}
+                                        className="flex items-center gap-2 px-4 py-2.5 text-sm hover:bg-gray-50"
+                                    >
+                                        <FiKey className="opacity-80" />
+                                        Passwort ändern
                                     </Link>
 
                                     {/* Karte */}
