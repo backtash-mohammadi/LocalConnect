@@ -61,8 +61,10 @@ public class SicherheitsKonfiguration {
 
 
     @Bean
-    public SecurityFilterChain sicherheitsFilterKette(HttpSecurity http,
-                                                      AuthenticationProvider authProvider) throws Exception {
+    public SecurityFilterChain sicherheitsFilterKette(
+            HttpSecurity http,
+            AuthenticationProvider authProvider
+    ) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.configurationSource(corsKonfiguration()))
@@ -71,12 +73,13 @@ public class SicherheitsKonfiguration {
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/comments").permitAll()
                         .requestMatchers(HttpMethod.GET,  "/comments/**").permitAll()
+                        .requestMatchers(HttpMethod.GET,  "/api/anfragen/aktuell").permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/erstellen").permitAll()
                         .requestMatchers("/meine-anfragen").permitAll()
                         .requestMatchers("/anfrage/**").permitAll()
-                        .requestMatchers("stadt-anfragen").permitAll()
+                        .requestMatchers("/stadt-anfragen").permitAll() // 👈 слеш добавлен
                         .requestMatchers(HttpMethod.GET, "/api/geocode/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/benutzer/me/avatar").authenticated()
                         .requestMatchers(HttpMethod.POST,
@@ -88,24 +91,29 @@ public class SicherheitsKonfiguration {
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
+
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint((req, res, e) ->
+                                res.sendError(jakarta.servlet.http.HttpServletResponse.SC_UNAUTHORIZED))
+                )
                 .authenticationProvider(authProvider)
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtFilter, org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
 
-    private CorsConfigurationSource corsKonfiguration() {
-        CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of(erlaubteUrspruenge.split(",")));
-        config.setAllowedMethods(List.of("GET","POST","PUT","DELETE","PATCH","OPTIONS"));
-        config.setAllowedHeaders(List.of("*"));
-        //        config.setAllowedHeaders(List.of("Authorization","Content-Type","Accept","Accept-Language","Origin","Referer","Cache-Control","Pragma","X-Requested-With"));
-        config.setExposedHeaders(List.of("Authorization"));
 
-        config.setAllowCredentials(true);
+    @Bean
+    public org.springframework.web.cors.CorsConfigurationSource corsKonfiguration() {
+        var cfg = new org.springframework.web.cors.CorsConfiguration();
+        cfg.setAllowedOrigins(java.util.List.of(erlaubteUrspruenge.split(",")));
+        cfg.setAllowedMethods(java.util.List.of("GET","POST","PUT","DELETE","PATCH","OPTIONS"));
+        cfg.setAllowedHeaders(java.util.List.of("*"));
+        cfg.setExposedHeaders(java.util.List.of("Authorization"));
+        cfg.setAllowCredentials(true);
 
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", config);
-        return source;
+        var quelle = new org.springframework.web.cors.UrlBasedCorsConfigurationSource();
+        quelle.registerCorsConfiguration("/**", cfg);
+        return quelle;
     }
 }

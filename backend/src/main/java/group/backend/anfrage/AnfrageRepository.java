@@ -8,4 +8,7 @@ import java.util.Optional;
 public interface AnfrageRepository extends JpaRepository<Anfrage, Long> {
     Optional<List<Anfrage>> findByErstellerId(Long userId);
     List<Anfrage> findByStadtIgnoreCase(String stadt);
+
+    List<Anfrage> findTop100ByStatusNotIgnoreCaseOrderByErstelltAmDesc(String status);
+    List<Anfrage> findTop100ByStatusNotIgnoreCaseAndKategorieIgnoreCaseOrderByErstelltAmDesc(String status, String kategorie);
 }

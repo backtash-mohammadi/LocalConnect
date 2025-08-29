@@ -5,6 +5,7 @@ import nachhilfe from "../assets/nachhilfe.png";
 import sonstiges from "../assets/sonstiges.png";
 import transport from "../assets/transport.png";
 import werkzeuge from "../assets/werkzeuge.png";
+import AktuelleAnzeigen from "./AktuelleAnzeigen.jsx";
 
 function AnzeigeKarte({ titel, kategorie, ort, karmaKosten }) {
     return (
@@ -88,28 +89,8 @@ export default function MainPage() {
 
             {/* Anzeigenliste (Demo) */}
             <section className="my-8">
-                <div className="mb-3 flex items-center justify-between">
-                    <h2 className="text-lg font-semibold">Aktuelle Anzeigen</h2>
-                    <div className="flex gap-2">
-                        <input
-                            type="text"
-                            placeholder="Suche in Anzeigen…"
-                            className="w-48 rounded-xl border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-600"
-                        />
-                        <select className="rounded-xl border px-3 py-2 text-sm">
-                            <option>Alle Kategorien</option>
-                            {kategorien.map((kat) => (
-                                <option key={kat.name}>{kat.name}</option>
-                            ))}
-                        </select>
-                    </div>
-                </div>
 
-                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                    {beispielAnzeigen.map((anzeige, idx) => (
-                        <AnzeigeKarte key={idx} {...anzeige} />
-                    ))}
-                </div>
+                <AktuelleAnzeigen />
             </section>
         </main>
     );
