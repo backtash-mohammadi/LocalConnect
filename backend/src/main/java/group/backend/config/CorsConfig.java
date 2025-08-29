@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.cors.*;
 import org.springframework.web.filter.CorsFilter;
 
+/*
 @Configuration
 public class CorsConfig {
     @Bean
@@ -18,4 +19,8 @@ public class CorsConfig {
         s.registerCorsConfiguration("/api/**", c);
         return new CorsFilter(s);
     }
+}*/
+@Configuration
+public class CorsConfig {
+// 🚫 Diese Bean absichtlich entfernt. CORS läuft über SecurityFilterChain.cors().
 }

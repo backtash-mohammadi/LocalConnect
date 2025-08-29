@@ -32,4 +32,30 @@ public class BenutzerProfilController {
         dienst.passwortAendern(u.getUsername(), req.getAktuellesPasswort(), req.getNeuesPasswort());
     }
 
+    @PostMapping(path="/avatar", consumes = org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE)
+    public void avatarUpload(
+            @org.springframework.security.core.annotation.AuthenticationPrincipal org.springframework.security.core.userdetails.User u,
+            @org.springframework.web.bind.annotation.RequestPart("datei") org.springframework.web.multipart.MultipartFile datei
+    ){
+        dienst.avatarSetzen(u.getUsername(), datei);
+    }
+
+    @GetMapping("/avatar")
+    public org.springframework.http.ResponseEntity<byte[]> avatarAnzeigen(
+            @org.springframework.security.core.annotation.AuthenticationPrincipal org.springframework.security.core.userdetails.User u
+    ){
+        var antwort = dienst.avatarHolen(u.getUsername());
+        if (antwort == null) return org.springframework.http.ResponseEntity.notFound().build();
+
+        var headers = new org.springframework.http.HttpHeaders();
+        headers.setCacheControl(org.springframework.http.CacheControl.noCache());
+        if (antwort.geaendertAm() != null) {
+            headers.setLastModified(antwort.geaendertAm().toEpochMilli());
+        }
+        return org.springframework.http.ResponseEntity
+                .ok()
+                .contentType(org.springframework.http.MediaType.parseMediaType(antwort.contentType()))
+                .headers(headers)
+                .body(antwort.daten());
+    }
 }

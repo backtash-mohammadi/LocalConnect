@@ -17,6 +17,7 @@ import AnfrageDetailSeite from "./components/AnfrageDetailSeite.jsx";
 import KarteAnzeigen from "./components/KarteAnzeigenSeite.jsx";
 import EmailBestaetigenSeite from "./components/EmailBestaetigenSeite.jsx";
 import ZweiFaktorSeite from "./components/ZweiFaktorSeite.jsx";
+import PasswortAendernSeite from "./components/PasswortAendernSeite.jsx";
 
 export function App() {
 
@@ -39,6 +40,7 @@ export function App() {
                             <Route path="/anfrage/:id/bearbeiten" element={<AnfrageBearbeitenSeite />} />
 
                             <Route path="/profil" element={<ProfilSeite />} />
+                            <Route path="/profil/passwort" element={<PasswortAendernSeite />} />
                             <Route path="/admin" element={<AdminBenutzerSeite />} />
                             <Route path="/admin/anzeigen" element={<AdminAnzeigenSeite />} />
                             <Route path="/anfrage/:id" element={<AnfrageDetailSeite />} />

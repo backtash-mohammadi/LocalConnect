@@ -9,6 +9,8 @@ import lombok.*;
 
 import java.util.List;
 import group.backend.comments.Comment;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.time.Instant;
 
@@ -18,8 +20,6 @@ import java.time.Instant;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Getter
-@Setter
 @Table(name = "benutzer", uniqueConstraints = @UniqueConstraint(name = "uk_benutzer_email", columnNames = "email_adresse"))
 @JsonIgnoreProperties({"hibernateLazyInitializer","handler"})
 
@@ -60,5 +60,16 @@ public class Benutzer {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonBackReference("comment-user")
     private List<Comment> comments = new java.util.ArrayList<>();
+
+    @Lob
+    @JdbcTypeCode(SqlTypes.BLOB)
+    @Column(name = "avatar_bytes", columnDefinition = "MEDIUMBLOB")
+    private byte[] avatarBytes;
+
+    @Column(name="avatar_content_type", length = 100)
+    private String avatarContentType;
+
+    @Column(name="avatar_geaendert_am")
+    private java.time.Instant avatarGeaendertAm;
 
 }
