@@ -16,6 +16,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.core.annotation.Order;
+
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -60,7 +62,7 @@ public class SicherheitsKonfiguration {
     }
 
 
-    @Bean
+/*    @Bean
     public SecurityFilterChain sicherheitsFilterKette(
             HttpSecurity http,
             AuthenticationProvider authProvider
@@ -79,16 +81,16 @@ public class SicherheitsKonfiguration {
                         .requestMatchers("/erstellen").permitAll()
                         .requestMatchers("/meine-anfragen").permitAll()
                         .requestMatchers("/anfrage/**").permitAll()
-                        .requestMatchers("/stadt-anfragen").permitAll() // 👈 слеш добавлен
+                        .requestMatchers("/stadt-anfragen").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/geocode/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/benutzer/me/avatar").authenticated()
-                        .requestMatchers(HttpMethod.POST,
+*//*                        .requestMatchers(HttpMethod.POST,
                                 "/api/auth/registrieren",
                                 "/api/auth/registrieren/bestaetigen",
                                 "/api/auth/login/start",
                                 "/api/auth/login/bestaetigen",
                                 "/api/auth/login/code-erneut"
-                        ).permitAll()
+                        ).permitAll()*//*
                         .anyRequest().authenticated()
                 )
 
@@ -97,11 +99,61 @@ public class SicherheitsKonfiguration {
                                 res.sendError(jakarta.servlet.http.HttpServletResponse.SC_UNAUTHORIZED))
                 )
                 .authenticationProvider(authProvider)
-                .addFilterBefore(jwtFilter, org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
-    }
+    }*/
 
+// === 🇩🇪 Kette 1: Offene Auth-API (/api/auth/**) — kein JWT-Filter, alles erlaubt
+            @Bean
+            @Order(1)
+public SecurityFilterChain authOffeneFilterKette(HttpSecurity http) throws Exception {
+            http
+                        // 🇩🇪 Gilt nur für /api/auth/**
+                        .securityMatcher("/api/auth/**")
+                        .csrf(csrf -> csrf.disable())
+                        .cors(cors -> cors.configurationSource(corsKonfiguration()))
+                        .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                        .authorizeHttpRequests(auth -> auth.anyRequest().permitAll());
+            // ⚠️ Kein jwtFilter hier!
+                    return http.build();
+        }
+
+        // === 🇩🇪 Kette 2: Rest der API — JWT erforderlich
+        @Bean
+        @Order(2)
+public SecurityFilterChain sicherheitsFilterKette(
+        HttpSecurity http,
+        AuthenticationProvider authProvider
+) throws Exception {
+            http
+                        .csrf(csrf -> csrf.disable())
+                        .cors(cors -> cors.configurationSource(corsKonfiguration()))
+                        .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                        .authorizeHttpRequests(auth -> auth
+                                .requestMatchers("/error", "/error/**").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/comments").permitAll()
+                                .requestMatchers(HttpMethod.GET,  "/comments/**").permitAll()
+                                .requestMatchers(HttpMethod.GET,  "/api/anfragen/aktuell").permitAll()
+                                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                                .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                                .requestMatchers("/erstellen").permitAll()
+                                .requestMatchers("/meine-anfragen").permitAll()
+                                .requestMatchers("/anfrage/**").permitAll()
+                                .requestMatchers("/stadt-anfragen").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/api/geocode/**").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/api/benutzer/me/avatar").authenticated()
+                                .anyRequest().authenticated()
+                        )
+                .exceptionHandling(ex -> ex
+                                .authenticationEntryPoint((req, res, e) ->
+                                        res.sendError(jakarta.servlet.http.HttpServletResponse.SC_UNAUTHORIZED))
+                        )
+                        .authenticationProvider(authProvider)
+                        .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+
+                    return http.build();
+        }
 
     @Bean
     public org.springframework.web.cors.CorsConfigurationSource corsKonfiguration() {

@@ -60,7 +60,7 @@ export default function PasswortAendernSeite() {
             return;
         }
         if (felder.neuesPasswort !== felder.neuesPasswortWdh) {
-            setFehler("Neue Passwörter stimmen nicht übereин.");
+            setFehler("Neue Passwörter stimmen nicht überein.");
             return;
         }
 

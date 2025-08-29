@@ -37,13 +37,13 @@ export default function RegistrationAndSignIn() {
                 // Schritt 1: Registrierung starten (отправляем код на почту)
                 await registrieren({ name, emailAdresse, passwort });
 
-                // Переходим на страницу подтверждения e-mail
+
                 navigate("/verifizieren?email=" + encodeURIComponent(emailAdresse));
             } else {
                 const emailAdresse = daten.emailAdresse.trim();
                 const passwort = daten.passwort;
 
-                // Шаг 1 логина: либо сразу токен, либо потребуется 2FA
+
                 let r;
                 try {
                     r = await starteLogin(emailAdresse, passwort);
@@ -57,16 +57,26 @@ export default function RegistrationAndSignIn() {
                     }
 
                 if (r?.zweiFaktor) {
-                    // Новый девайс/браузер — просим ввести код
+
                     navigate("/2fa", { state: { emailAdresse } });
                 } else {
-                    // Доверенное устройство — сразу в приложение
+
                     navigate("/");
                 }
             }
-        } catch (err) {
-            setFehler(err.message || "Es ist ein Fehler aufgetreten.");
-        }
+            } catch (err) {
+                // 🇩🇪 Nutzerfreundliche Meldungen nach Statuscode
+                    if (err.status === 409) {
+                        setFehler("Diese E-Mail ist bereits registriert. Bitte melde dich an oder benutze eine andere E-Mail-Adresse.");
+                    } else if (err.status === 400) {
+                        setFehler(err.message || "Eingabefehler. Bitte prüfe deine Angaben.");
+                    } else if (err.status === 401) {
+                        // Falls Security /error zuvor 401 lieferte, trotzdem eine klare Meldung zeigen
+                            setFehler(err.message && err.message !== ("HTTP " + err.status) ? err.message : "Nicht autorisiert. Bitte erneut versuchen.");
+                    } else {
+                        setFehler(err.message || "Es ist ein Fehler aufgetreten.");
+                    }
+            }
     }
 
     return (

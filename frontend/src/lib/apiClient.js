@@ -8,10 +8,20 @@ async function parseAntwort(res) {
 }
 
 function buildError(ans) {
-    const msg = ans?.data?.message || ans?.data?.error || ans.text || `HTTP ${ans.status}`;
-    const err = new Error(msg);
-    err.status = ans.status;
-    err.body = ans.data ?? ans.text;
+    // 🇩🇪 Bevorzugte Reihenfolge der Fehlermeldung:
+    // 1) message (engl.), 2) nachricht (dt.), 3) error/fehler, 4) Rohtext/HTTP-Status
+    const d = ans && ans.data ? ans.data : null;
+    const kandidat =
+        (d && typeof d.message === "string" && d.message.trim()) ||
+        (d && typeof d.nachricht === "string" && d.nachricht.trim()) ||
+        (d && typeof d.error === "string" && d.error.trim()) ||
+        (d && typeof d.fehler === "string" && d.fehler.trim()) ||
+        (ans && typeof ans.text === "string" && ans.text.trim()) ||
+        `HTTP ${ans && typeof ans.status === "number" ? ans.status : 0}`;
+
+    const err = new Error(kandidat);
+    err.status = ans?.status;
+    err.body = d ?? ans?.text;
     return err;
 }
 
