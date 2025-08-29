@@ -27,7 +27,7 @@ public class CommentController {
     public void delete(@PathVariable Long id){ svc.delete(id); }
 
 
-    // CommentController.java (use DTOs)
+    // (use DTOs)
     @GetMapping("/post/{postId}")
     public List<CommentDto> byPost(@PathVariable Long postId){
         return svc.byPost(postId).stream().map(CommentDto::from).toList();
