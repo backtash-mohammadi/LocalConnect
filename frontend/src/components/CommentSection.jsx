@@ -1,15 +1,14 @@
 import { useEffect, useState } from "react";
+// CHANGED: use same auth + api client as in Anfrage* pages
+import { useAuth } from "../context/AuthKontext";            // from your app
+import { apiGet, apiPost } from "../lib/apiClient";          // from your app
 
-/**
- * CommentSection – Kommentar-Komponente für einen Post/Anfrage
- *
- * Props:
- *  - postId: string | number – ID der Anfrage
- *  - onBack?: () => void – optionaler Zurück-Handler (nur wenn nicht embedded)
- *  - embedded?: boolean – wenn true, ohne eigenen Außen-Wrapper/Überschrift (für Detailseite)
- *  - className?: string – zusätzliche Klassen (nur wenn !embedded)
- */
-export default function CommentSection({ postId, onBack, embedded = false, className = "" }) {
+// OLD: export default function CommentSection({ postId, userId, onBack, embedded = false, className = "" }) {
+export default function CommentSection({ postId, onBack, embedded = false, className = "" }) { // CHANGED: we read user from context
+                                                                                               // OLD: const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:8080";
+                                                                                               // CHANGED: apiClient handles base URL, tokens, cookies, CSRF (like Anfrage*).
+    const { token, benutzer } = useAuth(); // CHANGED: this is how your other pages get userId/token
+
     const [comments, setComments] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
@@ -17,150 +16,152 @@ export default function CommentSection({ postId, onBack, embedded = false, class
     const [submitting, setSubmitting] = useState(false);
 
     useEffect(() => {
-        let isMounted = true;
-        async function load() {
-            setLoading(true);
-            setError("");
+        let alive = true;
+        (async () => {
             try {
-                const res = await fetch(`/api/posts/${postId}/comments`, {
-                    headers: { Accept: "application/json" },
-                    credentials: "include",
-                });
-                if (!res.ok) throw new Error("Fehler beim Laden der Kommentare");
-                const data = await res.json();
-                if (isMounted) setComments(Array.isArray(data) ? data : []);
+                setLoading(true);
+                setError("");
+
+                // OLD:
+                // const res = await fetch(`${API_BASE}/comments/post/${postId}`, { headers:{Accept:"application/json"} , credentials:"include"});
+                // if (!res.ok) throw new Error("Fehler beim Laden der Kommentare");
+                // const raw = await res.json();
+
+                // CHANGED: same style as AnfrageBearbeiten -> apiGet(path, token)
+                const raw = await apiGet(`/comments/post/${postId}`, token);
+
+                const normalized = (Array.isArray(raw) ? raw : []).map((d) => ({
+                    id: d.id,
+                    text: d.text,
+                    createdAt: d.createdAt,
+                    author: { id: d.userId, name: d.userName },
+                }));
+                if (alive) setComments(normalized);
             } catch (e) {
-                if (isMounted) setError(e.message || "Unerwarteter Fehler");
+                if (alive) setError(e.message || "Unbekannter Fehler");
             } finally {
-                if (isMounted) setLoading(false);
+                if (alive) setLoading(false);
             }
-        }
-        load();
-        return () => { isMounted = false; };
-    }, [postId]);
+        })();
+        return () => { alive = false; };
+    }, [postId, token]);
 
     async function handleSubmit(e) {
         e.preventDefault();
-        if (!text.trim()) return;
+        if (!text.trim() || submitting) return;
 
         setSubmitting(true);
         setError("");
+
+        // CHANGED: allow userId === 0; only block when we truly have no numeric id
+        const userIdIsValidNumber = typeof benutzer?.id === "number" && Number.isFinite(benutzer.id);
+        if (!userIdIsValidNumber) {
+            setError("Du musst angemeldet sein, um zu kommentieren.");
+            return setSubmitting(false);
+        }
 
         const tempId = `tmp-${Date.now()}`;
         const optimistic = {
             id: tempId,
             text: text.trim(),
             createdAt: new Date().toISOString(),
-            author: { id: "me", name: "Ich" },
+            author: { id: benutzer.id, name: benutzer.name ?? "Du" },
         };
         setComments((prev) => [optimistic, ...prev]);
-        setText("");
 
         try {
-            const res = await fetch(`/api/posts/${postId}/comments`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json", Accept: "application/json" },
-                credentials: "include",
-                body: JSON.stringify({ text: optimistic.text }),
-            });
-            if (!res.ok) throw new Error("Kommentar konnte nicht gespeichert werden");
-            const saved = await res.json();
+            const payload = { userId: benutzer.id, postId: Number(postId), text: optimistic.text };
+
+            // OLD:
+            // const res = await fetch(`${API_BASE}/comments`, { method:"POST", headers:{...}, credentials:"include", body: JSON.stringify(payload) });
+            // const savedRaw = await res.json();
+
+            // CHANGED: same pattern as AnfrageErstellen -> apiPost(path, body, token)
+            const savedRaw = await apiPost(`/comments`, payload, token); // uses token/cookies/CSRF like other screens :contentReference[oaicite:2]{index=2}
+
+            const saved = {
+                id: savedRaw.id,
+                text: savedRaw.text,
+                createdAt: savedRaw.createdAt,
+                author: { id: savedRaw.userId, name: savedRaw.userName },
+            };
             setComments((prev) => prev.map((c) => (c.id === tempId ? saved : c)));
+            setText("");
         } catch (e) {
-            setError(e.message || "Unerwarteter Fehler");
-            setComments((prev) => prev.filter((c) => c.id !== tempId));
-            setText(optimistic.text);
+            setError(e.message || "Kommentar konnte nicht gespeichert werden");
+            setComments((prev) => prev.filter((c) => c.id !== tempId)); // rollback
         } finally {
             setSubmitting(false);
         }
     }
 
-    // --- Inhalt der Section (ohne äußeren Wrapper) ---
+    const header = embedded ? null : (
+        <div className="mb-4 flex items-center justify-between">
+            <h2 className="text-xl font-semibold">Kommentare</h2>
+            {onBack && (
+                <button onClick={onBack} className="px-3 py-1.5 rounded-lg border hover:bg-gray-50 transition">
+                    Zurück
+                </button>
+            )}
+        </div>
+    );
+
+    const form = (
+        <form onSubmit={handleSubmit} className="mb-4 flex gap-2">
+            <input
+                value={text}
+                onChange={(e) => setText(e.target.value)}
+                placeholder="Schreibe einen Kommentar…"
+                className="flex-1 rounded-lg border px-3 py-2 outline-none focus:ring"
+            />
+            <button
+                type="submit"
+                // OLD: disabled={submitting || !text.trim()}
+                disabled={submitting || !text.trim() || !(typeof benutzer?.id === "number" && Number.isFinite(benutzer.id))} // CHANGED: only enable when we truly have a numeric id (0 allowed)
+                className="rounded-lg bg-black text-white px-4 py-2 disabled:opacity-50"
+            >
+                {submitting ? "Senden…" : "Senden"}
+            </button>
+        </form>
+    );
+
     const content = (
         <>
-            {/* Header nur zeigen, wenn nicht embedded UND es einen Zurück-Button gibt */}
-            {!embedded && (
-                <div className="flex items-center gap-2 mb-4">
-                    {onBack && (
-                        <button
-                            onClick={onBack}
-                            className="px-3 py-1.5 rounded-lg border hover:bg-gray-50"
-                        >
-                            ← Zurück
-                        </button>
-                    )}
-                    <h2 className="text-xl font-semibold">Kommentare</h2>
+            {header}
+            {!benutzer && (
+                <div className="mb-3 rounded-lg border border-amber-300 bg-amber-50 px-3 py-2 text-sm text-amber-800">
+                    Bitte einloggen, um zu kommentieren. {/* CHANGED: mirrors Anfrage* gating */} :contentReference[oaicite:3]{index=3}
                 </div>
             )}
-
+            {error && (
+                <div className="mb-3 rounded-lg border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-700">
+                    {error}
+                </div>
+            )}
+            {form}
             {loading ? (
-                <p className="text-sm text-gray-600">Kommentarliste wird geladen…</p>
+                <div>Lade…</div>
             ) : (
-                <>
-                    {error && (
-                        <div className="mb-3 rounded-lg border border-red-300 bg-red-50 p-3 text-sm text-red-800">
-                            {error}
-                        </div>
-                    )}
-
-                    <form onSubmit={handleSubmit} className="mb-4">
-                        {!embedded && (
-                            <label htmlFor="comment" className="block text-sm font-medium mb-1">
-                                Neuen Kommentar schreiben
-                            </label>
-                        )}
-                        <textarea
-                            id="comment"
-                            className="w-full rounded-xl border px-3 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-600"
-                            rows={4}
-                            placeholder="Schreibe etwas…"
-                            value={text}
-                            onChange={(e) => setText(e.target.value)}
-                        />
-                        <div className="mt-2 flex items-center gap-3">
-                            <button
-                                type="submit"
-                                disabled={submitting || !text.trim()}
-                                className="px-4 py-2 rounded-xl bg-indigo-600 text-white disabled:opacity-50 hover:bg-indigo-700"
-                            >
-                                {submitting ? "Senden…" : "Senden"}
-                            </button>
-                            <span className="text-sm text-gray-500">{comments.length} Kommentare</span>
-                        </div>
-                    </form>
-
-                    <ul className="space-y-3">
-                        {comments.length === 0 && (
-                            <li className="text-sm text-gray-600">Noch keine Kommentare vorhanden.</li>
-                        )}
-                        {comments.map((c) => (
-                            <li key={c.id} className="rounded-xl border p-3 bg-white/60">
-                                <div className="mb-1 text-xs text-gray-500">
-                                    <span className="font-medium">{c.author?.name || "Unbekannt"}</span>{" "}
-                                    · {formatDateTime(c.createdAt)}
-                                </div>
-                                <p className="whitespace-pre-wrap text-sm">{c.text}</p>
-                            </li>
-                        ))}
-                    </ul>
-                </>
+                <ul className="space-y-3">
+                    {comments.map((c) => (
+                        <li key={c.id} className="rounded-xl border p-3">
+                            <div className="text-sm text-gray-600">
+                                <span className="font-medium">{c.author?.name ?? "Unbekannt"}</span> ·{" "}
+                                <span>{formatDateTime(c.createdAt)}</span>
+                                {String(c.id).startsWith("tmp-") && <span className="ml-2">⏳</span>}
+                            </div>
+                            <p className="mt-1">{c.text}</p>
+                        </li>
+                    ))}
+                    {!comments.length && <li className="text-gray-500">Keine Kommentare.</li>}
+                </ul>
             )}
         </>
     );
 
-    // --- Wrapper nur, wenn nicht embedded (keine Inline-Komponente mehr!) ---
-    return embedded ? (
-        content
-    ) : (
-        <div className={`max-w-3xl mx-auto p-4 ${className}`}>{content}</div>
-    );
+    return embedded ? content : <div className={`max-w-3xl mx-auto p-4 ${className}`}>{content}</div>;
 }
 
 function formatDateTime(iso) {
-    try {
-        const d = new Date(iso);
-        return d.toLocaleString();
-    } catch {
-        return "" + iso;
-    }
+    try { return new Date(iso).toLocaleString(); } catch { return String(iso ?? ""); }
 }
