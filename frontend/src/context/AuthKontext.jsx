@@ -95,11 +95,19 @@ export function AuthProvider({ children }) {
         localStorage.removeItem("lc_benutzer");
     }
 
+    function aktualisiereBenutzer(neueDaten) {
+        setBenutzer((alt) => {
+            const gemischt = { ...(alt || {}), ...(neueDaten || {}) };
+            try { localStorage.setItem("lc_benutzer", JSON.stringify(gemischt)); } catch {}
+            return gemischt;
+        });
+    }
+
     const wert = useMemo(() => ({
         benutzer, token, laden,
         registrieren, bestaetigeRegistrierung,
         starteLogin, bestaetigeLogin,
-        ausloggen
+        ausloggen, aktualisiereBenutzer,
     }), [benutzer, token, laden]);
 
     return <AuthKontext.Provider value={wert}>{children}</AuthKontext.Provider>;
@@ -110,3 +118,4 @@ export function useAuth() {
     if (!ctx) throw new Error("useAuth muss innerhalb von <AuthProvider> genutzt werden");
     return ctx;
 }
+
