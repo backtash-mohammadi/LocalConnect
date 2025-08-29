@@ -78,6 +78,7 @@ public class SicherheitsKonfiguration {
                         .requestMatchers("/anfrage/**").permitAll()
                         .requestMatchers("stadt-anfragen").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/geocode/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/benutzer/me/avatar").authenticated()
                         .requestMatchers(HttpMethod.POST,
                                 "/api/auth/registrieren",
                                 "/api/auth/registrieren/bestaetigen",
@@ -97,8 +98,10 @@ public class SicherheitsKonfiguration {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedOrigins(List.of(erlaubteUrspruenge.split(",")));
         config.setAllowedMethods(List.of("GET","POST","PUT","DELETE","PATCH","OPTIONS"));
-        config.setAllowedHeaders(List.of("Authorization","Content-Type"));
+        config.setAllowedHeaders(List.of("*"));
+        //        config.setAllowedHeaders(List.of("Authorization","Content-Type","Accept","Accept-Language","Origin","Referer","Cache-Control","Pragma","X-Requested-With"));
         config.setExposedHeaders(List.of("Authorization"));
+
         config.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
