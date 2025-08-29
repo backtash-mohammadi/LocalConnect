@@ -5,6 +5,8 @@ import nachhilfe from "../assets/nachhilfe.png";
 import sonstiges from "../assets/sonstiges.png";
 import transport from "../assets/transport.png";
 import werkzeuge from "../assets/werkzeuge.png";
+import {useEffect, useState} from "react";
+import {apiGet} from "../lib/apiClient.js";
 
 function AnzeigeKarte({ titel, kategorie, ort, karmaKosten }) {
     return (
@@ -23,7 +25,38 @@ function AnzeigeKarte({ titel, kategorie, ort, karmaKosten }) {
 }
 
 export default function MainPage() {
-    const { benutzer } = useAuth();
+    // const { benutzer } = useAuth();
+
+    const { token, benutzer } = useAuth();
+    const [laden, setLaden] = useState(true);
+    const [fehler, setFehler] = useState("");
+    // const [ok, setOk] = useState("");
+
+    const [form, setForm] = useState({
+        name: "",
+        emailAdresse: "",
+        fotoUrl: "",
+        faehigkeiten: "",
+        karma: 0,
+        erstelltAm: "",
+    });
+
+    useEffect(()=>{
+        let alive = true;
+        setLaden(true);
+        apiGet("/api/benutzer/me", token)
+            .then((data)=>{ if(!alive) return; setForm({
+                name: data.name || "",
+                emailAdresse: data.emailAdresse || "",
+                fotoUrl: data.fotoUrl || "",
+                faehigkeiten: data.faehigkeiten || "",
+                karma: data.karma || 0,
+                erstelltAm: data.erstelltAm || "",
+            }); })
+            .catch((e)=>{ if(!alive) return; setFehler(e.message || "Fehler beim Laden"); })
+            .finally(()=>{ if(!alive) return; setLaden(false); });
+        return ()=>{ alive=false; };
+    },[token]);
 
     const kategorien = [
         { name: "Werkzeuge", beschreibung: "Bohrmaschine, Leiter, Schraubenschlüssel…" },
@@ -45,7 +78,7 @@ export default function MainPage() {
             {/* Willkommen-Hinweis */}
             {benutzer && (
                 <div className="mt-4 rounded-2xl border border-green-200 bg-green-50 p-4 text-sm text-green-800">
-                    Willkommen, <strong>{benutzer.name}</strong>! Du bist eingeloggt. Dein aktuelles Karma: <strong>{benutzer.karma}</strong>.
+                    Willkommen, <strong>{benutzer.name}</strong>! Du bist eingeloggt. Dein aktuelles Karma: <strong>{form.karma}</strong>.
                 </div>
             )}
 
@@ -65,8 +98,8 @@ export default function MainPage() {
                         )}
                         {benutzer && (
                             <>
-                            <Link to="/erstellen" className="rounded-xl border px-4 py-2 text-sm hover:bg-white">Anfrage erstellen</Link>
-                            <Link to="/meine-anfragen" className="rounded-xl border px-4 py-2 text-sm hover:bg-white">Meine Anfragen</Link>
+                                <Link to="/erstellen" className="rounded-xl border px-4 py-2 text-sm hover:bg-white">Anfrage erstellen</Link>
+                                <Link to="/meine-anfragen" className="rounded-xl border px-4 py-2 text-sm hover:bg-white">Meine Anfragen</Link>
                             </>
                         )}
                     </div>

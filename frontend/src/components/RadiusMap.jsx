@@ -11,6 +11,7 @@ import nachhilfe from "../assets/nachhilfe.png";
 import sonstiges from "../assets/sonstiges.png";
 import transport from "../assets/transport.png";
 import werkzeuge from "../assets/werkzeuge.png";
+import { IoLocationSharp } from "react-icons/io5";
 
 // Category → bg class mapping (explicit strings so Tailwind won't purge)
 const kategorieFarben = {
@@ -54,7 +55,9 @@ export default function RadiusMap({ center, onGeolocated, posts = [] }) {
         navigator.geolocation.getCurrentPosition(
             (pos) => {
                 const { latitude, longitude } = pos.coords
-                if (onGeolocated) onGeolocated(latitude, longitude)
+                if (onGeolocated) {
+                    onGeolocated(latitude, longitude);
+                }
                 setGeoStatus('granted')
             },
             (err) => {
@@ -67,6 +70,7 @@ export default function RadiusMap({ center, onGeolocated, posts = [] }) {
 
     const radiusMeters = useMemo(() => radiusKm * 100, [radiusKm])
 
+    // count die Anfrage per category. it is needed for the icons on top of the map.
     const kategorieZaehler = useMemo(() => {
         const acc = {};
         if (!Array.isArray(posts)) return acc;
@@ -103,7 +107,7 @@ export default function RadiusMap({ center, onGeolocated, posts = [] }) {
                             {geoStatus === 'granted'  && <span><FcOk /></span>}
                         </div>
                         <button className="btn" type="button" onClick={requestGeolocation}>
-                            Meinen Standort verwenden
+                            Meinen Ort verwenden
                         </button>
                     </div>
 

@@ -7,6 +7,9 @@ import { apiPut } from '../lib/apiClient';
 
 const KATEGORIEN = [ 'Werkzeuge', 'Nachhilfe', 'Transport', 'Haushalt', 'Sonstiges' ];
 
+// backend enpoint to compute lat and lon from city, street and plz values.
+const GEOCODE_ENDPOINT = '/api/geocode/search';
+
 export default function AnfrageBearbeitenSeite(){
     // Zustände und Router-Parameter
     const { token, benutzer } = useAuth();
@@ -52,17 +55,54 @@ export default function AnfrageBearbeitenSeite(){
         setForm(f => ({ ...f, [name]: value }));
     }
 
+    // --- Neu: Adresse → Koordinaten via Backend-Proxy (Nominatim) ---
+    async function geocodeAdresse({ strasse, plz, stadt }){
+        //  (Straße, PLZ, Stadt)
+        const query = [strasse, plz, stadt].filter(Boolean).join(' ');
+        if(!query.trim()) throw new Error('Adresse unvollständig.');
+
+        const url = `${GEOCODE_ENDPOINT}?q=${encodeURIComponent(query)}&limit=1`;
+        const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
+
+        if(!res.ok){
+            // Hinweis: Wenn ihr KEINEN Proxy nutzt, ist hier oft CORS / 403 die Ursache
+            throw new Error('Geokodierung fehlgeschlagen (Server).');
+        }
+
+        const arr = await res.json();
+        const hit = Array.isArray(arr) && arr[0];
+        if(!hit) throw new Error('Adresse nicht gefunden. Bitte prüfen.');
+
+        const lat = Number(hit.lat);
+        const lon = Number(hit.lon);
+        if(!Number.isFinite(lat) || !Number.isFinite(lon)){
+            throw new Error('Ungültige Koordinaten erhalten.');
+        }
+        return { lat, lon };
+    }
+
     async function speichern(e){
         e.preventDefault(); setFehler(''); setOk(''); setLaden(true);
         try{
+
+            // 1) Koordinaten ermitteln (vor dem Speichern)
+            const { lat, lon } = await geocodeAdresse({
+                strasse: form.strasse.trim(),
+                plz: form.plz.trim(),
+                stadt: form.stadt.trim()
+            });
+
             const payload = {
                 titel: form.titel.trim(),
                 beschreibung: form.beschreibung.trim(),
                 kategorie: form.kategorie,
                 stadt: form.stadt.trim(),
                 strasse: form.strasse.trim(),
-                plz: form.plz.trim()
+                plz: form.plz.trim(),
+                lat,
+                lon
             };
+
             await apiPut(`/anfrage/${id}/bearbeiten`, payload, token);
             setOk('Anfrage aktualisiert');
             navigate('/meine-anfragen');

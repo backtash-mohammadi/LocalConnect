@@ -41,6 +41,10 @@ public class AnfrageService {
         a.setPlz(dto.getPlz());
         a.setStatus("open");
 
+        // to get lat-lon values from the dto
+        a.setLat(dto.getLat());
+        a.setLon(dto.getLon());
+
         return anfrageRepository.save(a);
     }
 
@@ -71,6 +75,8 @@ public class AnfrageService {
         a.setStadt(dto.getStadt());
         a.setStrasse(dto.getStrasse());
         a.setPlz(dto.getPlz());
+        a.setLat(dto.getLat());
+        a.setLon(dto.getLon());
         return anfrageRepository.save(a);
     }
 

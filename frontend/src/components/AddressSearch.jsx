@@ -14,6 +14,11 @@ export default function AddressSearch({ onSelect }) {
     const controllerRef = useRef(null)
     const timeoutRef = useRef(null)
 
+
+    // Stadt aus dem Treffer extrahieren
+    const extractCity = (a) =>
+        a?.address?.city || a?.address?.town || a?.address?.village || a?.address?.municipality || a?.address?.county || ''
+
     useEffect(() => {
         // 1) Frühzeitiger Ausstieg: keine/zu kurze Eingabe → nichts suchen
         if (!query || query.trim().length < 3) {
@@ -39,8 +44,8 @@ export default function AddressSearch({ onSelect }) {
                 const controller = new AbortController()
                 controllerRef.current = controller
 
+                // 29.08 call to the backend. This should improve loading time.
                 // WICHTIG: Wir rufen den Backend-Proxy auf, NICHT direkt Nominatim.
-                // Der Proxy setzt den korrekten User-Agent, drosselt Anfragen, usw.
                 const url = `/api/geocode/search?q=${encodeURIComponent(query)}&limit=5`
 
                 const res = await fetch(url, {
@@ -74,7 +79,7 @@ export default function AddressSearch({ onSelect }) {
             } finally {
                 setLoading(false)
             }
-        }, 400) // Debounce-Zeit (400ms ist ein guter Kompromiss)
+        }, 400) // Debounce-Zeit
 
         // Cleanup bei Query-Änderung/Unmount
         return () => {
@@ -83,12 +88,15 @@ export default function AddressSearch({ onSelect }) {
         }
     }, [query])
 
-    // Auswahl eines Treffers → Liste schließen, Textfeld füllen, Koordinaten melden
+
+    // Auswahl eines Treffers → Liste schließen, Textfeld füllen, Koordinaten + Stadt melden
     const handlePick = (item) => {
         setOpen(false)
         setResults([])
         setQuery(item.display_name)
-        if (onSelect) onSelect(item.lat, item.lon)
+        if (onSelect){
+            onSelect(item.lat, item.lon, extractCity(item)) // <— Stadt mitsenden
+        }
     }
 
     // Enter/“Suchen”-Button → wähle den ersten Treffer (falls vorhanden)

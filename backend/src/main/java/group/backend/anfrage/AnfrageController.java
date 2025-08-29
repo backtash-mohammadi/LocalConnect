@@ -40,7 +40,9 @@ public class AnfrageController {
                 a.getPlz(),
                 a.getErsteller().getId(),
                 0,
-                a.getStatus()
+                a.getStatus(),
+                a.getLat(),
+                a.getLon()
         );
 
         return ResponseEntity.ok(dto);
@@ -70,7 +72,9 @@ public class AnfrageController {
                         a.getPlz(),
                         a.getErsteller().getId(),
                         helferId,
-                        a.getStatus()
+                        a.getStatus(),
+                        a.getLat(),
+                        a.getLon()
                 );
                 anfrageDTOs.add(dto);
             }
@@ -96,7 +100,9 @@ public class AnfrageController {
                     a.getPlz(),
                     a.getErsteller().getId(),
                     0,
-                    a.getStatus()
+                    a.getStatus(),
+                    a.getLat(),
+                    a.getLon()
 
             );
             anfrageDTOs.add(dto);
@@ -119,7 +125,9 @@ public class AnfrageController {
                 a.getPlz(),
                 a.getErsteller().getId(),
                 0,
-                a.getStatus()
+                a.getStatus(),
+                a.getLat(),
+                a.getLon()
         );
         return ResponseEntity.ok(dto);
     }
@@ -140,7 +148,9 @@ public class AnfrageController {
                 a.getPlz(),
                 a.getErsteller().getId(),
                 0,
-                a.getStatus()
+                a.getStatus(),
+                a.getLat(),
+                a.getLon()
         );
         return ResponseEntity.ok(dto);
     }

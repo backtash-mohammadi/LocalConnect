@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import group.backend.benutzer.Benutzer;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.DecimalMax;
+import jakarta.validation.constraints.DecimalMin;
 import lombok.Data;
 
 import group.backend.comments.Comment;
@@ -22,7 +24,7 @@ import java.util.List;
 @Data
 @Getter
 @Setter
-@Table(name = "posts_test")
+@Table(name = "post2")
 @JsonIgnoreProperties({"hibernateLazyInitializer","handler"})
 public class Anfrage {
 
@@ -74,6 +76,13 @@ public class Anfrage {
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonBackReference("comment-post")
     private List<Comment> comments = new java.util.ArrayList<>();
+
+    // code for storing latitude / longitude in db.
+    @Column(name = "lat", columnDefinition = "DOUBLE default 0.0") // MariaDB DOUBLE
+    private Double lat;
+
+    @Column(name = "lon", columnDefinition = "DOUBLE default 0.0") // MariaDB DOUBLE
+    private Double lon;
 
 
 

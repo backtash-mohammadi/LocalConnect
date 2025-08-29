@@ -37,7 +37,17 @@ export default function AnfrageDetailSeite() {
             {/* EIN Zurück-Button */}
             <div className="mb-4 flex items-center gap-3">
                 <button
-                    onClick={() => navigate(-1)}
+                    // onClick={() => navigate(-1)}  //
+
+                    // 29.08 - diese Version ist für die Tabs, die von der KarteSeite geöffnet werden.
+                    onClick={() => {
+                        if (window.history.length > 1) {
+                            navigate(-1);
+                        } else {
+                            navigate("/meine-anfragen");
+                        }
+                    }}
+
                     className="rounded-xl border px-3 py-1.5 text-sm hover:bg-gray-50"
                 >
                     ← Zurück

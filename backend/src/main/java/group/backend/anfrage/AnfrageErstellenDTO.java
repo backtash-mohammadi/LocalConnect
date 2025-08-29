@@ -41,7 +41,8 @@ public class AnfrageErstellenDTO {
 
     private String status;
 
-//    public AnfrageErstellenDTO(String beschreibung, String kategorie, String stadt) {
-//    }
+    // to store lat and log value.
+    private Double lat;
+    private Double lon;
 }
 
