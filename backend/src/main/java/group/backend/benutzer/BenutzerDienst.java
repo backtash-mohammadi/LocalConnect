@@ -70,4 +70,22 @@ public class BenutzerDienst {
         repo.save(benutzer);
     }
 
+
+
+    // test method,  to compute the karma points from creator and helper.
+    @Transactional
+    public void rechnePunkte(long userId, Benutzer helfer) {
+        int currenKarmaPoints = this.repo.findById(userId).get().getKarma();
+
+        if(helfer == null){
+            this.repo.findById(userId).get().setKarma(--currenKarmaPoints);
+            return;
+        }
+        long helferId = helfer.getId();
+        int helferKarmaPoints = helfer.getKarma();
+
+        this.repo.findById(helferId).get().setKarma(++helferKarmaPoints);
+        this.repo.findById(userId).get().setKarma(--currenKarmaPoints);
+
+    }
 }

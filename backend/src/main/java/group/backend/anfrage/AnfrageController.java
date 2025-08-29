@@ -1,4 +1,6 @@
 package group.backend.anfrage;
+import group.backend.benutzer.Benutzer;
+import group.backend.benutzer.BenutzerDienst;
 import group.backend.benutzer.BenutzerRepository;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -14,11 +16,11 @@ import java.util.List;
 public class AnfrageController {
 
     private final AnfrageService anfrageService;
-//    private final BenutzerRepository benutzerRepo;
+    private final BenutzerDienst benutzerDienst;
 
-    public AnfrageController(AnfrageService anfrageService, BenutzerRepository benutzerRepo){
+    public AnfrageController(AnfrageService anfrageService, BenutzerDienst benutzerDienst){
         this.anfrageService = anfrageService;
-//        this.benutzerRepo = benutzerRepo;
+        this.benutzerDienst = benutzerDienst;
     }
 
     @PostMapping(path = "/erstellen")
@@ -147,6 +149,12 @@ public class AnfrageController {
 // @PreAuthorize("isAuthenticated()") // enable if you use auth
     public ResponseEntity<Void> markiereAlsFertig(@PathVariable("id") Long id) {
         anfrageService.markiereAlsFertig(id);
+
+        // swap the points.
+        long userId = anfrageService.findeAnfrage(id).getErsteller().getId();
+        Benutzer helfer = anfrageService.findeAnfrage(id).getHelfer();
+        benutzerDienst.rechnePunkte(userId, helfer);
+        //
         return ResponseEntity.noContent().build();
     }
 

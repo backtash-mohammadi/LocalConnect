@@ -65,7 +65,7 @@ export default function RadiusMap({ center, onGeolocated, posts = [] }) {
         )
     }
 
-    const radiusMeters = useMemo(() => radiusKm * 1000, [radiusKm])
+    const radiusMeters = useMemo(() => radiusKm * 100, [radiusKm])
 
     const kategorieZaehler = useMemo(() => {
         const acc = {};
