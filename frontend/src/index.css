@@ -14,3 +14,12 @@
 /*    width: 100%;*/
 /*    height: 100%;*/
 /*}*/
+
+/*@layer base {*/
+/*    a {*/
+/*        @apply text-gray-900 no-underline;*/
+/*    }*/
+/*    a:visited {*/
+/*        @apply text-gray-900;*/
+/*    }*/
+/*}*/

@@ -3,6 +3,9 @@ import React, { useMemo, useState } from 'react'
 import { MapContainer, TileLayer, Circle, CircleMarker, Tooltip, useMap } from 'react-leaflet'
 import 'leaflet/dist/leaflet.css'
 import { FcOk } from "react-icons/fc";
+import { PiPhoneCallFill } from "react-icons/pi";
+import { BiSolidMapPin } from "react-icons/bi";
+
 import haushalt from "../assets/haushalt.png";
 import nachhilfe from "../assets/nachhilfe.png";
 import sonstiges from "../assets/sonstiges.png";
@@ -62,7 +65,7 @@ export default function RadiusMap({ center, onGeolocated, posts = [] }) {
         )
     }
 
-    const radiusMeters = useMemo(() => radiusKm * 100, [radiusKm])
+    const radiusMeters = useMemo(() => radiusKm * 1000, [radiusKm])
 
     const kategorieZaehler = useMemo(() => {
         const acc = {};
@@ -94,8 +97,8 @@ export default function RadiusMap({ center, onGeolocated, posts = [] }) {
                     <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
                         {/* Status (optional; kann auch links bleiben, wenn gewünscht) */}
                         <div className="controls__status">
-                            {geoStatus === 'locating' && <span>Standort wird angefragt… </span>}
-                            {geoStatus === 'denied'   && <span>Zugriff auf Standort verweigert.</span>}
+                            {geoStatus === 'locating' && <span><PiPhoneCallFill /></span>}
+                            {geoStatus === 'denied'   && <span></span>}
                             {geoStatus === 'error'    && <span>{geoMessage}</span>}
                             {geoStatus === 'granted'  && <span><FcOk /></span>}
                         </div>
@@ -141,7 +144,7 @@ export default function RadiusMap({ center, onGeolocated, posts = [] }) {
                 {Array.isArray(posts) && posts
                     .filter(p => Number.isFinite(p.lat) && Number.isFinite(p.lon))
                     .map((p, i) => {
-                        // Normalize id & category across possible shapes
+                        // "Normalize" id & category (english/german and )
                         const id        = p.id ?? p.post_id ?? p.postId ?? i
                         const pfad      = `/anfrage/${id}`
 
@@ -168,7 +171,7 @@ export default function RadiusMap({ center, onGeolocated, posts = [] }) {
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         onClick={(e) => e.stopPropagation()} // prevent also triggering marker click
-                                        className={`block px-1 py-0.5 rounded underline text-gray-900 text-lg ${bgKlasse}`}
+                                        className={`block px-1 py-0.5 rounded text-gray-900 text-lg ${bgKlasse}`}
                                         title={kategorie ? `Kategorie: ${kategorie}` : undefined}
                                     >
                                         {titel}
