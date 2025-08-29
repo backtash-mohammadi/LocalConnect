@@ -1,19 +1,28 @@
 package group.backend.benutzer;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+
+import java.util.List;
+import group.backend.comments.Comment;
 
 import java.time.Instant;
+
+
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@Getter
+@Setter
 @Table(name = "benutzer", uniqueConstraints = @UniqueConstraint(name = "uk_benutzer_email", columnNames = "email_adresse"))
+@JsonIgnoreProperties({"hibernateLazyInitializer","handler"})
+
 public class Benutzer {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -46,5 +55,10 @@ public class Benutzer {
 
     @Column(name="email_bestaetigt", nullable = false)
     private boolean emailBestaetigt = false;
+
+    // Relation to comments
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonBackReference("comment-user")
+    private List<Comment> comments = new java.util.ArrayList<>();
 
 }
