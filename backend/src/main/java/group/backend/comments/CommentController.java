@@ -1,26 +1,36 @@
 package group.backend.comments;
 
 
-import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
+import group.backend.comments.dto.CommentDto;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/comments")
-@RequiredArgsConstructor
+
 public class CommentController {
-    private final CommentService service;
+    private final CommentService svc;
+    public CommentController(CommentService svc){ this.svc = svc; }
 
-    @PostMapping
-    public Comment create(@RequestBody Comment c){ return service.save(c); }
+    public static record NewCommentRequest(Long userId, Long postId, String text) {}
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Comment> get(@PathVariable Long id){
-        return service.find(id).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+    @PostMapping public Comment create(@RequestBody NewCommentRequest r){
+        return svc.create(r.userId(), r.postId(), r.text());
     }
 
-    @GetMapping
-    public List<Comment> list(){ return service.all(); }
+
+    @GetMapping("/user/{userId}")
+    public List<Comment> byUser(@PathVariable Long userId){ return svc.byUser(userId); }
+
+    @DeleteMapping("/{id}")
+    public void delete(@PathVariable Long id){ svc.delete(id); }
+
+
+    // CommentController.java (use DTOs)
+    @GetMapping("/post/{postId}")
+    public List<CommentDto> byPost(@PathVariable Long postId){
+        return svc.byPost(postId).stream().map(CommentDto::from).toList();
+    }
+
 }
