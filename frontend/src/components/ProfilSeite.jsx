@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useAuth } from "../context/AuthKontext";
 import { apiGet, apiPut } from "../lib/apiClient";
+import { useNavigate } from "react-router-dom";
 
 export default function ProfilSeite() {
     const BASIS_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
@@ -384,9 +385,12 @@ export default function ProfilSeite() {
     );
 }
 
-// --- Unterkomponente: Passwort ändern ---
+// --- Unterkomponente: Passwort ändern (Auto-Logout + Redirect) ---
 function PasswortAendernForm() {
-    const { token } = useAuth();
+    const { token, ausloggen } = useAuth();
+    const navigate = useNavigate();
+    const LOGIN_PFAD = "/login"; // <- при необходимости поменяй
+
     const [felder, setFelder] = useState({
         aktuellesPasswort: "",
         neuesPasswort: "",
@@ -395,6 +399,43 @@ function PasswortAendernForm() {
     const [ok, setOk] = useState("");
     const [fehler, setFehler] = useState("");
     const [lade, setLade] = useState(false);
+
+    // Countdown für Auto-Logout
+    const [logoutSekunden, setLogoutSekunden] = useState(0);
+    const timerRef = useRef({ intervalId: null, timeoutId: null });
+
+    // Timer aufräumen beim Unmount
+    useEffect(() => {
+        return () => {
+            if (timerRef.current.intervalId) clearInterval(timerRef.current.intervalId);
+            if (timerRef.current.timeoutId) clearTimeout(timerRef.current.timeoutId);
+        };
+    }, []);
+
+    function starteAutoLogoutCountdown(sekunden = 5) {
+        // vorhandene Timer stoppen
+        if (timerRef.current.intervalId) clearInterval(timerRef.current.intervalId);
+        if (timerRef.current.timeoutId) clearTimeout(timerRef.current.timeoutId);
+
+        setLogoutSekunden(sekunden);
+
+        // 1-секундный тикер
+        timerRef.current.intervalId = setInterval(() => {
+            setLogoutSekunden((prev) => {
+                if (prev <= 1) {
+                    clearInterval(timerRef.current.intervalId);
+                    return 0;
+                }
+                return prev - 1;
+            });
+        }, 1000);
+
+        // фактический логаут + редирект
+        timerRef.current.timeoutId = setTimeout(() => {
+            try { ausloggen(); } catch {}
+            navigate(LOGIN_PFAD, { replace: true });
+        }, sekunden * 1000);
+    }
 
     async function absenden(e) {
         e.preventDefault();
@@ -409,6 +450,7 @@ function PasswortAendernForm() {
             setFehler("Neue Passwörter stimmen nicht überein.");
             return;
         }
+
         setLade(true);
         try {
             const headers = { "Content-Type": "application/json" };
@@ -429,7 +471,9 @@ function PasswortAendernForm() {
                 const t = await res.text();
                 throw new Error(t || `HTTP ${res.status}`);
             }
-            setOk("Passwort wurde geändert. Bitte melde dich neu an.");
+
+            setOk("Passwort wurde geändert. Du wirst automatisch abgemeldet.");
+            starteAutoLogoutCountdown(5); // авто-логаут и редирект через 5с
         } catch (err) {
             setFehler(err.message || "Ändern fehlgeschlagen.");
         } finally {
@@ -445,8 +489,11 @@ function PasswortAendernForm() {
                     type="password"
                     className="w-full rounded border px-3 py-2"
                     value={felder.aktuellesPasswort}
-                    onChange={(e) => setFelder({ ...felder, aktuellesPasswort: e.target.value })}
+                    onChange={(e) =>
+                        setFelder({ ...felder, aktuellesPasswort: e.target.value })
+                    }
                     required
+                    disabled={lade || logoutSekunden > 0}
                 />
             </div>
             <div>
@@ -455,9 +502,12 @@ function PasswortAendernForm() {
                     type="password"
                     className="w-full rounded border px-3 py-2"
                     value={felder.neuesPasswort}
-                    onChange={(e) => setFelder({ ...felder, neuesPasswort: e.target.value })}
+                    onChange={(e) =>
+                        setFelder({ ...felder, neuesPasswort: e.target.value })
+                    }
                     required
                     minLength={8}
+                    disabled={lade || logoutSekunden > 0}
                 />
             </div>
             <div>
@@ -466,20 +516,30 @@ function PasswortAendernForm() {
                     type="password"
                     className="w-full rounded border px-3 py-2"
                     value={felder.neuesPasswortWdh}
-                    onChange={(e) => setFelder({ ...felder, neuesPasswortWdh: e.target.value })}
+                    onChange={(e) =>
+                        setFelder({ ...felder, neuesPasswortWdh: e.target.value })
+                    }
                     required
                     minLength={8}
+                    disabled={lade || logoutSekunden > 0}
                 />
             </div>
+
             <div className="flex items-center gap-3">
                 <button
-                    disabled={lade}
+                    disabled={lade || logoutSekunden > 0}
                     type="submit"
                     className="rounded-2xl bg-indigo-600 px-4 py-2 text-white disabled:opacity-60"
                 >
                     {lade ? "Speichere..." : "Passwort speichern"}
                 </button>
-                {ok && <span className="text-sm text-green-700">{ok}</span>}
+
+                {ok && (
+                    <span className="text-sm text-green-700">
+            {ok}
+                        {logoutSekunden > 0 ? ` (Weiterleitung in ${logoutSekunden}s)` : ""}
+          </span>
+                )}
                 {fehler && <span className="text-sm text-red-700">{fehler}</span>}
             </div>
         </form>
