@@ -1,10 +1,18 @@
 package group.backend.anfrage;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import group.backend.benutzer.Benutzer;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import group.backend.comments.Comment;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.time.LocalDateTime;
+import java.util.List;
+
 
 /**
  * Entity für eine Hilfsanfrage ("Anfrage").
@@ -12,7 +20,10 @@ import java.time.LocalDateTime;
  */
 @Entity
 @Data
+@Getter
+@Setter
 @Table(name = "posts_test")
+@JsonIgnoreProperties({"hibernateLazyInitializer","handler"})
 public class Anfrage {
 
     @Id
@@ -58,6 +69,11 @@ public class Anfrage {
     //    @Convert(converter = AnfrageStatusConverter.class)
     @Column(name = "status", nullable = false, length = 20)
     private String status = "open"; // Standardwert "open"
+
+    // Relation to comments
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonBackReference("comment-post")
+    private List<Comment> comments = new java.util.ArrayList<>();
 
 
 
