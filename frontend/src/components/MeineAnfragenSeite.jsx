@@ -33,6 +33,14 @@ export default function MeineAnfragenSeite(){
             });
 
             const daten = await apiGet(`/meine-anfragen?${parameter.toString()}`, token);
+            if(Array.isArray(daten)){
+                daten.sort((a, b) => {
+                    if (a.status === "open" && b.status !== "open") return -1;
+                    if (b.status === "open" && a.status !== "open") return 1;
+                    return 0;
+                });
+            }
+
             setAnfragen(Array.isArray(daten) ? daten : []);
         }catch(err){
             setFehler(err.message || 'Fehler beim Laden');
@@ -41,7 +49,12 @@ export default function MeineAnfragenSeite(){
         }
     }
 
-    useEffect(() => { if(benutzer){ ladeDaten(); } }, [benutzer]);
+    useEffect(() => {
+        if(benutzer){
+            ladeDaten();
+        }
+        }, [benutzer]
+    );
 
     // Navigate to edit page for a specific request
     function bearbeitenAnfrage(id){
