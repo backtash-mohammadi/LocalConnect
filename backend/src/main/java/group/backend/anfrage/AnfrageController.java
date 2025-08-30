@@ -195,6 +195,7 @@ public class AnfrageController {
 
 
             long helferId = (a.getHelfer() == null) ? 0 : a.getHelfer().getId();
+
             AnfrageErstellenDTO dto = new AnfrageErstellenDTO(
                     a.getId(),
                     a.getTitel(),
@@ -205,7 +206,9 @@ public class AnfrageController {
                     a.getPlz(),
                     a.getErsteller() != null ? a.getErsteller().getId() : 0,
                     helferId,
-                    a.getStatus()
+                    a.getStatus(),
+                    a.getLat(),
+                    a.getLon()
             );
             dtoListe.add(dto);
         }
