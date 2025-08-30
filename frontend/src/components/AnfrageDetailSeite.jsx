@@ -1,4 +1,6 @@
 // src/components/AnfrageDetailSeite.jsx
+// THE STYLING FOR COMMENT SECTION HAPPENS HERE
+
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthKontext";
@@ -52,7 +54,7 @@ export default function AnfrageDetailSeite() {
                 >
                     ← Zurück
                 </button>
-                <h1 className="text-xl font-bold">Anfrage</h1>
+                <h1 className="text-3xl font-thin">Anfrage</h1>
             </div>
 
             {laden && <div className="rounded-2xl border bg-white p-4 text-sm">Lade…</div>}
@@ -64,7 +66,8 @@ export default function AnfrageDetailSeite() {
 
             {/* Karte 1: Post */}
             {post && (
-                <div className="mb-6 rounded-2xl border bg-white p-5 shadow-sm">
+                // Anfrage Details...
+                <div className="relative overflow-hidden rounded-2xl border border-sky-100 bg-gradient-to-br from-sky-30 via-blue-200 to-sky-100 p-5 shadow-sm ring-1 ring-sky-100/60">
                     <h2 className="text-lg font-semibold">
                         {post.titel ?? post.title ?? "Ohne Titel"}
                     </h2>
@@ -92,9 +95,9 @@ export default function AnfrageDetailSeite() {
             )}
 
             {/* Karte 2: Kommentare – gleiche Breite/Optik */}
-            <div className="rounded-2xl border bg-white p-5 shadow-sm">
+            <div className="mt-6 relative overflow-hidden rounded-2xl border border-sky-100 bg-gradient-to-br from-sky-30 via-blue-200 to-sky-100 p-5 shadow-sm ring-1 ring-sky-100/60">
                 <div className="mb-3">
-                    <h2 className="text-lg font-semibold">Kommentare</h2>
+                    <h2 className="text-2xl font-thin text-gray-900 ">Kommentare</h2>
                 </div>
                 {/* embedded=true => CommentSection rendert ohne eigenen Außen-Wrapper */}
                 <CommentSection postId={id} embedded />

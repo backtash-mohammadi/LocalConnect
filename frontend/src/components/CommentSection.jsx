@@ -87,6 +87,8 @@ export default function CommentSection({ postId, onBack, embedded = false, class
             };
             setComments((prev) => prev.map((c) => (c.id === tempId ? saved : c)));
             setText("");
+            setTimeout(() => window.location.reload(), 100);
+
         } catch (e) {
             setError(e.message || "Kommentar konnte nicht gespeichert werden");
             setComments((prev) => prev.filter((c) => c.id !== tempId)); // rollback
@@ -96,8 +98,8 @@ export default function CommentSection({ postId, onBack, embedded = false, class
     }
 
     const header = embedded ? null : (
-        <div className="mb-4 flex items-center justify-between">
-            <h2 className="text-xl font-semibold">Kommentare</h2>
+        <div className="mb-4 flex  items-center justify-between">
+            <h2 className="text-xl text-red-400 font-semibold">Kommentare</h2>
             {onBack && (
                 <button onClick={onBack} className="px-3 py-1.5 rounded-lg border hover:bg-gray-50 transition">
                     Zurück
@@ -112,7 +114,7 @@ export default function CommentSection({ postId, onBack, embedded = false, class
                 value={text}
                 onChange={(e) => setText(e.target.value)}
                 placeholder="Schreibe einen Kommentar…"
-                className="flex-1 rounded-lg border px-3 py-2 outline-none focus:ring"
+                className="flex-1 overflow-hidden rounded-xl border border-sky-200 bg-gradient-to-br from-sky-50 via-sky-100 to-white p-3 shadow-sm ring-1 ring-sky-100/60"
             />
             <button
                 type="submit"
@@ -126,6 +128,7 @@ export default function CommentSection({ postId, onBack, embedded = false, class
     );
 
     const content = (
+
         <>
             {header}
             {!benutzer && (
@@ -144,13 +147,17 @@ export default function CommentSection({ postId, onBack, embedded = false, class
             ) : (
                 <ul className="space-y-3">
                     {comments.map((c) => (
-                        <li key={c.id} className="rounded-xl border p-3">
-                            <div className="text-sm text-gray-600">
+                        /* Comment component inside the comment section */
+                        <li key={c.id} className="relative overflow-hidden rounded-xl border border-sky-200 bg-gradient-to-br from-sky-50 via-sky-100 to-white p-3 shadow-sm ring-1 ring-sky-100/60">
+                        <div className="text-sm text-gray-600 flex items-center ">
                                 <span className="font-medium">{c.author?.name ?? "Unbekannt"}</span> ·{" "}
-                                <span>{formatDateTime(c.createdAt)}</span>
+
+                                <span className={"ml-auto"}>{formatDateTime(c.createdAt)}</span>
+
                                 {String(c.id).startsWith("tmp-") && <span className="ml-2">⏳</span>}
                             </div>
-                            <p className="mt-1">{c.text}</p>
+                            <p className="mt-1 font-light whitespace-pre-wrap">{c.text}</p>
+
                         </li>
                     ))}
                     {!comments.length && <li className="text-gray-500">Keine Kommentare.</li>}
@@ -159,9 +166,12 @@ export default function CommentSection({ postId, onBack, embedded = false, class
         </>
     );
 
-    return embedded ? content : <div className={`max-w-3xl mx-auto p-4 ${className}`}>{content}</div>;
+    return embedded ? content : <div className={`max-w-4xl mx-auto p-4 ${className}`}>{content}</div>;
 }
 
 function formatDateTime(iso) {
-    try { return new Date(iso).toLocaleString(); } catch { return String(iso ?? ""); }
+    try { return new Date(iso).toLocaleString(
+        'de-DE', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' });
+    } catch { return String(iso ?? "");}
+
 }
