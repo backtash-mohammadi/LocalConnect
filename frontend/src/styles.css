@@ -195,9 +195,9 @@ body {
         max-width: 80vw;         /* ~70% der Bildschirmbreite */
     }
 }
-@media (min-width: 1280px) {     /* xl */
-    .search-wrap,
-    .map-wrap {
-        max-width: 56rem;        /* feste Obergrenze, optisch ruhiger */
-    }
-}
+/*@media (min-width: 1280px) {     !* xl *!*/
+/*    .search-wrap,*/
+/*    .map-wrap {*/
+/*        max-width: 56rem;        !* feste Obergrenze, optisch ruhiger *!*/
+/*    }*/
+/*}*/

@@ -18,6 +18,8 @@ import EmailBestaetigenSeite from "./components/EmailBestaetigenSeite.jsx";
 import ZweiFaktorSeite from "./components/ZweiFaktorSeite.jsx";
 import PasswortAendernSeite from "./components/PasswortAendernSeite.jsx";
 import MeineAkzeptierteAnfragen from "./components/MeineAkzeptierteAnfragen.jsx";
+import PrivatChatSeite from "./components/PrivatChatSeite.jsx";
+import PrivatChatListeSeite from "./components/PrivatChatListeSeite.jsx";
 
 export function App() {
     return (
@@ -50,6 +52,9 @@ export function App() {
                                 <Route path="/2fa" element={<ZweiFaktorSeite />} />
 
                                 <Route path="/meine-akzeptierte-anfragen" element={<MeineAkzeptierteAnfragen />} />
+                                <Route path="/chats" element={<PrivatChatListeSeite />} />
+                                <Route path="/chat/:id" element={<PrivatChatSeite/>} />
+
                             </Routes>
                         </div>
                     </main>
