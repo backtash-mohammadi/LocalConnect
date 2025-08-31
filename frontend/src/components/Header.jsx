@@ -168,7 +168,7 @@ export default function Header() {
                         alt="LocalConnect Logo"
                         className="h-10 w-10 rounded-xl shadow-sm transition-transform group-hover:scale-105"
                     />
-                    <span className="text-xl font-bold tracking-tight text-indigo-700">
+                    <span className="text-3xl font-thin tracking-tight text-indigo-700">
             LocalConnect
           </span>
                 </Link>
