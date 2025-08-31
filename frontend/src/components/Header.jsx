@@ -12,7 +12,8 @@ import {
     FiPlusCircle,
     FiClipboard,
     FiKey,
-    FiSearch
+    FiSearch,
+    FiMail,
 } from "react-icons/fi";
 
 export default function Header() {
@@ -34,6 +35,23 @@ export default function Header() {
     const [suchtext, setSuchtext] = useState("");
     const [anzahlAnzeigenGesamt, setAnzahlAnzeigenGesamt] = useState(null);
     const [anzahlMeine, setAnzahlMeine] = useState(null);
+
+    // 🔔 Ungelesen-Badge
+    const [ungelesen, setUngelesen] = useState(0);
+    useEffect(() => {
+        let aktiv = true;
+        async function poll() {
+            try {
+                if (!token) { setUngelesen(0); return; }
+                const d = await apiGet(`/privatchats/unread-count`, token);
+                const n = (typeof d?.anzahl === "number") ? d.anzahl : (typeof d === "number" ? d : 0);
+                if (aktiv) setUngelesen(n);
+            } catch {}
+        }
+        poll();
+        const iv = setInterval(poll, 10000);
+        return () => { aktiv = false; clearInterval(iv); };
+    }, [token]);
 
     // Admin-Prüfung
     useEffect(() => {
@@ -98,7 +116,7 @@ export default function Header() {
         return (a + b).toUpperCase();
     }
 
-    // --- Suche → /karte?q=... (карта сама прочитает q и отцентрируется) ---
+    // --- Suche → /karte?q=... ---
     function sucheAbsenden(e) {
         e.preventDefault();
         const q = (suchtext || "").trim();
@@ -142,7 +160,7 @@ export default function Header() {
     return (
         <header className="sticky top-0 z-40 w-full border-b bg-white/70 backdrop-blur">
             <div className="mx-auto flex max-w-6xl items-center gap-3 px-4 py-3">
-                {/* Marke / Logo */}
+                {/* Marke / Logo — снова на главную */}
                 <Link to="/" className="group flex shrink-0 items-center gap-3">
                     <img
                         src="/logo.png"
@@ -193,8 +211,26 @@ export default function Header() {
                     </div>
                 </div>
 
-                {/* Rechts: Auth / Profil (меню не трогаем) */}
+                {/* Rechts: Badge + Profil / Login */}
                 <div className="ml-auto flex items-center gap-2">
+                    {/* 🔔 Nachrichten-Badge → на /chats */}
+                    {benutzer && (
+                        <button
+                            onClick={() => navigate("/chats")}
+                            className="relative inline-flex items-center rounded-xl cursor-pointer px-2 py-1.5 text-xl hover:bg-gray-50"
+                            aria-label="Nachrichten"
+                            title="Nachrichten"
+                        >
+                            <FiMail className="mr-1" />
+
+                            {ungelesen > 0 && (
+                                <span className="ml-2 inline-flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-red-600 px-1 text-xs font-semibold text-white">
+                  {ungelesen}
+                </span>
+                            )}
+                        </button>
+                    )}
+
                     {benutzer ? (
                         <div className="relative" ref={dropdownRef}>
                             <button
@@ -250,6 +286,9 @@ export default function Header() {
                                     </Link>
                                     <Link to="/erstellen" onClick={() => setMenueOffen(false)} className="flex items-center gap-2 px-4 py-2.5 text-sm hover:bg-gray-50">
                                         <FiPlusCircle className="opacity-80" /> Anfrage erstellen
+                                    </Link>
+                                    <Link to="/chats" onClick={() => setMenueOffen(false)} className="flex items-center gap-2 px-4 py-2.5 text-sm hover:bg-gray-50">
+                                        <FiMail className="opacity-80" /> Nachrichten
                                     </Link>
                                     <Link to="/meine-anfragen" onClick={() => setMenueOffen(false)} className="flex items-center gap-2 px-4 py-2.5 text-sm hover:bg-gray-50">
                                         <FiClipboard className="opacity-80" /> Meine Anfragen

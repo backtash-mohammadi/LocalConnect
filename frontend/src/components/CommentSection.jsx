@@ -1,182 +1,141 @@
 import { useEffect, useState } from "react";
-// CHANGED: use same auth + api client as in Anfrage* pages
-import { useAuth } from "../context/AuthKontext";            // from your app
-import { apiGet, apiPost } from "../lib/apiClient";          // from your app
+import { useAuth } from "../context/AuthKontext";
+import { apiGet, apiPost } from "../lib/apiClient";
 
-// OLD: export default function CommentSection({ postId, userId, onBack, embedded = false, className = "" }) {
-export default function CommentSection({ postId, onBack, embedded = false, className = "" }) { // CHANGED: we read user from context
-                                                                                               // OLD: const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:8080";
-                                                                                               // CHANGED: apiClient handles base URL, tokens, cookies, CSRF (like Anfrage*).
-    const { token, benutzer } = useAuth(); // CHANGED: this is how your other pages get userId/token
-
+export default function CommentSection({ postId, embedded = false, className = "" }) {
+    const { token, benutzer } = useAuth();
     const [comments, setComments] = useState([]);
+    const [erstellerId, setErstellerId] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
     const [text, setText] = useState("");
-    const [submitting, setSubmitting] = useState(false);
 
-    useEffect(() => {
-        let alive = true;
-        (async () => {
-            try {
-                setLoading(true);
-                setError("");
-
-                // OLD:
-                // const res = await fetch(`${API_BASE}/comments/post/${postId}`, { headers:{Accept:"application/json"} , credentials:"include"});
-                // if (!res.ok) throw new Error("Fehler beim Laden der Kommentare");
-                // const raw = await res.json();
-
-                // CHANGED: same style as AnfrageBearbeiten -> apiGet(path, token)
-                const raw = await apiGet(`/comments/post/${postId}`, token);
-
-                const normalized = (Array.isArray(raw) ? raw : []).map((d) => ({
-                    id: d.id,
-                    text: d.text,
-                    createdAt: d.createdAt,
-                    author: { id: d.userId, name: d.userName },
-                }));
-                if (alive) setComments(normalized);
-            } catch (e) {
-                if (alive) setError(e.message || "Unbekannter Fehler");
-            } finally {
-                if (alive) setLoading(false);
-            }
-        })();
-        return () => { alive = false; };
-    }, [postId, token]);
-
-    async function handleSubmit(e) {
-        e.preventDefault();
-        if (!text.trim() || submitting) return;
-
-        setSubmitting(true);
-        setError("");
-
-        // CHANGED: allow userId === 0; only block when we truly have no numeric id
-        const userIdIsValidNumber = typeof benutzer?.id === "number" && Number.isFinite(benutzer.id);
-        if (!userIdIsValidNumber) {
-            setError("Du musst angemeldet sein, um zu kommentieren.");
-            return setSubmitting(false);
-        }
-
-        const tempId = `tmp-${Date.now()}`;
-        const optimistic = {
-            id: tempId,
-            text: text.trim(),
-            createdAt: new Date().toISOString(),
-            author: { id: benutzer.id, name: benutzer.name ?? "Du" },
-        };
-        setComments((prev) => [optimistic, ...prev]);
-
+    async function ladeKommentare() {
         try {
-            const payload = { userId: benutzer.id, postId: Number(postId), text: optimistic.text };
-
-            // OLD:
-            // const res = await fetch(`${API_BASE}/comments`, { method:"POST", headers:{...}, credentials:"include", body: JSON.stringify(payload) });
-            // const savedRaw = await res.json();
-
-            // CHANGED: same pattern as AnfrageErstellen -> apiPost(path, body, token)
-            const savedRaw = await apiPost(`/comments`, payload, token); // uses token/cookies/CSRF like other screens :contentReference[oaicite:2]{index=2}
-
-            const saved = {
-                id: savedRaw.id,
-                text: savedRaw.text,
-                createdAt: savedRaw.createdAt,
-                author: { id: savedRaw.userId, name: savedRaw.userName },
-            };
-            setComments((prev) => prev.map((c) => (c.id === tempId ? saved : c)));
-            setText("");
-            setTimeout(() => window.location.reload(), 100);
-
+            setLoading(true);
+            setError("");
+            const raw = await apiGet(`/comments/post/${postId}`, token);
+            const normalized = (Array.isArray(raw) ? raw : []).map((d) => ({
+                id: d.id,
+                text: d.text,
+                createdAt: d.createdAt || d.created_at || d.erstelltAm || d.datum || null,
+                user: d.user ? { id: d.user.id, name: d.user.name } : { id: d.userId ?? d.benutzerId ?? null, name: d.userName ?? d.benutzerName ?? "Nutzer" }
+            }));
+            setComments(normalized);
         } catch (e) {
-            setError(e.message || "Kommentar konnte nicht gespeichert werden");
-            setComments((prev) => prev.filter((c) => c.id !== tempId)); // rollback
+            setError(e?.message || "Fehler beim Laden der Kommentare");
         } finally {
-            setSubmitting(false);
+            setLoading(false);
         }
     }
 
-    // NEW: always render newest first
-    const sortedComments = [...comments].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    // Hole Ersteller der Anfrage (nur um Sichtbarkeit der Chat-Schaltfläche zu bestimmen)
+    useEffect(() => {
+        let aktiv = true;
+        async function ladeAnfrage() {
+            try {
+                const a = await apiGet(`/anfrage/${postId}`, token);
+                const id = a?.userId ?? a?.erstellerId ?? null;
+                if (aktiv && id != null) setErstellerId(Number(id));
+            } catch { /* ignorieren */ }
+        }
+        if (postId && token) ladeAnfrage();
+        // Kommentare gleich тоже laden
+        if (postId && token) ladeKommentare();
+        return () => { aktiv = false; };
+    }, [postId, token]);
 
+    async function sendeKommentar(e) {
+        e?.preventDefault?.();
+        const t = text.trim();
+        if (!t) return;
+        const optimistic = {
+            id: `tmp_${Date.now()}`,
+            text: t,
+            createdAt: new Date().toISOString(),
+            user: { id: benutzer?.id, name: benutzer?.name || "Ich" }
+        };
+        setComments((alt) => [...alt, optimistic]);
+        setText("");
 
-    const header = embedded ? null : (
-        <div className="mb-4 flex  items-center justify-between">
-            <h2 className="text-xl text-red-400 font-semibold">Kommentare</h2>
-            {onBack && (
-                <button onClick={onBack} className="px-3 py-1.5 rounded-lg border hover:bg-gray-50 transition">
-                    Zurück
+        try {
+            const payload = { userId: benutzer.id, postId: Number(postId), text: optimistic.text };
+            const savedRaw = await apiPost(`/comments`, payload, token);
+            const saved = {
+                id: savedRaw.id,
+                text: savedRaw.text,
+                createdAt: savedRaw.createdAt || savedRaw.erstelltAm || optimistic.createdAt,
+                user: optimistic.user
+            };
+            setComments((alt) => alt.map((c) => (c.id === optimistic.id ? saved : c)));
+        } catch (e) {
+            setComments((alt) => alt.filter((c) => c.id !== optimistic.id));
+            setError(e?.message || "Fehler beim Senden des Kommentars");
+        }
+    }
+
+    async function startePrivatchat(kommentarId) {
+        try {
+            const res = await apiPost(`/privatchats/von-kommentar/${kommentarId}`, {}, token);
+            const kId = res?.konversationId;
+            if (kId != null) {
+                window.location.href = `/chat/${kId}`;
+            }
+        } catch (e) {
+            alert(e?.message || "Privatchat konnte nicht gestartet werden");
+        }
+    }
+
+    function formatDateTime(iso) {
+        try {
+            return new Date(iso).toLocaleString("de-DE", { day: "2-digit", month: "2-digit", year: "2-digit", hour: "2-digit", minute: "2-digit" });
+        } catch {
+            return String(iso ?? "");
+        }
+    }
+
+    return (
+        <div className={"" + (className || "")}>
+            {error && <div className="mb-2 rounded-lg border border-red-200 bg-red-50 p-2 text-red-700 text-sm">{error}</div>}
+
+            <ul className="space-y-3">
+                {comments.map((c) => (
+                    <li key={c.id} className="rounded-xl border bg-white p-3 shadow-sm">
+                        <div className="flex items-center justify-between text-sm text-gray-600">
+                            <div className="font-medium">{c.user?.name || "Nutzer"}</div>
+                            <div>{formatDateTime(c.createdAt)}</div>
+                        </div>
+                        <div className="mt-2 whitespace-pre-wrap break-words">{c.text}</div>
+
+                        {(erstellerId != null && benutzer?.id === erstellerId) && (
+                            <div className="mt-2">
+                                <button
+                                    onClick={() => startePrivatchat(c.id)}
+                                    className="rounded-lg border px-2 py-1 text-xs hover:bg-gray-50">
+                                    Privatchat
+                                </button>
+                            </div>
+                        )}
+                    </li>
+                ))}
+                {comments.length === 0 && !loading && <li className="text-sm text-gray-500">Keine Kommentare.</li>}
+                {loading && <li className="text-sm text-gray-500">Laden…</li>}
+            </ul>
+
+            <form onSubmit={sendeKommentar} className="mt-3 flex gap-2">
+                <input
+                    value={text}
+                    onChange={(e) => setText(e.target.value)}
+                    placeholder="Einen Kommentar schreiben…"
+                    className="flex-1 rounded-xl border px-3 py-2 outline-none"
+                />
+                <button
+                    type="submit"
+                    disabled={!text.trim()}
+                    className="rounded-xl bg-black px-4 py-2 text-white disabled:opacity-50">
+                    Senden
                 </button>
-            )}
+            </form>
         </div>
     );
-
-    const form = (
-        <form onSubmit={handleSubmit} className="mb-4 flex gap-2">
-            <input
-                value={text}
-                onChange={(e) => setText(e.target.value)}
-                placeholder="Schreibe einen Kommentar…"
-                className="flex-1 overflow-hidden rounded-xl border border-sky-200 bg-gradient-to-br from-sky-50 via-sky-100 to-white p-3 shadow-sm ring-1 ring-sky-100/60"
-            />
-            <button
-                type="submit"
-                // OLD: disabled={submitting || !text.trim()}
-                disabled={submitting || !text.trim() || !(typeof benutzer?.id === "number" && Number.isFinite(benutzer.id))} // CHANGED: only enable when we truly have a numeric id (0 allowed)
-                className="rounded-lg bg-black text-white px-4 py-2 disabled:opacity-50"
-            >
-                {submitting ? "Senden…" : "Senden"}
-            </button>
-        </form>
-    );
-
-    const content = (
-
-        <>
-            {header}
-            {!benutzer && (
-                <div className="mb-3 rounded-lg border border-amber-300 bg-amber-50 px-3 py-2 text-sm text-amber-800">
-                    Bitte einloggen, um zu kommentieren. {/* CHANGED: mirrors Anfrage* gating */} :contentReference[oaicite:3]  {index=3}
-                </div>
-            )}
-            {error && (
-                <div className="mb-3 rounded-lg border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-700">
-                    {error}
-                </div>
-            )}
-            {form}
-            {loading ? (
-                <div>Lade…</div>
-            ) : (
-                <ul className="space-y-3">
-                    {sortedComments.map((c) => (
-
-                        /* Comment component inside the comment section */
-                        <li key={c.id} className="relative overflow-hidden rounded-xl border border-sky-200 bg-gradient-to-br from-sky-50 via-sky-100 to-white p-3 shadow-sm ring-1 ring-sky-100/60">
-                        <div className="text-sm text-gray-600 flex items-center ">
-                                <span className="font-medium">{c.author?.name ?? "Unbekannt"}</span> ·{" "}
-
-                                <span className={"ml-auto"}>{formatDateTime(c.createdAt)}</span>
-
-                                {String(c.id).startsWith("tmp-") && <span className="ml-2">⏳</span>}
-                            </div>
-                            <p className="mt-1 font-light whitespace-pre-wrap">{c.text}</p>
-
-                        </li>
-                    ))}
-                    {!comments.length && <li className="text-gray-500">Keine Kommentare.</li>}
-                </ul>
-            )}
-        </>
-    );
-
-    return embedded ? content : <div className={`max-w-4xl mx-auto p-4 ${className}`}>{content}</div>;
-}
-
-function formatDateTime(iso) {
-    try { return new Date(iso).toLocaleString(
-        'de-DE', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' });
-    } catch { return String(iso ?? "");}
-
 }
