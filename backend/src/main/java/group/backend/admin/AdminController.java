@@ -9,6 +9,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 
+import org.springframework.http.CacheControl;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+
 import java.util.List;
 import java.util.Map;
 
@@ -65,5 +72,23 @@ public class AdminController {
     public Map<String, Object> loeschen(@PathVariable Long id) {
         adminDienst.loescheBenutzer(id);
         return Map.of("ok", true);
+    }
+
+    @GetMapping("/benutzer/{id}/avatar")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<byte[]> avatarFuerBenutzer(@PathVariable Long id) {
+        var antwort = adminDienst.avatarHolenById(id);
+        if (antwort == null) return ResponseEntity.notFound().build();
+
+        var headers = new HttpHeaders();
+        headers.setCacheControl(CacheControl.noCache());
+        if (antwort.geaendertAm() != null) {
+            headers.setLastModified(antwort.geaendertAm().toEpochMilli());
+        }
+        return ResponseEntity
+                .ok()
+                .contentType(MediaType.parseMediaType(antwort.contentType()))
+                .headers(headers)
+                .body(antwort.daten());
     }
 }

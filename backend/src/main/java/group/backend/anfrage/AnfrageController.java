@@ -205,7 +205,9 @@ public class AnfrageController {
                     a.getPlz(),
                     a.getErsteller() != null ? a.getErsteller().getId() : 0,
                     helferId,
-                    a.getStatus()
+                    a.getStatus(),
+                    a.getLat(),
+                    a.getLon()
             );
             dtoListe.add(dto);
         }

@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import group.backend.benutzer.BenutzerAvatarAntwort;
 
 import java.util.List;
 
@@ -53,6 +54,18 @@ public class AdminDienst {
                 suchtext.trim(), suchtext.trim(), pageable
         );
         return seite.map(this::inDto);
+    }
+
+    @Transactional(readOnly = true)
+    public BenutzerAvatarAntwort avatarHolenById(Long id) {
+        var b = benutzerRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Benutzer nicht gefunden"));
+        if (b.getAvatarBytes() == null) return null;
+        return new BenutzerAvatarAntwort(
+                b.getAvatarBytes(),
+                b.getAvatarContentType() != null ? b.getAvatarContentType() : "image/jpeg",
+                b.getAvatarGeaendertAm()
+        );
     }
 
     private AdminBenutzerDto inDto(Benutzer b) {
