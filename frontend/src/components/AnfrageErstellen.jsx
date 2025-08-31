@@ -101,8 +101,8 @@ export default function AnfrageErstellenSeite(){
     }
 
     return (
-        <div className="mx-auto max-w-3xl px-4 py-8">
-            <h1 className="mb-4 text-xl font-bold">Anfrage erstellen</h1>
+       <div className="mx-auto max-w-3xl px-4 py-8 rounded-2xl bg-gradient-to-br from-sky-30 via-blue-200 to-sky-100 shadow-sm ring-1 ring-sky-100/60">
+            <h1 className="mb-4 text-3xl font-thin">Anfrage erstellen</h1>
 
             <form onSubmit={submit} className="space-y-5">
                 <div className="grid gap-4 rounded-2xl border bg-white p-4">
@@ -189,7 +189,7 @@ export default function AnfrageErstellenSeite(){
                     <button
                         disabled={laden}
                         type="submit"
-                        className="rounded-xl bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-60"
+                        className="rounded-xl bg-indigo-600 px-4 py-2 text-sha-md font-thin text-white hover:bg-indigo-700 disabled:opacity-60"
                     >
                         {laden ? 'Adresse wird ermittelt…' : 'Anfrage speichern'}
                     </button>
