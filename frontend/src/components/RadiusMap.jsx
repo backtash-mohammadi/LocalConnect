@@ -102,16 +102,16 @@ export default function RadiusMap({
                     <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
                         <div>
                             {stadt && <span className="text-lg text-gray-700">Stadt: <strong>{stadt}</strong></span>}
-                            <button
-                                type="button"
-                                className="btn"
-                                id="suche-btn"
-                                onClick={onSuche}
-                                disabled={ladeAnfragen}
-                                aria-busy={ladeAnfragen}
-                            >
-                                {ladeAnfragen ? 'Lade Anfragen…' : 'in der Nähe suchen'}
-                            </button>
+                            {/*<button*/}
+                            {/*    type="button"*/}
+                            {/*    className="btn"*/}
+                            {/*    id="suche-btn"*/}
+                            {/*    onClick={onSuche}*/}
+                            {/*    disabled={ladeAnfragen}*/}
+                            {/*    aria-busy={ladeAnfragen}*/}
+                            {/*>*/}
+                            {/*    {ladeAnfragen ? 'Lade Anfragen…' : 'in der Nähe suchen'}*/}
+                            {/*</button>*/}
                             {fehlermeldung && (
                                 <div className="mx-auto w-full md:w-4/5 lg:w-3/4 mb-3 text-sm text-red-600">{fehlermeldung}</div>
                             )}
@@ -125,9 +125,9 @@ export default function RadiusMap({
                             {geoStatus === 'error'    && <span>{geoMessage}</span>}
                             {geoStatus === 'granted'  && <span><FcOk /></span>}
                         </div>
-                        <button className="btn" id="ort-btn" type="button" onClick={requestGeolocation}>
-                            Meinen Ort verwenden
-                        </button>
+                        {/*<button className="btn" id="ort-btn" type="button" onClick={requestGeolocation}>*/}
+                        {/*    Meinen Ort verwenden*/}
+                        {/*</button>*/}
                     </div>
                    </div>
                     {/* Rechte Seite: Kategorien + Anzahl */}

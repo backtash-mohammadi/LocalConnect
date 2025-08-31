@@ -10,10 +10,36 @@ export default function AddressSearch({ onSelect }) {
     const [error, setError] = useState('')
     const [open, setOpen] = useState(false)
 
+    // NEW: Geolocation-Status in AddressSearch
+    const [geoStatus, setGeoStatus] = useState('');
+    const [geoMeldung, setGeoMeldung] = useState('');
+
     // Referenzen für AbortController (zum Abbrechen laufender Requests) und Debounce-Timeout
     const controllerRef = useRef(null)
     const timeoutRef = useRef(null)
 
+    // NEW: Button-Handler "Meinen Ort verwenden"
+    const ortVerwenden = () => {
+        if (!('geolocation' in navigator)) {
+            setGeoStatus('error');
+            setGeoMeldung('Geolokalisierung wird von diesem Browser nicht unterstützt.');
+            return;
+        }
+        setGeoStatus('locating');
+        navigator.geolocation.getCurrentPosition(
+            (pos) => {
+                const { latitude, longitude } = pos.coords;
+                setGeoStatus('granted');
+                // WICHTIG: Stadt leer lassen – OpenStreetMap macht dann Reverse-Geocoding.
+                if (onSelect) onSelect(latitude, longitude, '');
+            },
+            (err) => {
+                setGeoStatus(err.code === err.PERMISSION_DENIED ? 'denied' : 'error');
+                setGeoMeldung(err.message || 'Standort konnte nicht ermittelt werden.');
+            },
+            { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+        );
+    };
 
     // Stadt aus dem Treffer extrahieren
     const extractCity = (a) =>
@@ -128,6 +154,15 @@ export default function AddressSearch({ onSelect }) {
                     aria-busy={loading}
                 >
                     {loading ? <AiOutlineReload /> : 'Suchen'}
+                </button>
+                {/* NEW: Meinen Ort verwenden */}
+                <button
+                    className="btn"
+                    type="button"
+                    onClick={ortVerwenden}
+                    aria-busy={geoStatus === 'locating'}
+                >
+                    Meinen Ort verwenden
                 </button>
             </form>
 

@@ -1,5 +1,7 @@
 import React from "react";
 
+import OpenStreetMap from "./OpenStreetMap.jsx";
+
 export default function KarteAnzeigen(){
 
     return (
@@ -13,5 +15,3 @@ export default function KarteAnzeigen(){
 
 )
 }
-
-import OpenStreetMap from "./OpenStreetMap.jsx";

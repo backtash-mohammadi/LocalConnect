@@ -137,7 +137,7 @@ export default function CommentSection({ postId, onBack, embedded = false, class
             {header}
             {!benutzer && (
                 <div className="mb-3 rounded-lg border border-amber-300 bg-amber-50 px-3 py-2 text-sm text-amber-800">
-                    Bitte einloggen, um zu kommentieren. {/* CHANGED: mirrors Anfrage* gating */} :contentReference[oaicite:3]{index=3}
+                    Bitte einloggen, um zu kommentieren. {/* CHANGED: mirrors Anfrage* gating */} :contentReference[oaicite:3]  {index=3}
                 </div>
             )}
             {error && (

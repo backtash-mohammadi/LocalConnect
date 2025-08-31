@@ -87,7 +87,7 @@ body {
 .btn {
     border: 1px solid var(--color-indigo-600);
     /*border-radius: 999px;*/
-    
+
     border-radius: var(--radius-xl);
     padding: 6px 12px;
     background: white;
@@ -188,16 +188,16 @@ body {
     backdrop-filter: blur(2px);
 }
 
-@media (min-width: 768px) {      /* md */
-    .search-wrap,
-    .map-wrap {
-        min-width: 65vw;
-        max-width: 80vw;         /* ~70% der Bildschirmbreite */
-    }
-}
-@media (min-width: 1280px) {     /* xl */
-    .search-wrap,
-    .map-wrap {
-        max-width: 56rem;        /* feste Obergrenze, optisch ruhiger */
-    }
-}
+/*@media (min-width: 768px) {      !* md *!*/
+/*    .search-wrap,*/
+/*    .map-wrap {*/
+/*        min-width: 65vw;*/
+/*        max-width: 80vw;         !* ~70% der Bildschirmbreite *!*/
+/*    }*/
+/*}*/
+/*@media (min-width: 1280px) {     !* xl *!*/
+/*    .search-wrap,*/
+/*    .map-wrap {*/
+/*        max-width: 56rem;        !* feste Obergrenze, optisch ruhiger *!*/
+/*    }*/
+/*}*/

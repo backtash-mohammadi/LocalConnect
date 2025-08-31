@@ -122,8 +122,18 @@ export default function OpenStreetMap() {
         }
     }
 
+    // After state declarations and the other hooks
+    useEffect(() => {
+        // Only trigger when we actually have a city name
+        if (stadt && stadt.trim()) {
+            // Load the posts for this city (same logic as the "in der Nähe" button)
+            ladeAnfragenFuerAktuelleStadt();
+        }
+    }, [stadt]); // will run after AddressSearch calls onSelect and stadt is set
+
+
     return (
-        <main className="app mx-auto px-4 my-8">
+        <main className="app max-w-6xl mx-auto px-4 my-8">
             <div className="search-wrap mx-auto w-full md:w-4/5 lg:w-3/4">
                 <AddressSearch onSelect={handleSelectAddress} />
             </div>
