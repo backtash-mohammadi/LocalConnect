@@ -1,8 +1,9 @@
 // --- file: src/components/OpenStreetMap.jsx ---
-import React, { useState, useCallback } from 'react'
+import React, { useState, useCallback, useEffect } from 'react'
 import AddressSearch from './AddressSearch.jsx'
 import RadiusMap from './RadiusMap.jsx'
 import { apiGet, baueQuery } from '../lib/apiClient.js'
+import { useSearchParams } from "react-router-dom";
 
 const DEFAULT_CENTER = [52.520008, 13.404954]
 
@@ -13,6 +14,30 @@ export default function OpenStreetMap() {
     const [ladeAnfragen, setLadeAnfragen] = useState(false)
     const [stadt, setStadt] = useState('')
     const [fehlermeldung, setFehlermeldung] = useState('')
+
+    const [params] = useSearchParams();
+
+    useEffect(() => {
+        const q = params.get("q");
+        if (!q || !q.trim()) return;
+        (async () => {
+            try {
+                const res = await fetch(`/api/geocode/search?q=${encodeURIComponent(q)}&limit=1`, {
+                    headers: { Accept: "application/json" }
+                });
+                if (!res.ok) return;
+                const arr = await res.json();
+                const hit = Array.isArray(arr) && arr[0];
+                if (!hit) return;
+                const lat = Number(hit.lat), lon = Number(hit.lon);
+                const adr = hit.address || {};
+                const stadtVomHit = adr.city || adr.town || adr.village || adr.municipality || "";
+
+                await handleSelectAddress(lat, lon, stadtVomHit);
+            } catch { /* ignorieren */ }
+        })();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [params]); // handleSelectAddress уже стабилен (useCallback)
 
     const handleSelectAddress = useCallback(async (lat, lon, stadtVomPick) => {
         const neu = [Number(lat), Number(lon)]

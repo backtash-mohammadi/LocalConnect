@@ -1,7 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthKontext";
 import { useEffect, useRef, useState } from "react";
-import { apiGet } from "../lib/apiClient";
+import { apiGet, baueQuery } from "../lib/apiClient";
 import { FaMapMarkedAlt } from "react-icons/fa";
 import {
     FiChevronDown,
@@ -11,7 +11,8 @@ import {
     FiList,
     FiPlusCircle,
     FiClipboard,
-    FiKey
+    FiKey,
+    FiSearch
 } from "react-icons/fi";
 
 export default function Header() {
@@ -29,6 +30,11 @@ export default function Header() {
     const navigate = useNavigate();
     const dropdownRef = useRef(null);
 
+    // Suche + Statistik
+    const [suchtext, setSuchtext] = useState("");
+    const [anzahlAnzeigenGesamt, setAnzahlAnzeigenGesamt] = useState(null);
+    const [anzahlMeine, setAnzahlMeine] = useState(null);
+
     // Admin-Prüfung
     useEffect(() => {
         let abbruch = false;
@@ -45,7 +51,7 @@ export default function Header() {
         return () => { abbruch = true; };
     }, [token]);
 
-    // Avatar laden: fetch mit Authorization → blob URL
+    // Avatar laden
     useEffect(() => {
         if (!token || hatKeinAvatar) {
             if (avatarUrl) URL.revokeObjectURL(avatarUrl);
@@ -82,7 +88,7 @@ export default function Header() {
         return () => document.removeEventListener("mousedown", onDocClick);
     }, [menueOffen]);
 
-    // Initialen als Fallback (wenn kein Avatar)
+    // Initialen als Fallback
     function initialen() {
         const s = (benutzer?.name || benutzer?.emailAdresse || "").trim();
         if (!s) return "?";
@@ -92,11 +98,52 @@ export default function Header() {
         return (a + b).toUpperCase();
     }
 
+    // --- Suche → /karte?q=... (карта сама прочитает q и отцентрируется) ---
+    function sucheAbsenden(e) {
+        e.preventDefault();
+        const q = (suchtext || "").trim();
+        if (!q) return;
+        setMenueOffen(false);
+        navigate(`/karte?q=${encodeURIComponent(q)}`);
+    }
+
+    // --- Statistik laden ---
+    useEffect(() => {
+        let abbruch = false;
+
+        async function ladeAdminAnzeigenGesamt() {
+            if (!token || !istAdmin) { setAnzahlAnzeigenGesamt(null); return; }
+            try {
+                const q = baueQuery({ seite: 0, groesse: 1 });
+                const res = await apiGet(`/api/admin/anzeigen${q}`, token);
+                if (!abbruch) setAnzahlAnzeigenGesamt(
+                    res?.gesamtElemente != null ? Number(res.gesamtElemente) : null
+                );
+            } catch {
+                if (!abbruch) setAnzahlAnzeigenGesamt(null);
+            }
+        }
+
+        async function ladeMeine() {
+            if (!token) { setAnzahlMeine(null); return; }
+            try {
+                const res = await apiGet(`/meine-anfragen`, token);
+                if (!abbruch) setAnzahlMeine(Array.isArray(res) ? res.length : null);
+            } catch {
+                if (!abbruch) setAnzahlMeine(null);
+            }
+        }
+
+        ladeAdminAnzeigenGesamt();
+        ladeMeine();
+        return () => { abbruch = true; };
+    }, [token, istAdmin]);
+
     return (
         <header className="sticky top-0 z-40 w-full border-b bg-white/70 backdrop-blur">
-            <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3">
+            <div className="mx-auto flex max-w-6xl items-center gap-3 px-4 py-3">
                 {/* Marke / Logo */}
-                <Link to="/" className="group flex items-center gap-3">
+                <Link to="/" className="group flex shrink-0 items-center gap-3">
                     <img
                         src="/logo.png"
                         alt="LocalConnect Logo"
@@ -107,36 +154,47 @@ export default function Header() {
           </span>
                 </Link>
 
-                {/* Haupt-Navigation */}
-                <nav className="hidden sm:flex items-center gap-2">
-                    <Link
-                        to="/karte"
-                        className="inline-flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100"
-                    >
-                        <FaMapMarkedAlt className="opacity-80" />
-                        Karte
-                    </Link>
+                {/* Mitte: Karte-Link + Suche + Statistik */}
+                <div className="flex min-w-0 flex-1 items-center justify-center gap-3">
+                    <nav className="flex items-center gap-2">
+                        <Link
+                            to="/karte"
+                            className="inline-flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100"
+                        >
+                            <FaMapMarkedAlt className="opacity-80" />
+                            Karte
+                        </Link>
+                    </nav>
 
-                    {istAdmin && (
-                        <div className="ml-2 inline-flex items-center gap-2">
-                            <Link
-                                to="/admin"
-                                className="rounded-xl border px-3 py-2 text-sm font-medium hover:bg-gray-50"
-                            >
-                                Admin-Dashboard
-                            </Link>
-                            <Link
-                                to="/admin/anzeigen"
-                                className="rounded-xl px-3 py-2 text-sm font-semibold text-red-600 hover:bg-red-50"
-                            >
-                                Admin · Anzeigen
-                            </Link>
-                        </div>
-                    )}
-                </nav>
+                    {/* Suche */}
+                    <form onSubmit={sucheAbsenden} className="relative w-44 sm:w-60 md:w-72 lg:w-80">
+                        <FiSearch className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 opacity-60" />
+                        <input
+                            value={suchtext}
+                            onChange={(e) => setSuchtext(e.target.value)}
+                            placeholder="Suche (Adresse/Ort)…"
+                            className="w-full rounded-xl border border-gray-300 bg-white pl-9 pr-3 py-2 text-sm outline-none transition focus:border-gray-400 focus:ring-2 focus:ring-gray-200"
+                            aria-label="Globale Suche"
+                        />
+                    </form>
 
-                {/* Rechts: Auth / Profil */}
-                <div className="flex items-center gap-2">
+                    {/* Statistik */}
+                    <div className="flex flex-wrap items-center gap-2">
+                        {istAdmin && anzahlAnzeigenGesamt != null && (
+                            <span className="rounded-full border border-indigo-200 bg-indigo-50 px-2.5 py-0.5 text-[11px] font-semibold text-indigo-800">
+                Anzeigen gesamt: {anzahlAnzeigenGesamt}
+              </span>
+                        )}
+                        {anzahlMeine != null && (
+                            <span className="rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-0.5 text-[11px] font-semibold text-emerald-800">
+                Meine Anfragen: {anzahlMeine}
+              </span>
+                        )}
+                    </div>
+                </div>
+
+                {/* Rechts: Auth / Profil (меню не трогаем) */}
+                <div className="ml-auto flex items-center gap-2">
                     {benutzer ? (
                         <div className="relative" ref={dropdownRef}>
                             <button
@@ -157,18 +215,14 @@ export default function Header() {
                                 <span className="max-w-[10rem] truncate font-medium text-gray-800">
                   {benutzer.name || benutzer.emailAdresse}
                 </span>
-
-                                {/* Admin-Badge neben dem Namen */}
                                 {istAdmin && (
                                     <span className="ml-1 rounded-full border border-amber-300 bg-amber-100 px-2 py-0.5 text-[10px] font-semibold text-amber-800">
                     Admin
                   </span>
                                 )}
-
                                 <FiChevronDown className={`transition ${menueOffen ? "rotate-180" : ""}`} />
                             </button>
 
-                            {/* Dropdown-Menü */}
                             {menueOffen && (
                                 <div className="absolute right-0 mt-2 w-64 overflow-hidden rounded-2xl border bg-white shadow-lg ring-1 ring-black/5">
                                     <div className="px-3 py-2 text-xs text-gray-500">
@@ -176,7 +230,6 @@ export default function Header() {
                                         <div className="truncate font-medium text-gray-800">
                                             {benutzer.emailAdresse}
                                         </div>
-                                        {/* Aktive Rolle */}
                                         {istAdmin && (
                                             <div className="mt-2 inline-flex items-center gap-1 rounded-full border border-amber-300 bg-amber-50 px-2 py-0.5 text-[10px] font-semibold text-amber-800">
                                                 Aktive Rolle: Admin
@@ -186,74 +239,30 @@ export default function Header() {
 
                                     <div className="h-px bg-gray-100" />
 
-                                    <Link
-                                        to="/profil"
-                                        onClick={() => setMenueOffen(false)}
-                                        className="flex items-center gap-2 px-4 py-2.5 text-sm hover:bg-gray-50"
-                                    >
-                                        <FiUser className="opacity-80" />
-                                        Mein Profil
+                                    <Link to="/profil" onClick={() => setMenueOffen(false)} className="flex items-center gap-2 px-4 py-2.5 text-sm hover:bg-gray-50">
+                                        <FiUser className="opacity-80" /> Mein Profil
+                                    </Link>
+                                    <Link to="/profil/passwort" onClick={() => setMenueOffen(false)} className="flex items-center gap-2 px-4 py-2.5 text-sm hover:bg-gray-50">
+                                        <FiKey className="opacity-80" /> Passwort ändern
+                                    </Link>
+                                    <Link to="/karte" onClick={() => setMenueOffen(false)} className="flex items-center gap-2 px-4 py-2.5 text-sm hover:bg-gray-50">
+                                        <FaMapMarkedAlt className="opacity-80" /> Karte
+                                    </Link>
+                                    <Link to="/erstellen" onClick={() => setMenueOffen(false)} className="flex items-center gap-2 px-4 py-2.5 text-sm hover:bg-gray-50">
+                                        <FiPlusCircle className="opacity-80" /> Anfrage erstellen
+                                    </Link>
+                                    <Link to="/meine-anfragen" onClick={() => setMenueOffen(false)} className="flex items-center gap-2 px-4 py-2.5 text-sm hover:bg-gray-50">
+                                        <FiClipboard className="opacity-80" /> Meine Anfragen
                                     </Link>
 
-                                    {/* NEU: Passwort ändern */}
-                                    <Link
-                                        to="/profil/passwort"
-                                        onClick={() => setMenueOffen(false)}
-                                        className="flex items-center gap-2 px-4 py-2.5 text-sm hover:bg-gray-50"
-                                    >
-                                        <FiKey className="opacity-80" />
-                                        Passwort ändern
-                                    </Link>
-
-                                    {/* Karte */}
-                                    <Link
-                                        to="/karte"
-                                        onClick={() => setMenueOffen(false)}
-                                        className="flex items-center gap-2 px-4 py-2.5 text-sm hover:bg-gray-50"
-                                    >
-                                        <FaMapMarkedAlt className="opacity-80" />
-                                        Karte
-                                    </Link>
-
-                                    {/* Anfrage erstellen */}
-                                    <Link
-                                        to="/erstellen"
-                                        onClick={() => setMenueOffen(false)}
-                                        className="flex items-center gap-2 px-4 py-2.5 text-sm hover:bg-gray-50"
-                                    >
-                                        <FiPlusCircle className="opacity-80" />
-                                        Anfrage erstellen
-                                    </Link>
-
-                                    {/* Meine Anfragen */}
-                                    <Link
-                                        to="/meine-anfragen"
-                                        onClick={() => setMenueOffen(false)}
-                                        className="flex items-center gap-2 px-4 py-2.5 text-sm hover:bg-gray-50"
-                                    >
-                                        <FiClipboard className="opacity-80" />
-                                        Meine Anfragen
-                                    </Link>
-
-                                    {/* Admin-Einträge */}
                                     {istAdmin && (
                                         <>
                                             <div className="h-px bg-gray-100" />
-                                            <Link
-                                                to="/admin"
-                                                onClick={() => setMenueOffen(false)}
-                                                className="flex items-center gap-2 px-4 py-2.5 text-sm hover:bg-gray-50"
-                                            >
-                                                <FiSettings className="opacity-80" />
-                                                Admin-Dashboard
+                                            <Link to="/admin" onClick={() => setMenueOffen(false)} className="flex items-center gap-2 px-4 py-2.5 text-sm hover:bg-gray-50">
+                                                <FiSettings className="opacity-80" /> Admin-Dashboard
                                             </Link>
-                                            <Link
-                                                to="/admin/anzeigen"
-                                                onClick={() => setMenueOffen(false)}
-                                                className="flex items-center gap-2 px-4 py-2.5 text-sm hover:bg-gray-50"
-                                            >
-                                                <FiList className="opacity-80" />
-                                                Admin · Anzeigen
+                                            <Link to="/admin/anzeigen" onClick={() => setMenueOffen(false)} className="flex items-center gap-2 px-4 py-2.5 text-sm hover:bg-gray-50">
+                                                <FiList className="opacity-80" /> Admin · Anzeigen
                                             </Link>
                                         </>
                                     )}
@@ -264,42 +273,18 @@ export default function Header() {
                                         onClick={() => { setMenueOffen(false); ausloggen(); navigate("/"); }}
                                         className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm text-red-600 hover:bg-red-50"
                                     >
-                                        <FiLogOut />
-                                        Abmelden
+                                        <FiLogOut /> Abmelden
                                     </button>
                                 </div>
                             )}
                         </div>
                     ) : (
-                        <Link
-                            to="/login"
-                            className="rounded-xl border px-3 py-1.5 text-sm font-medium hover:bg-gray-50"
-                        >
+                        <Link to="/login" className="rounded-xl border px-3 py-1.5 text-sm font-medium hover:bg-gray-50">
                             Login / Registrierung
                         </Link>
                     )}
                 </div>
             </div>
-
-            {/* Mobile Subnav (Admin) */}
-            {istAdmin && (
-                <div className="sm:hidden border-t bg-white/80">
-                    <div className="mx-auto max-w-6xl px-4 py-2 flex gap-2">
-                        <Link
-                            to="/admin"
-                            className="rounded-lg border px-3 py-1.5 text-xs font-medium hover:bg-gray-50"
-                        >
-                            Admin-Dashboard
-                        </Link>
-                        <Link
-                            to="/admin/anzeigen"
-                            className="rounded-lg px-3 py-1.5 text-xs font-semibold text-red-600 hover:bg-red-50"
-                        >
-                            Admin · Anzeigen
-                        </Link>
-                    </div>
-                </div>
-            )}
         </header>
     );
 }

@@ -4,7 +4,7 @@ export default function Footer() {
 
     return (
         <footer className="mt-12 border-t bg-white">
-            <div className="mx-auto grid max-w-6xl gap-6 px-4 py-8 md:grid-cols-3">
+            <div className="mx-auto grid max-w-6xl gap-6 px-4 py-4 md:grid-cols-3">
                 <div>
                     <div className="flex items-center">
                         <img
