@@ -68,12 +68,6 @@ export default function MainPage() {
     ];
     const categoryIconMap = { "Haushalt": haushalt, "Nachhilfe": nachhilfe, "Sonstiges": sonstiges, "Transport": transport, "Werkzeuge": werkzeuge, };
 
-    const beispielAnzeigen = [
-        { titel: "Brauche Bohrmaschine für 2h", kategorie: "Werkzeuge", ort: "Linden-Mitte", karmaKosten: 1 },
-        { titel: "Biete Mathe-Nachhilfe (Kl. 5–8)", kategorie: "Nachhilfe", ort: "Nordstadt", karmaKosten: -1 },
-        { titel: "Hilfe beim Umzug am Samstag", kategorie: "Transport", ort: "Calenberger Neustadt", karmaKosten: 1 },
-    ];
-
     return (
         <main className="mx-auto max-w-6xl px-4">
             {/* Willkommen-Hinweis */}

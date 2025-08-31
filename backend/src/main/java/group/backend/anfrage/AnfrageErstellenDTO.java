@@ -44,5 +44,6 @@ public class AnfrageErstellenDTO {
     // to store lat and log value.
     private Double lat;
     private Double lon;
+
 }
 
