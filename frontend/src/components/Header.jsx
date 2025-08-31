@@ -3,6 +3,7 @@ import { useAuth } from "../context/AuthKontext";
 import { useEffect, useRef, useState } from "react";
 import { apiGet, baueQuery } from "../lib/apiClient";
 import { FaMapMarkedAlt } from "react-icons/fa";
+import mailIcon from "../assets/mailIcon.svg";
 import {
     FiChevronDown,
     FiLogOut,
@@ -217,11 +218,12 @@ export default function Header() {
                     {benutzer && (
                         <button
                             onClick={() => navigate("/chats")}
-                            className="relative inline-flex items-center rounded-xl cursor-pointer px-2 py-1.5 text-xl hover:bg-gray-50"
+                            className="relative inline-flex  cursor-pointer px-2 py-1.5 text-xl hover:bg-gray-90"
                             aria-label="Nachrichten"
                             title="Nachrichten"
                         >
-                            <FiMail className="mr-1" />
+                            <img src={mailIcon} alt="" className="w-10 h-10" />
+
 
                             {ungelesen > 0 && (
                                 <span className="ml-2 inline-flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-red-600 px-1 text-xs font-semibold text-white">

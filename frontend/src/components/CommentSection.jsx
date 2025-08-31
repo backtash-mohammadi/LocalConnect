@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthKontext";
 import { apiGet, apiPost } from "../lib/apiClient";
+import chatIcon from "../assets/chatIcon.svg";
 
 export default function CommentSection({ postId, embedded = false, className = "" }) {
     const { token, benutzer } = useAuth();
@@ -111,9 +112,13 @@ export default function CommentSection({ postId, embedded = false, className = "
                             <div className="mt-2">
                                 <button
                                     onClick={() => startePrivatchat(c.id)}
-                                    className="rounded-lg border px-2 py-1 text-xs hover:bg-gray-50">
-                                    Privatchat
+                                    aria-label="Privatchat"
+                                    title="Privatchat"
+                                    className="rounded-lg p-1 hover:bg-gray-50"
+                                >
+                                    <img src={chatIcon} alt="" className="w-8 h-8" />
                                 </button>
+
                             </div>
                         )}
                     </li>

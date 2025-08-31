@@ -78,10 +78,11 @@ export default function MainPage() {
             )}
 
             {/* Hero */}
-            <section className="my-8 grid gap-6 rounded-2xl bg-gradient-to-r from-indigo-50 to-blue-50 p-6 md:grid-cols-2">
-                <div>
-                    <h1 className="mb-3 text-2xl font-bold text-gray-900">Nachbarschaftshilfe, fair & einfach</h1>
-                    <p className="mb-5 text-sm text-gray-700">
+            {/*rounded-xl border border-sky-200 bg-gradient-to-br from-sky-50 via-sky-100 to-white p-3 shadow-sm ring-1 ring-sky-100/60 */}
+            <section className="my-8 grid gap-12 rounded-xl border border-sky-200 bg-gradient-to-br from-sky-50 via-sky-100 to-white p-6 md:grid-cols-2">
+                <div className="space-y-6 md:space-y-8">
+                    <h1 className="text-3xl font-thin text-gray-900">Nachbarschaftshilfe, fair & einfach</h1>
+                    <p className="text-sm text-gray-700 leading-7 ">
                         Frage nach Hilfe oder biete sie an. Sammle Karma, wenn du hilfst, und
                         nutze Karma, wenn dir geholfen wird. Transparent, lokal, community-getrieben.
                     </p>

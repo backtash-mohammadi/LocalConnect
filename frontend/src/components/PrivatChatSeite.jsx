@@ -46,7 +46,7 @@ export default function PrivatChatSeite(){
   return (
       <div className="mx-auto max-w-3xl p-4">
         <div className="mb-3 flex items-center justify-between">
-          <h1 className="text-xl font-semibold">Privater Chat</h1>
+          <h1 className="text-3xl font-thin">Privat Chat</h1>
           <Link to="/" className="text-sm text-blue-600 hover:underline">Zurück</Link>
         </div>
 
@@ -54,11 +54,11 @@ export default function PrivatChatSeite(){
         {laden ? (
             <div className="rounded-lg border bg-white p-4 shadow-sm">Laden…</div>
         ) : (
-            <div className="rounded-2xl border bg-white p-0 shadow-sm">
+            <div className="rounded-xl border border-sky-200 bg-gradient-to-br from-sky-50 via-sky-100 to-white p-3 shadow-sm ring-1 ring-sky-100/60 ">
               <div className="max-h-[60vh] overflow-y-auto p-4 space-y-2">
                 {nachrichten.map((n) => (
                     <div key={n.id} className={`flex ${n.absenderId === benutzer?.id ? "justify-end" : "justify-start"}`}>
-                      <div className={`max-w-[80%] rounded-xl px-3 py-2 text-sm ${n.absenderId === benutzer?.id ? "bg-blue-500 text-white" : "bg-gray-100"}`}>
+                      <div className={`max-w-[80%] rounded-xl px-3 py-2 text-sm ${n.absenderId === benutzer?.id ? "bg-blue-400 text-white" : "bg-green-200"}`}>
 
                         <div className="whitespace-pre-wrap break-words">{n.text}</div>
                         <div className="mt-1 text-[11px] text-gray-800">{new Date(n.erstelltAm).toLocaleString("de-DE")}{n.gelesen ? " • gelesen": ""}</div>
@@ -69,8 +69,8 @@ export default function PrivatChatSeite(){
               </div>
               <form onSubmit={senden} className="border-t p-3 flex gap-2">
                 <input ref={eingabeRef} value={text} onChange={(e)=>setText(e.target.value)} placeholder="Nachricht schreiben…"
-                       className="flex-1 rounded-xl border px-3 py-2 outline-none" />
-                <button type="submit" className="rounded-xl bg-black px-4 py-2 text-white disabled:opacity-50" disabled={!text.trim()}>Senden</button>
+                       className="flex-1 rounded-xl border border-sky-300 bg-gradient-to-br from-sky-50 via-sky-100 to-white p-3 shadow-sm ring-1 ring-sky-100/60" />
+                <button type="submit" className="rounded-xl bg-blue-700 px-4 py-2 text-white disabled:opacity-90" disabled={!text.trim()}>Senden</button>
               </form>
             </div>
         )}
