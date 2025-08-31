@@ -11,4 +11,6 @@ public interface AnfrageRepository extends JpaRepository<Anfrage, Long> {
 
     List<Anfrage> findTop100ByStatusNotIgnoreCaseOrderByErstelltAmDesc(String status);
     List<Anfrage> findTop100ByStatusNotIgnoreCaseAndKategorieIgnoreCaseOrderByErstelltAmDesc(String status, String kategorie);
+
+    Optional<List<Anfrage>> findByHelferIdAndStatusNotIgnoreCase(Long userId, String status);
 }

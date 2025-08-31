@@ -141,6 +141,7 @@ public SecurityFilterChain sicherheitsFilterKette(
                                 .requestMatchers("/meine-anfragen").permitAll()
                                 .requestMatchers("/anfrage/**").permitAll()
                                 .requestMatchers("/stadt-anfragen").permitAll()
+                                .requestMatchers("/akzeptierte-anfragen").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/api/geocode/**").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/api/benutzer/me/avatar").authenticated()
                                 .anyRequest().authenticated()

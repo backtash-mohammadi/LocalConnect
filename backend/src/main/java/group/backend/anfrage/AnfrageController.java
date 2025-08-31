@@ -217,5 +217,32 @@ public class AnfrageController {
         return ResponseEntity.ok(dtoListe);
     }
 
+    @GetMapping("/akzeptierte-anfragen")
+    public ResponseEntity<List<AnfrageErstellenDTO>> getAkzeptierteAnfragen(@RequestParam("userId")  Long userId){
+
+        List<Anfrage> benutzerAnfragen = this.anfrageService.getAkzeptierteAnfragen(userId);
+        List<AnfrageErstellenDTO> anfrageDTOs = new ArrayList<>();
+
+        for(Anfrage a : benutzerAnfragen){
+            AnfrageErstellenDTO dto = new AnfrageErstellenDTO(
+                    a.getId(),
+                    a.getTitel(),
+                    a.getBeschreibung(),
+                    a.getKategorie(),
+                    a.getStadt(),
+                    a.getStrasse(),
+                    a.getPlz(),
+                    a.getErsteller().getId(),
+                    a.getHelfer().getId(),
+                    a.getStatus(),
+                    a.getLat(),
+                    a.getLon()
+
+            );
+            anfrageDTOs.add(dto);
+        }
+        return ResponseEntity.ok(anfrageDTOs);
+    }
+
 }
 

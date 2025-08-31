@@ -18,6 +18,7 @@ import KarteAnzeigen from "./components/KarteAnzeigenSeite.jsx";
 import EmailBestaetigenSeite from "./components/EmailBestaetigenSeite.jsx";
 import ZweiFaktorSeite from "./components/ZweiFaktorSeite.jsx";
 import PasswortAendernSeite from "./components/PasswortAendernSeite.jsx";
+import MeineAkzeptierteAnfragen from "./components/MeineAkzeptierteAnfragen.jsx";
 
 export function App() {
 
@@ -47,6 +48,8 @@ export function App() {
                             <Route path={"/karte"} element={<KarteAnzeigen />} />
                             <Route path="/verifizieren" element={<EmailBestaetigenSeite />} />
                             <Route path="/2fa" element={<ZweiFaktorSeite />} />
+
+                            <Route path="/meine-akzeptierte-anfragen" element={<MeineAkzeptierteAnfragen />} />
                         </Routes>
                     </div>
                     <Footer />

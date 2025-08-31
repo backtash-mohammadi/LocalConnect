@@ -101,6 +101,8 @@ export default function MainPage() {
                             <>
                                 <Link to="/erstellen" className="rounded-xl border px-4 py-2 text-sm hover:bg-white">Anfrage erstellen</Link>
                                 <Link to="/meine-anfragen" className="rounded-xl border px-4 py-2 text-sm hover:bg-white">Meine Anfragen</Link>
+
+                                <Link to="/meine-akzeptierte-anfragen" className="rounded-xl border px-4 py-2 text-sm hover:bg-white">Akzeptierte</Link>
                             </>
                         )}
                     </div>

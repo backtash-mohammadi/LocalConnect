@@ -15,18 +15,18 @@ import werkzeuge from "../assets/werkzeuge.png";
 
 // Category → bg class mapping (explicit strings so Tailwind won't purge)
 const kategorieFarben = {
-    Werkzeuge: 'bg-blue-100',
-    Nachhilfe: 'bg-green-100',
-    Transport: 'bg-orange-100',
-    Haushalt:  'bg-pink-100',
-    Sonstiges: 'bg-lightblue-100'
+    Werkzeuge: 'bg-blue-500',
+    Nachhilfe: 'bg-green-600',
+    Transport: 'bg-orange-600',
+    Haushalt:  'bg-pink-500',
+    Sonstiges: 'bg-blue-800'
 };
 
 // Return a Tailwind bg class for a given category (fallback to gray)
 function kategorieKlasse(kategorieWert) {
-    if (!kategorieWert) return 'bg-gray-100';            // defensive fallback
+    if (!kategorieWert) return 'bg-gray-600';            // defensive fallback
     const key = String(kategorieWert).trim();
-    return kategorieFarben[key] || 'bg-gray-100';        // fallback if unknown category
+    return kategorieFarben[key] || 'bg-gray-600';        // fallback if unknown category
 }
 
 
@@ -181,7 +181,7 @@ export default function RadiusMap({
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         onClick={(e) => e.stopPropagation()}
-                                        className={`block px-1 py-0.5 rounded text-gray-900 text-lg ${bgKlasse}`}
+                                        className={`px-1 py-0.5 rounded text-xl !text-gray-50 italic ${bgKlasse}`}
                                         title={kategorie ? `Kategorie: ${kategorie}` : undefined}
                                     >
                                         {titel}

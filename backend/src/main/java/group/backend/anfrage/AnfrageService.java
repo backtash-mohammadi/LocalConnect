@@ -106,4 +106,14 @@ public class AnfrageService {
         return this.anfrageRepository.findByStadtIgnoreCase(stadt);
 
     }
+
+    public List<Anfrage> getAkzeptierteAnfragen(Long userId) {
+        Optional<List<Anfrage>> anfragenOptional = this.anfrageRepository.findByHelferIdAndStatusNotIgnoreCase(userId, "open");
+        if(anfragenOptional.isEmpty()){
+            throw new IllegalArgumentException("Benutzer nicht gefunden: " + userId);
+        }
+        List<Anfrage> anfrageList = anfragenOptional.orElse(new ArrayList<>());
+
+        return anfrageList;
+    }
 }

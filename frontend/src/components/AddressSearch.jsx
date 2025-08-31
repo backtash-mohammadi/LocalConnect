@@ -45,7 +45,7 @@ export default function AddressSearch({ onSelect }) {
                 controllerRef.current = controller
 
                 // 29.08 call to the backend. This should improve loading time.
-                // WICHTIG: Wir rufen den Backend-Proxy auf, NICHT direkt Nominatim.
+                //  den Backend-Proxy aufrufen, NICHT direkt Nominatim.
                 const url = `/api/geocode/search?q=${encodeURIComponent(query)}&limit=5`
 
                 const res = await fetch(url, {
