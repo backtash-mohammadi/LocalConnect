@@ -159,7 +159,7 @@ export default function Header() {
     }, [token, istAdmin]);
 
     return (
-        <header className="sticky top-0 z-40 w-full border-b bg-white/70 backdrop-blur">
+        <header className="sticky top-0 z-40 w-full rounded-xl border border-sky-200 bg-gradient-to-br from-sky-50 via-sky-100 to-white p-3 shadow-sm ring-1 ring-sky-100/60">
             <div className="mx-auto flex max-w-6xl items-center gap-3 px-4 py-3">
                 {/* Marke / Logo — снова на главную */}
                 <Link to="/" className="group flex shrink-0 items-center gap-3">
