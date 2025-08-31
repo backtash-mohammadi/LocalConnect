@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthKontext";
 import { apiGet, apiPost } from "../lib/apiClient";
-import chatIcon from "../assets/chatIcon.svg";
+import chooseButton from "../assets/chooseButton.svg";
+import ThickBox from "./ThickBox.jsx";
+
 
 export default function CommentSection({ postId, embedded = false, className = "" }) {
     const { token, benutzer } = useAuth();
@@ -109,15 +111,20 @@ export default function CommentSection({ postId, embedded = false, className = "
                         <div className="mt-2 whitespace-pre-wrap break-words">{c.text}</div>
 
                         {(erstellerId != null && benutzer?.id === erstellerId) && (
-                            <div className="mt-2">
+                            <div className="mt-2 flex w-full items-center gap-2">
                                 <button
                                     onClick={() => startePrivatchat(c.id)}
                                     aria-label="Privatchat"
                                     title="Privatchat"
-                                    className="rounded-lg p-1 hover:bg-gray-50"
+                                    className="rounded-xl bg-blue-700 px-3 py-1 text-white disabled:opacity-50"
                                 >
-                                    <img src={chatIcon} alt="" className="w-8 h-8" />
+                                    Privatchat
                                 </button>
+
+                                <button className="ml-auto inline-flex h-10 w-10 items-center justify-center rounded-xl  hover:bg-blue-800 disabled:opacity-50">
+                                    <img src={chooseButton} alt="" aria-hidden className="h-11 w-11" />
+                                </button>
+
 
                             </div>
                         )}
