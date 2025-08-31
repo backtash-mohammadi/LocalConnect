@@ -178,7 +178,7 @@ export default function Header() {
                     <nav className="flex items-center gap-2">
                         <Link
                             to="/karte"
-                            className="inline-flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100"
+                            className="inline-flex items-center gap-2 rounded-xl px-3 py-2 text-lg font-thin text-gray-700 hover:bg-gray-100"
                         >
                             <FaMapMarkedAlt className="opacity-80" />
                             Karte
@@ -237,7 +237,7 @@ export default function Header() {
                         <div className="relative" ref={dropdownRef}>
                             <button
                                 onClick={() => setMenueOffen((v) => !v)}
-                                className="inline-flex items-center gap-2 rounded-xl border px-2.5 py-1.5 text-sm hover:bg-gray-50"
+                                className="inline-flex items-center gap-2 rounded-xl border-sky-200 px-2.5 py-1.5 text-md font-thin hover:bg-gray-50"
                             >
                                 {avatarUrl ? (
                                     <img
@@ -262,7 +262,7 @@ export default function Header() {
                             </button>
 
                             {menueOffen && (
-                                <div className="absolute right-0 mt-2 w-64 overflow-hidden rounded-2xl border bg-white shadow-lg ring-1 ring-black/5">
+                                <div className="absolute right-0 mt-2 w-64 overflow-hidden rounded-2xl border-sky-200 bg-white shadow-lg ring-1 ring-black/5">
                                     <div className="px-3 py-2 text-xs text-gray-500">
                                         Angemeldet als
                                         <div className="truncate font-medium text-gray-800">
