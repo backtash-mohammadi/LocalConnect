@@ -187,7 +187,7 @@ function Karussell3D({
     return (
         <div
             ref={buehneRef}
-            className="relative mx-auto w-full cursor-grab select-none"
+            className="relative mx-auto w-full cursor-grab select-none "
             style={{ perspective: "1200px", height: `${kartenHoehePx}px` }}
             onPointerDown={onPointerDown}
             onPointerMove={onPointerMove}
@@ -197,7 +197,7 @@ function Karussell3D({
         >
             <div
                 ref={rotorRef}
-                className="absolute inset-0 will-change-transform"
+                className="absolute inset-0 will-change-transform "
                 style={{
                     transformStyle: "preserve-3d",
                     transition: "transform 900ms ease",
@@ -211,7 +211,7 @@ function Karussell3D({
                         <div
                             key={i}
                             data-index={i}
-                            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
+                            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 "
                             style={{
                                 width: `min(${kartenBreiteMaxPx}px, ${kartenBreiteProzent * 100}%)`,
                                 height: "100%",
@@ -223,7 +223,7 @@ function Karussell3D({
                             }}
                         >
                             <div
-                                className="h-full transition-all"
+                                className="h-full transition-all rounded-xl border border-sky-200 bg-gradient-to-br from-sky-50 via-sky-100 to-white p-3 shadow-sm ring-1 ring-sky-100/60"
                                 style={{
                                     transform: `scale(${aktiv ? 1.0 : (nachbar ? 0.96 : 0.92)})`,
                                     boxShadow: aktiv ? "0 18px 40px rgba(0,0,0,0.18)" : "0 6px 18px rgba(0,0,0,0.08)",
@@ -231,7 +231,7 @@ function Karussell3D({
                                     background: "transparent",
                                 }}
                             >
-                                <div className="h-full">{el}</div>
+                                <div className="h-full ">{el}</div>
                             </div>
                         </div>
                     );
@@ -281,9 +281,9 @@ export default function AktuelleAnzeigen() {
     ));
 
     return (
-        <section className="mx-auto max-w-6xl px-4">
-            <div className="mb-4">
-                <h2 className="text-xl font-bold">Aktuelle Anzeigen</h2>
+        <section className="mx-auto max-w-6xl px-4 rounded-xl border border-sky-200 bg-gradient-to-br from-sky-50 via-sky-100 to-white p-3 shadow-sm ring-1 ring-sky-100/60">
+            <div className="mb-4 ">
+                <h2 className="text-2xl text-black font-thin">Aktuelle Anzeigen</h2>
                 <p className="text-sm text-gray-500">Neueste, noch offene Gesuche aus der Umgebung</p>
             </div>
 
