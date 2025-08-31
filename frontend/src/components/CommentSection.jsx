@@ -97,6 +97,10 @@ export default function CommentSection({ postId, onBack, embedded = false, class
         }
     }
 
+    // NEW: always render newest first
+    const sortedComments = [...comments].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+
     const header = embedded ? null : (
         <div className="mb-4 flex  items-center justify-between">
             <h2 className="text-xl text-red-400 font-semibold">Kommentare</h2>
@@ -146,7 +150,8 @@ export default function CommentSection({ postId, onBack, embedded = false, class
                 <div>Lade…</div>
             ) : (
                 <ul className="space-y-3">
-                    {comments.map((c) => (
+                    {sortedComments.map((c) => (
+
                         /* Comment component inside the comment section */
                         <li key={c.id} className="relative overflow-hidden rounded-xl border border-sky-200 bg-gradient-to-br from-sky-50 via-sky-100 to-white p-3 shadow-sm ring-1 ring-sky-100/60">
                         <div className="text-sm text-gray-600 flex items-center ">
