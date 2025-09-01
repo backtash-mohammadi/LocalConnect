@@ -144,6 +144,7 @@ public SecurityFilterChain sicherheitsFilterKette(
                                 .requestMatchers("/akzeptierte-anfragen").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/api/geocode/**").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/api/benutzer/me/avatar").authenticated()
+                                .requestMatchers("api/benutzer/me/get-top-3").permitAll()
                                 .anyRequest().authenticated()
                         )
                 .exceptionHandling(ex -> ex

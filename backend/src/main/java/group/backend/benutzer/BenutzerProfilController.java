@@ -1,15 +1,24 @@
 package group.backend.benutzer;
 
+import group.backend.anfrage.AnfrageErstellenDTO;
 import group.backend.benutzer.dto.*;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/benutzer/me")
 public class BenutzerProfilController {
     private final BenutzerProfilDienst dienst;
-    public BenutzerProfilController(BenutzerProfilDienst d){ this.dienst = d; }
+    private final BenutzerDienst benutzerDienst;
+    public BenutzerProfilController(BenutzerProfilDienst d, BenutzerDienst benutzerDienst){
+        this.dienst = d;
+        this.benutzerDienst = benutzerDienst;
+    }
 
     @GetMapping
     public BenutzerProfilDto meinProfil(@org.springframework.security.core.annotation.AuthenticationPrincipal org.springframework.security.core.userdetails.User u){
@@ -57,5 +66,14 @@ public class BenutzerProfilController {
                 .contentType(org.springframework.http.MediaType.parseMediaType(antwort.contentType()))
                 .headers(headers)
                 .body(antwort.daten());
+    }
+
+    @GetMapping("/get-top-3")
+    public ResponseEntity<List<Benutzer>> getTopBenutzern(){
+
+        List<Benutzer> benutzern = this.benutzerDienst.getTopBenutzern();
+
+        return new ResponseEntity<>(benutzern, HttpStatus.OK);
+
     }
 }

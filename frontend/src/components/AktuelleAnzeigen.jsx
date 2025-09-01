@@ -245,7 +245,7 @@ function Karussell3D({
 
 
 export default function AktuelleAnzeigen() {
-    // 🔒 Kein Token nötig; Endpunkt ist öffentlich
+    // Kein Token nötig; Endpunkt ist öffentlich
     const [anzeigen, setAnzeigen] = useState([]);
     const [laden, setLaden] = useState(true);
     const [fehler, setFehler] = useState("");

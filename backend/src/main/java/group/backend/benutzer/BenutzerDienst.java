@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -99,5 +100,14 @@ public class BenutzerDienst {
             throw new IllegalArgumentException("Benutzer nicht gefunden: " + helferId);
         }
         return opt.get();
+    }
+
+    public List<Benutzer> getTopBenutzern(){
+        long listSize  = this.repo.findAll().size();
+        if(listSize < 3){
+            return this.repo.findAll();
+        }
+        return this.repo.findTop3ByOrderByKarmaDesc();
+
     }
 }
