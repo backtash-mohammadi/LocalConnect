@@ -171,7 +171,7 @@ export default function CommentSection({ postId, embedded = false, className = "
             </ul>
 
             {(benutzer && token) ? (
-                <form onSubmit={sendeKommentar} className={"mt-4 flex items-center gap-2" + (embedded ? " hidden" : "")}>
+              <form onSubmit={sendeKommentar} className="mt-4 flex items-center gap-2">
                 <input
                     value={text}
                     onChange={(e) => setText(e.target.value)}
@@ -184,8 +184,8 @@ export default function CommentSection({ postId, embedded = false, className = "
                     className="rounded-xl bg-black px-4 py-2 text-white disabled:opacity-50">
                     Senden
                 </button>
-            </form>) : (
-                <div className={"mt-4 text-sm text-gray-600" + (embedded ? " hidden" : "")}>
+                </form>) : (
+                    <div className="mt-4 text-sm text-gray-600">
                     Bitte <a href="/login" className="underline">einloggen</a>, um einen Kommentar zu schreiben.
                 </div>
             )}
