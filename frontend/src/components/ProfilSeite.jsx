@@ -268,7 +268,7 @@ export default function ProfilSeite() {
                                         <button
                                             type="button"
                                             onClick={() => fileInputRef.current?.click()}
-                                            className="rounded-xl bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700"
+                                            className="rounded-xl cursor-pointer bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700"
                                         >
                                             Datei wählen
                                         </button>
@@ -277,7 +277,7 @@ export default function ProfilSeite() {
                                             type="button"
                                             onClick={avatarSpeichern}
                                             disabled={!avatarDatei || !!ladeProzent}
-                                            className="rounded-xl bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-60"
+                                            className="rounded-xl cursor-pointer bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-60"
                                         >
                                             {ladeProzent ? `Lade ${ladeProzent}%` : "Avatar speichern"}
                                         </button>
@@ -325,7 +325,7 @@ export default function ProfilSeite() {
                         <div className="flex items-center gap-3">
                             <button
                                 type="submit"
-                                className="rounded-xl bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700"
+                                className="rounded-xl cursor-pointer bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700"
                             >
                                 Speichern
                             </button>

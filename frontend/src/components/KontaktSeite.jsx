@@ -154,7 +154,7 @@ export default function KontaktSeite() {
                     <button
                         type="submit"
                         disabled={laedt || !email.trim() || !nachricht.trim()}
-                        className="rounded-xl bg-indigo-600 px-4 py-2 font-medium text-white hover:bg-indigo-700 disabled:opacity-50"
+                        className="rounded-xl cursor-pointer bg-indigo-600 px-4 py-2 font-medium text-white hover:bg-indigo-700 disabled:opacity-50"
                     >
                         {laedt ? "Senden…" : "Nachricht senden"}
                     </button>

@@ -205,6 +205,7 @@ export default function CommentSection({ postId, embedded = false, className = "
 
                         {(erstellerId != null && benutzer?.id === erstellerId) && (
                             <div className="mt-2 flex w-full items-center gap-2">
+                                {c.user?.id && c.user.id !== benutzer?.id && (
                                 <button
                                     onClick={() => startePrivatchat(c.id)}
                                     aria-label="Privatchat"
@@ -215,6 +216,7 @@ export default function CommentSection({ postId, embedded = false, className = "
 
                                 {/* Button aktiviert nur mit "open" status und nur für andere Benutzern (nicht für Ersteller)) */}
                                 </button>
+                                )}
                                 {(anfrageStatus === "open" && erstellerId !== c.user.id) ?
                                 <button
                                     onClick={(e) => onAlsBearbeitungMarkiert(c, e)}

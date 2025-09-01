@@ -189,7 +189,7 @@ export default function AnfrageErstellenSeite(){
                     <button
                         disabled={laden}
                         type="submit"
-                        className="rounded-xl bg-indigo-600 px-4 py-2 text-sha-md font-thin text-white hover:bg-indigo-700 disabled:opacity-60"
+                        className="rounded-xl cursor-pointer bg-indigo-600 px-4 py-2 text-sha-md font-thin text-white hover:bg-indigo-700 disabled:opacity-60"
                     >
                         {laden ? 'Adresse wird ermittelt…' : 'Anfrage speichern'}
                     </button>

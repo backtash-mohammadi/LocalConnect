@@ -76,7 +76,7 @@ export default function HilfeSeite() {
                                 <button
                                     type="button"
                                     onClick={() => oeffneBild(b.voll, b.titel)}
-                                    className="group block shrink-0 rounded-xl border focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                                    className="group block cursor-pointer shrink-0 rounded-xl border focus:outline-none focus:ring-2 focus:ring-indigo-400"
                                     aria-label={`${b.titel} – Bild öffnen`}
                                     title="Bild vergrößern"
                                 >
@@ -166,7 +166,7 @@ export default function HilfeSeite() {
                             <h4 className="truncate text-base font-medium text-gray-800">{bildTitel}</h4>
                             <button
                                 onClick={schliesseBild}
-                                className="rounded-lg border px-3 py-1 text-sm font-medium hover:bg-gray-50"
+                                className="rounded-lg cursor-pointer border px-3 py-1 text-sm font-medium hover:bg-gray-50"
                                 aria-label="Schließen"
                             >
                                 Schließen

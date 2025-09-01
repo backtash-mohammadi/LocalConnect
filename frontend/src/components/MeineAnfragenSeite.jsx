@@ -120,7 +120,7 @@ export default function MeineAnfragenSeite(){
 
             <div className="mb-4 flex items-center gap-3">
                 <button onClick={ladeDaten} disabled={laden}
-                        className="rounded-xl bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-60">
+                        className="rounded-xl cursor-pointer bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-60">
                     {laden ? 'Aktualisiere…' : 'Aktualisieren'}
                 </button>
 
@@ -196,7 +196,7 @@ export default function MeineAnfragenSeite(){
                                             onClick={() => !istFertig && setKarmaDialogId(id)}
                                             disabled={istFertig}
                                             aria-disabled={istFertig}
-                                            className={`rounded-xl font-medium text-white ${
+                                            className={`rounded-xl font-medium cursor-pointer text-white ${
                                                 istFertig
                                                     ? 'bg-green-300 text-xl cursor-not-allowed opacity-60'
                                                     : 'bg-green-500 hover:bg-green-700 px-3 py-1.5 text-xs'
@@ -268,7 +268,7 @@ export default function MeineAnfragenSeite(){
                                         // Visually/semantically disable when fertig
                                         disabled={istFertig}
                                         aria-disabled={istFertig}
-                                        className={`rounded-xl px-3 py-1.5 text-xs font-medium text-white ${
+                                        className={`rounded-xl cursor-pointer px-3 py-1.5 text-xs font-medium text-white ${
                                             istFertig
                                                 ? 'bg-amber-300 cursor-not-allowed opacity-60' // disabled look
                                                 : 'bg-amber-500 hover:bg-amber-600'
@@ -277,7 +277,7 @@ export default function MeineAnfragenSeite(){
                                         Bearbeiten
                                     </button>
                                     <button onClick={() => loeschenAnfrage(id)}
-                                            className="rounded-xl bg-red-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-red-700">
+                                            className="rounded-xl cursor-pointer bg-red-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-red-700">
                                         Löschen
                                     </button>
                                 </div>

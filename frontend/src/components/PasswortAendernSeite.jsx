@@ -143,7 +143,7 @@ export default function PasswortAendernSeite() {
                     <button
                         disabled={lade || logoutSekunden > 0}
                         type="submit"
-                        className="rounded-xl bg-indigo-600 px-4 py-2 text-sm font-medium text-white disabled:opacity-60 hover:bg-indigo-700"
+                        className="rounded-xl cursor-pointer bg-indigo-600 px-4 py-2 text-sm font-medium text-white disabled:opacity-60 hover:bg-indigo-700"
                     >
                         {lade ? "Speichere..." : "Passwort speichern"}
                     </button>
