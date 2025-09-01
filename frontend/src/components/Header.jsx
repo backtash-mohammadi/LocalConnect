@@ -152,18 +152,18 @@ export default function Header() {
             }
         }
 
-        async function ladeMeine() {
-            if (!token) { setAnzahlMeine(null); return; }
-            try {
-                const res = await apiGet(`/meine-anfragen`, token);
-                if (!abbruch) setAnzahlMeine(Array.isArray(res) ? res.length : null);
-            } catch {
-                if (!abbruch) setAnzahlMeine(null);
-            }
-        }
+        // async function ladeMeine() {
+        //     if (!token) { setAnzahlMeine(null); return; }
+        //     try {
+        //         const res = await apiGet(`/meine-anfragen`, token);
+        //         if (!abbruch) setAnzahlMeine(Array.isArray(res) ? res.length : null);
+        //     } catch {
+        //         if (!abbruch) setAnzahlMeine(null);
+        //     }
+        // }
 
         ladeAdminAnzeigenGesamt();
-        ladeMeine();
+        // ladeMeine();
         return () => { abbruch = true; };
     }, [token, istAdmin]);
 
@@ -223,7 +223,7 @@ export default function Header() {
 
                 {/* Rechts: Badge + Profil / Login */}
                 <div className="ml-auto flex items-center gap-2">
-                    {/* 🔔 Nachrichten-Badge → на /chats */}
+                    {/* 🔔 Nachrichten-Badge → /chats */}
                     {benutzer && (
                         <button
                             onClick={() => navigate("/chats")}

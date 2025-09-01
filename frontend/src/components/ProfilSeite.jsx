@@ -36,7 +36,7 @@ export default function ProfilSeite() {
 
     // Hilfswerte (de)
     const ERLAUBTE_TYPEN = new Set(["image/jpeg", "image/png", "image/webp"]);
-    const MAX_BYTES = 1 * 1024 * 1024; // 1 MB
+    const MAX_BYTES = 1024 * 1024; // 1 MB
 
     function bytesZuText(n) {
         if (n < 1024) return `${n} B`;
