@@ -9,7 +9,8 @@ import AktuelleAnzeigen from "./AktuelleAnzeigen.jsx";
 import {useEffect, useState} from "react";
 import {apiGet} from "../lib/apiClient.js";
 import TopBenutzern from "./TopBenutzern.jsx";
-import award from "../assets/goldAward.svg";
+import  ribbon from "../assets/gold_medal_ribbon2.svg";
+
 // function AnzeigeKarte({ titel, kategorie, ort, karmaKosten }) {
 //     return (
 //         <article className="rounded-2xl border p-4 shadow-sm transition hover:shadow">
@@ -118,7 +119,7 @@ export default function MainPage() {
                         {benutzer ?
                         <div className="flex flex-col align-middle text-xl font-thin text-gray-900">
                             <p className="mb-4"><span>Dein Karma: </span><span className="text-xl font-medium text-gray-900">{benutzer.karma}</span></p>
-                           <img src={award} alt="gold award karma" className="w-24 h-24 opacity-70"></img>
+                           <img src={ribbon} alt="gold award karma" className="w-24 h-32 opacity-60"></img>
                         </div> :
                             <></>
                         }
