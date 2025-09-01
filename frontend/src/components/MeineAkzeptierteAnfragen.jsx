@@ -100,7 +100,7 @@ export default function MeineAkzeptierteAnfragen(){
     });
 
     return (
-        <div className="mt-4 mx-auto max-w-3xl px-4 py-8 rounded-2xl bg-gradient-to-br from-orange-150 via-yellow-50 to-orange-200 shadow-sm ring-1 ring-sky-100/60">
+        <div className="mt-4 mx-auto max-w-3xl px-4 py-8 rounded-2xl bg-gradient-to-br from-sky-100 via-blue-180 to-sky-100 shadow-sm ring-1 ring-sky-100/60">
             <div className="mb-4 text-xl font-bold flex justify-between items-center">
                 <div className="mb-4 flex items-center gap-3">
                     <span>
@@ -121,20 +121,20 @@ export default function MeineAkzeptierteAnfragen(){
                     <span>Meine Akzeptierte Anfragen</span>
 
                 </div>
-                <div className="text-yellow-600 flex items-center">
-                    <span className="mr-3">Karma:</span>
+                <div className="text-yellow-600 flex items-center mr-10">
+                    <span className="mr-3 text-2xl">Karma:</span>
                     {(form.karma > 5)  &&
                         <>
-                            <span>{form.karma}</span> <VscStarEmpty className="text-2xl ml-2  text-yellow-500" />
+                            <span className="text-2xl">{form.karma}</span> <VscStarEmpty className="text-4xl ml-2  text-yellow-500" />
                         </>
                     }
                     {(form.karma > 0 && form.karma < 6)  &&
                         Array.from({ length: form.karma }, (_, i) => (
-                            <VscStarEmpty key={i} className="text-2xl ml-2  text-yellow-500" />
+                            <VscStarEmpty key={i} className="text-1xl ml-2  text-yellow-500" />
                         ))
                     }
                     {(form.karma < 0)  &&
-                        <span>{form.karma}</span>
+                        <span className="text-2xl">{form.karma}</span>
                     }
                 </div>
 
