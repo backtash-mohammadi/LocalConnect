@@ -21,6 +21,7 @@ import MeineAkzeptierteAnfragen from "./components/MeineAkzeptierteAnfragen.jsx"
 import PrivatChatSeite from "./components/PrivatChatSeite.jsx";
 import PrivatChatListeSeite from "./components/PrivatChatListeSeite.jsx";
 import HilfeSeite from "./components/HilfeSeite.jsx";
+import KontaktSeite from "./components/KontaktSeite.jsx";
 
 export function App() {
     return (
@@ -56,6 +57,7 @@ export function App() {
                                 <Route path="/chats" element={<PrivatChatListeSeite />} />
                                 <Route path="/chat/:id" element={<PrivatChatSeite/>} />
                                 <Route path="/hilfe" element={<HilfeSeite />} />
+                                <Route path="/kontakt" element={<KontaktSeite />} />
 
                             </Routes>
                         </div>
