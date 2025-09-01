@@ -8,15 +8,15 @@ export default function TopBenutzern() {
     const [fehler, setFehler] = useState("");
 
     // Optional: put a local asset at /public/avatar-default.png or adjust the path
-    const DEFAULT_AVATAR_SRC =
-        "data:image/svg+xml;utf8," +
-        encodeURIComponent(`
-      <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'>
-        <circle cx='32' cy='32' r='32' fill='#e5e7eb'/>
-        <circle cx='32' cy='24' r='12' fill='#9ca3af'/>
-        <path d='M12 54c4-10 16-12 20-12s16 2 20 12' fill='#9ca3af'/>
-      </svg>
-    `);
+    // const DEFAULT_AVATAR_SRC =
+    //     "data:image/svg+xml;utf8," +
+    //     encodeURIComponent(`
+    //   <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'>
+    //     <circle cx='32' cy='32' r='32' fill='#e5e7eb'/>
+    //     <circle cx='32' cy='24' r='12' fill='#9ca3af'/>
+    //     <path d='M12 54c4-10 16-12 20-12s16 2 20 12' fill='#9ca3af'/>
+    //   </svg>
+    // `);
 
     const getAvatarSrc = (avatarBytes, contentType) => {
         if (!avatarBytes) {
@@ -65,7 +65,7 @@ export default function TopBenutzern() {
                     <img
                         src={getAvatarSrc(b.avatarBytes, b.avatarContentType)}
                         alt={b.name || "Avatar"}
-                        className="h-12 w-12 shrink-0 rounded-full object-cover"
+                        className="h-12 w-12 shrink-0 rounded-full object-cover opacity-80"
                     />
                     {/* Name on the left */}
 
@@ -75,7 +75,7 @@ export default function TopBenutzern() {
                         </p>
                     </div>
                     <div>
-                        <p className="text-base font-semibold text-gray-900">{b.karma} Punkte</p>
+                        <p className="text-base  text-gray-900">{b.karma} Punkte</p>
                     </div>
 
                 </div>
