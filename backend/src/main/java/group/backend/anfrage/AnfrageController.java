@@ -161,10 +161,11 @@ public class AnfrageController {
         anfrageService.markiereAlsFertig(id);
 
         Benutzer helfer = anfrageService.findeAnfrage(id).getHelfer();
+        Benutzer ersteller = anfrageService.findeAnfrage(id).getErsteller();
         if(helfer != null && punkte != 0){
-            benutzerDienst.rechnePunkte(helfer, punkte);
+            benutzerDienst.rechnePunkte(ersteller, helfer, punkte);
         } else {
-            System.out.println("helfer objet ist null");
+            System.out.println("Fehler bei Punkte rechnung...");
         }
         return ResponseEntity.noContent().build();
     }

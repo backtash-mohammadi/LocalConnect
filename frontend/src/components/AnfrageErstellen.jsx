@@ -101,7 +101,7 @@ export default function AnfrageErstellenSeite(){
     }
 
     return (
-       <div className="mx-auto max-w-3xl px-4 py-8 rounded-2xl bg-gradient-to-br from-sky-30 via-blue-200 to-sky-100 shadow-sm ring-1 ring-sky-100/60">
+       <div className="mt-4 mx-auto max-w-3xl px-4 py-8 rounded-2xl bg-gradient-to-br from-sky-30 via-blue-200 to-sky-100 shadow-sm ring-1 ring-sky-100/60">
             <h1 className="mb-4 text-3xl font-thin">Anfrage erstellen</h1>
 
             <form onSubmit={submit} className="space-y-5">

@@ -74,16 +74,23 @@ public class BenutzerDienst {
 
 
 
-    // test method,  to compute the karma points from creator and helper.
+    // test method, to compute the karma points between  creator and helper.
     @Transactional
-    public void rechnePunkte(Benutzer helfer, int karmaPuntke) {
+    public void rechnePunkte(Benutzer ersteller, Benutzer helfer, int karmaPuntke) {
+
+        // noch einen Safety-Check
         if(helfer == null){
-//            this.repo.findById(userId).get().setKarma(--currenKarmaPoints);
             return;
         }
+
         long helferId = helfer.getId();
-        int currenKarma = this.repo.findById(helferId).get().getKarma();
-        this.repo.findById(helferId).get().setKarma(currenKarma + karmaPuntke);
+        int currentHelferKarma = this.repo.findById(helferId).get().getKarma();
+        this.repo.findById(helferId).get().setKarma(currentHelferKarma + karmaPuntke);
+
+        long erstellerId = ersteller.getId();
+        int currentErstellerKarma = this.repo.findById(erstellerId).get().getKarma();
+        this.repo.findById(erstellerId).get().setKarma(currentErstellerKarma - karmaPuntke);
+
     }
 
     public Benutzer findePerId(Long helferId) {

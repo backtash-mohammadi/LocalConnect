@@ -115,7 +115,7 @@ export default function MeineAnfragenSeite(){
     });
 
     return (
-        <div className="mx-auto max-w-3xl px-4 py-8">
+        <div className="mt-4 mx-auto max-w-3xl px-4 py-8 rounded-2xl bg-gradient-to-br from-sky-30 via-blue-200 to-sky-100 shadow-sm ring-1 ring-sky-100/60">
             <h1 className="mb-4 text-xl font-bold">Meine Anfragen</h1>
 
             <div className="mb-4 flex items-center gap-3">

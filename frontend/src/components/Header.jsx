@@ -38,7 +38,7 @@ export default function Header() {
     const [anzahlAnzeigenGesamt, setAnzahlAnzeigenGesamt] = useState(null);
     const [anzahlMeine, setAnzahlMeine] = useState(null);
 
-    // 🔔 Ungelesen-Badge
+    // Ungelesen-Badge
     const [ungelesen, setUngelesen] = useState(0);
     useEffect(() => {
         let aktiv = true;
@@ -174,7 +174,7 @@ export default function Header() {
           </span>
                 </Link>
 
-                {/* Mitte: Karte-Link + Suche + Statistik */}
+                {/* Mitte: Karte-Link + Suche */}
                 <div className="flex min-w-0 flex-1 items-center justify-center gap-3">
                     <nav className="flex items-center gap-2">
                         <Link
@@ -192,7 +192,7 @@ export default function Header() {
                         <input
                             value={suchtext}
                             onChange={(e) => setSuchtext(e.target.value)}
-                            placeholder="Suche (Adresse/Ort)…"
+                            placeholder="Suche (Stadt)…"
                             className="w-full rounded-xl border border-gray-300 bg-white pl-9 pr-3 py-2 text-sm outline-none transition focus:border-gray-400 focus:ring-2 focus:ring-gray-200"
                             aria-label="Globale Suche"
                         />
