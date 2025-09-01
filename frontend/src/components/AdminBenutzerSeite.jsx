@@ -2,19 +2,10 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { apiDelete, apiGet, apiPatch, baueQuery } from "../lib/apiClient";
 import { useAuth } from "../context/AuthKontext";
 
-/* --------- Глобальный кэш аватаров (живёт между страницами/ремонтами) --------- */
+
 const AVATAR_CACHE = new Map();   // key: string(id) -> blobURL
 const AVATAR_404 = new Set();     // key: string(id) с 404
 
-/**
- * AdminBenutzerSeite – аккуратная страница администрирования пользователей.
- * Немецкие имена переменных/классов/комментариев.
- *
- * Изменения:
- * - Аватар: ТОЛЬКО из /api/admin/benutzer/{id}/avatar (без fotoUrl).
- * - Кэш blob-URL сквозной (между страницами), ключи всегда строки.
- * - Без revoke при листании страниц (только при замене url для того же id).
- */
 export default function AdminBenutzerSeite() {
     const { token } = useAuth();
     const BASIS_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
@@ -40,7 +31,6 @@ export default function AdminBenutzerSeite() {
     const [zuLoeschen, setZuLoeschen] = useState(null);
     const [busy, setBusy] = useState(false);
 
-    // Локальная «проекция» кэша для рендера (чтобы реактивно подсветить появление фото)
     const [avatarVersion, setAvatarVersion] = useState(0); // просто счётчик для force-update
 
     // ---------- Suche (entprellt) ----------
@@ -76,7 +66,6 @@ export default function AdminBenutzerSeite() {
         }
     }
 
-    // ---------- Аватары: грузим по текущей странице; кэш сохраняем глобально ----------
     useEffect(() => {
         if (!token || !Array.isArray(liste) || liste.length === 0) return;
         let abbruch = false;
@@ -90,7 +79,6 @@ export default function AdminBenutzerSeite() {
                 if (!key) continue;
 
                 if (AVATAR_CACHE.has(key) || AVATAR_404.has(key)) {
-                    // уже есть результат в кэше — ничего не делаем
                     continue;
                 }
 
@@ -104,7 +92,7 @@ export default function AdminBenutzerSeite() {
                         continue;
                     }
                     if (!res.ok) {
-                        // не кэшируем ошибку — возможно, временная проблема
+
                         continue;
                     }
 
@@ -112,19 +100,16 @@ export default function AdminBenutzerSeite() {
                     if (abbruch) return;
                     const url = URL.createObjectURL(blob);
 
-                    // если по какой-то причине в кэше уже был url — заменим и освободим старый
                     const alt = AVATAR_CACHE.get(key);
                     if (alt) URL.revokeObjectURL(alt);
 
                     AVATAR_CACHE.set(key, url);
                     changed = true;
                 } catch {
-                    // игнорируем сетевые ошибки
                 }
             }
 
             if (!abbruch && changed) {
-                // инкрементим версию, чтобы форснуть перерисовку
                 setAvatarVersion((v) => v + 1);
             }
         })();
@@ -132,9 +117,6 @@ export default function AdminBenutzerSeite() {
         return () => { abbruch = true; };
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [liste, token]);
-
-    // ВАЖНО: не чистим AVATAR_CACHE при размонтировании — иначе фото пропадут при возврате на страницы.
-    // Чистка делается только при замене url для того же id (выше) либо вручную в другом месте приложения.
 
     // ---------- Sortierung (clientseitig) ----------
     const sortierteListe = useMemo(() => {
@@ -179,7 +161,6 @@ export default function AdminBenutzerSeite() {
         setBusy(true);
         try {
             await apiDelete(`/api/admin/benutzer/${zuLoeschen.id}`, token);
-            // при удалении — почистим кэш именно для этого пользователя
             const key = String(zuLoeschen.id);
             const alt = AVATAR_CACHE.get(key);
             if (alt) URL.revokeObjectURL(alt);

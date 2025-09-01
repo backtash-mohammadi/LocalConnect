@@ -134,6 +134,7 @@ public SecurityFilterChain sicherheitsFilterKette(
                                 .requestMatchers("/error", "/error/**").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/comments").permitAll()
                                 .requestMatchers(HttpMethod.GET,  "/comments/**").permitAll()
+                                .requestMatchers(HttpMethod.GET,  "/api/benutzer/*/avatar").permitAll()
                                 .requestMatchers(HttpMethod.GET,  "/api/anfragen/aktuell").permitAll()
                                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                                 .requestMatchers("/api/admin/**").hasRole("ADMIN")

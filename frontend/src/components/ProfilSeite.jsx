@@ -194,6 +194,7 @@ export default function ProfilSeite() {
 
             setHatKeinAvatar(false);
             setAvatarTs(Date.now()); // neu laden
+            window.dispatchEvent(new Event("avatar:changed"));
         } catch (err) {
             setFehler(err.message || "Hochladen fehlgeschlagen.");
         } finally {

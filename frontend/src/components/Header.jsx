@@ -38,6 +38,25 @@ export default function Header() {
     const [anzahlAnzeigenGesamt, setAnzahlAnzeigenGesamt] = useState(null);
     const [anzahlMeine, setAnzahlMeine] = useState(null);
 
+    async function ladeAvatar() {
+        if (!token) {
+              if (avatarUrl) URL.revokeObjectURL(avatarUrl);
+              setAvatarUrl("");
+              return;
+            }
+        try {
+              const headers = { Authorization: `Bearer ${token}` };
+              const res = await fetch(`${BASIS_URL}/api/benutzer/me/avatar?ts=${Date.now()}`, { headers });
+              if (res.status === 404) { setHatKeinAvatar(true); setAvatarUrl(""); return; }
+              if (!res.ok) { setAvatarUrl(""); return; }
+              const blob = await res.blob();
+              const url = URL.createObjectURL(blob);
+              setAvatarUrl((old) => { if (old) URL.revokeObjectURL(old); return url; });
+            } catch {
+              setAvatarUrl("");
+            }
+        }
+
     // 🔔 Ungelesen-Badge
     const [ungelesen, setUngelesen] = useState(0);
     useEffect(() => {
@@ -73,28 +92,17 @@ export default function Header() {
 
     // Avatar laden
     useEffect(() => {
-        if (!token || hatKeinAvatar) {
-            if (avatarUrl) URL.revokeObjectURL(avatarUrl);
-            setAvatarUrl("");
-            return;
-        }
-        let abbruch = false;
-        (async () => {
-            try {
-                const headers = { Authorization: `Bearer ${token}` };
-                const res = await fetch(`${BASIS_URL}/api/benutzer/me/avatar?ts=${Date.now()}`, { headers });
-                if (res.status === 404) { if (!abbruch) { setHatKeinAvatar(true); setAvatarUrl(""); } return; }
-                if (!res.ok) { if (!abbruch) setAvatarUrl(""); return; }
-                const blob = await res.blob();
-                if (abbruch) return;
-                const url = URL.createObjectURL(blob);
-                setAvatarUrl((old) => { if (old) URL.revokeObjectURL(old); return url; });
-            } catch {
-                if (!abbruch) setAvatarUrl("");
-            }
-        })();
-        return () => { abbruch = true; };
-    }, [token, benutzer?.name]);
+          ladeAvatar();
+        }, [token, benutzer?.id]);
+
+        useEffect(() => {
+              function onAvatarChanged() {
+                    setHatKeinAvatar(false);
+                    ladeAvatar();
+                  }
+              window.addEventListener("avatar:changed", onAvatarChanged);
+              return () => window.removeEventListener("avatar:changed", onAvatarChanged);
+            }, [token]);
 
     // Schließen bei Klick außerhalb
     useEffect(() => {

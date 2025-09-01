@@ -5,12 +5,23 @@ import chooseButton from "../assets/chooseButton.svg";
 
 export default function CommentSection({ postId, embedded = false, className = "", status }) {
     const { token, benutzer } = useAuth();
+    const BASIS_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
     const [comments, setComments] = useState([]);
     const [erstellerId, setErstellerId] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
     const [text, setText] = useState("");
     const [anfrageStatus, setAnfrageStatus] = useState("");
+    const [avatarKarte, setAvatarKarte] = useState({});
+
+    function initialen(name) {
+            const s = (name || "").trim();
+            if (!s) return "?";
+            const parts = s.split(/\s+/);
+            const a = parts[0]?.[0] || "";
+            const b = parts[1]?.[0] || "";
+            return (a + b).toUpperCase();
+        }
 
     async function ladeKommentare() {
         try {
@@ -46,6 +57,42 @@ export default function CommentSection({ postId, embedded = false, className = "
         if (postId && token) ladeAnfrage();
         return () => { aktiv = false; };
     }, [postId, token]);
+
+    // Avatare zu Kommentatoren laden (öffentlich, Token optional)
+        useEffect(() => {
+              let abbruch = false;
+              const ids = Array.from(new Set(comments.map(c => c.user?.id).filter(Boolean)));
+              const fehlt = ids.filter(id => !(id in avatarKarte));
+              if (fehlt.length === 0) return;
+
+                  async function lade(id) {
+                        try {
+                              const res = await fetch(`${BASIS_URL}/api/benutzer/${id}/avatar?ts=${Date.now()}`, {
+                                    headers: token ? { Authorization: `Bearer ${token}` } : {},
+                                  });
+                              if (!res.ok) {
+                                    if (res.status === 404) {
+                                          if (!abbruch) setAvatarKarte(prev => ({ ...prev, [id]: null }));
+                                        }
+                                    return;
+                                  }
+                              const blob = await res.blob();
+                              const url = URL.createObjectURL(blob);
+                              if (!abbruch) setAvatarKarte(prev => ({ ...prev, [id]: url }));
+                            } catch {
+                              if (!abbruch) setAvatarKarte(prev => ({ ...prev, [id]: null }));
+                            }
+                      }
+              fehlt.forEach(lade);
+              return () => { abbruch = true; };
+            }, [comments, token, BASIS_URL, avatarKarte]);
+
+        // Aufräumen: erzeugte blob-URLs beim Unmount freigeben
+            useEffect(() => {
+                  return () => {
+                        Object.values(avatarKarte).forEach(u => { if (u) URL.revokeObjectURL(u); });
+                      };
+                }, []);
 
     async function sendeKommentar(e) {
         e?.preventDefault?.();
@@ -132,7 +179,26 @@ export default function CommentSection({ postId, embedded = false, className = "
                 {comments.map((c) => (
                     <li key={c.id} className="rounded-xl border bg-white p-3 shadow-sm">
                         <div className="flex items-center justify-between text-sm text-gray-600">
-                            <div className="font-medium">{c.user?.name || "Nutzer"}</div>
+                            <div className="flex items-center gap-2">
+                                {c.user?.id && avatarKarte[c.user.id] !== undefined ? (
+                                    avatarKarte[c.user.id] ? (
+                                        <img
+                                            src={avatarKarte[c.user.id]}
+                                            alt=""
+                                            className="h-6 w-6 rounded-full object-cover ring-2 ring-indigo-500/20"
+                                        />
+                                    ) : (
+                                        <span className="flex h-6 w-6 items-center justify-center rounded-full bg-indigo-600 text-[10px] font-semibold text-white">
+          {initialen(c.user?.name)}
+        </span>
+                                    )
+                                ) : (
+                                    <span className="flex h-6 w-6 items-center justify-center rounded-full bg-indigo-600 text-[10px] font-semibold text-white">
+        {initialen(c.user?.name)}
+      </span>
+                                )}
+                                <div className="font-medium">{c.user?.name || "Nutzer"}</div>
+                            </div>
                             <div>{formatDateTime(c.createdAt)}</div>
                         </div>
                         <div className="mt-2 whitespace-pre-wrap break-words">{c.text}</div>
