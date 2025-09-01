@@ -20,7 +20,7 @@ export default function Footer() {
                         <li><a className="hover:text-indigo-700" href="#">Über uns</a></li>
                         <li><a className="hover:text-indigo-700" href="#">Kontakt</a></li>
                         <li><a className="hover:text-indigo-700" href="#">Datenschutz</a></li>
-                        <li><a className="hover:text-indigo-700" href="#">Impressum</a></li>
+                        <li><a className="hover:text-indigo-700" href="/hilfe">Hilfe</a></li>
                     </ul>
                 </div>
             </div>

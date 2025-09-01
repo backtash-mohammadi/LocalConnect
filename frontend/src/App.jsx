@@ -20,6 +20,7 @@ import PasswortAendernSeite from "./components/PasswortAendernSeite.jsx";
 import MeineAkzeptierteAnfragen from "./components/MeineAkzeptierteAnfragen.jsx";
 import PrivatChatSeite from "./components/PrivatChatSeite.jsx";
 import PrivatChatListeSeite from "./components/PrivatChatListeSeite.jsx";
+import HilfeSeite from "./components/HilfeSeite.jsx";
 
 export function App() {
     return (
@@ -54,6 +55,7 @@ export function App() {
                                 <Route path="/meine-akzeptierte-anfragen" element={<MeineAkzeptierteAnfragen />} />
                                 <Route path="/chats" element={<PrivatChatListeSeite />} />
                                 <Route path="/chat/:id" element={<PrivatChatSeite/>} />
+                                <Route path="/hilfe" element={<HilfeSeite />} />
 
                             </Routes>
                         </div>

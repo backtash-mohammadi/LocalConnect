@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthKontext";
 import { apiGet, apiPost } from "../lib/apiClient";
 import chooseButton from "../assets/chooseButton.svg";
-import ThickBox from "./ThickBox.jsx";
+//import ThickBox from "./ThickBox.jsx";
 
 
 export default function CommentSection({ postId, embedded = false, className = "" }) {
@@ -42,9 +42,9 @@ export default function CommentSection({ postId, embedded = false, className = "
                 if (aktiv && id != null) setErstellerId(Number(id));
             } catch { /* ignorieren */ }
         }
+        if (postId) ladeKommentare();
+
         if (postId && token) ladeAnfrage();
-        // Kommentare gleich тоже laden
-        if (postId && token) ladeKommentare();
         return () => { aktiv = false; };
     }, [postId, token]);
 
@@ -134,7 +134,8 @@ export default function CommentSection({ postId, embedded = false, className = "
                 {loading && <li className="text-sm text-gray-500">Laden…</li>}
             </ul>
 
-            <form onSubmit={sendeKommentar} className="mt-3 flex gap-2">
+            {(benutzer && token) ? (
+                <form onSubmit={sendeKommentar} className={"mt-4 flex items-center gap-2" + (embedded ? " hidden" : "")}>
                 <input
                     value={text}
                     onChange={(e) => setText(e.target.value)}
@@ -147,7 +148,11 @@ export default function CommentSection({ postId, embedded = false, className = "
                     className="rounded-xl bg-black px-4 py-2 text-white disabled:opacity-50">
                     Senden
                 </button>
-            </form>
+            </form>) : (
+                <div className={"mt-4 text-sm text-gray-600" + (embedded ? " hidden" : "")}>
+                    Bitte <a href="/login" className="underline">einloggen</a>, um einen Kommentar zu schreiben.
+                </div>
+            )}
         </div>
     );
 }

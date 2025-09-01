@@ -65,9 +65,9 @@ function Karussell3D({
                          pauseNachDragMs = 2500,
                      }) {
     const buehneRef = useRef(null);
-    const rotorRef  = useRef(null);     // контейнер, который вращаем
-    const schrittRef = useRef(0);       // текущее значение шага (истина)
-    const [schritt, setSchritt] = useState(0); // для подсветки/автоплея
+    const rotorRef  = useRef(null);
+    const schrittRef = useRef(0);
+    const [schritt, setSchritt] = useState(0);
 
     const n = Math.max(1, elemente.length);
     const winkelProKarte = 360 / n;
@@ -219,7 +219,7 @@ function Karussell3D({
                                 transition: "transform 900ms ease, opacity 900ms ease, filter 900ms ease, box-shadow 900ms ease",
                                 opacity: aktiv ? 1 : (nachbar ? 0.85 : 0.55),
                                 filter: aktiv ? "none" : "blur(0.3px)",
-                                pointerEvents: aktiv ? "auto" : "none", // кликается только фронт
+                                pointerEvents: aktiv ? "auto" : "none",
                             }}
                         >
                             <div

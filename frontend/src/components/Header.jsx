@@ -14,6 +14,7 @@ import {
     FiClipboard,
     FiKey,
     FiSearch,
+    FiHelpCircle,
     FiMail,
 } from "react-icons/fi";
 
@@ -276,6 +277,9 @@ export default function Header() {
                                     </div>
 
                                     <div className="h-px bg-gray-100" />
+                                    <Link to="/hilfe" onClick={() => setMenueOffen(false)} className="flex items-center gap-2 px-4 py-2.5 text-sm  hover:bg-gray-50">
+                                        <FiHelpCircle className="opacity-80" /> Hilfe
+                                    </Link>
 
                                     <Link to="/profil" onClick={() => setMenueOffen(false)} className="flex items-center gap-2 px-4 py-2.5 text-sm hover:bg-gray-50">
                                         <FiUser className="opacity-80" /> Mein Profil
