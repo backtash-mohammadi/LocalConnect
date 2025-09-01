@@ -212,9 +212,9 @@ export default function PrivatChatSeite() {
                         {!istIch && (
                             <div className="mr-2 mt-auto">
                               {partnerAvatar ? (
-                                  <img src={partnerAvatar} alt="" className="h-6 w-6 rounded-full object-cover ring-2 ring-indigo-500/20" />
+                                  <img src={partnerAvatar} alt="" className="h-8 w-8 rounded-full object-cover ring-2 ring-indigo-500/20" />
                               ) : (
-                                  <span className="flex h-6 w-6 items-center justify-center rounded-full bg-indigo-600 text-[10px] font-semibold text-white">
+                                  <span className="flex h-8 w-8 items-center justify-center rounded-full bg-indigo-600 text-[10px] font-semibold text-white">
                           {initialen(partnerName)}
                         </span>
                               )}

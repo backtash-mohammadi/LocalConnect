@@ -5,6 +5,8 @@ import group.backend.anfrage.Anfrage;
 import group.backend.benutzer.Benutzer;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.time.LocalDateTime;
 
@@ -28,11 +30,13 @@ public class Comment {
 
     @ManyToOne(optional=false)
     @JoinColumn(name="user_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonManagedReference("comment-user")
     private Benutzer user;
 
     @ManyToOne(optional=false)
     @JoinColumn(name="post_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonManagedReference("comment-post")
     private Anfrage post;
 

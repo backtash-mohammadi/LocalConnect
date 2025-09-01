@@ -232,7 +232,7 @@ export default function AdminAnzeigenSeite() {
                                 <td className="px-3 py-2">
                                     <button
                                         onClick={() => bestaetigungOeffnen(a)}
-                                        className="rounded-xl border border-red-300 px-2 py-1 text-xs text-red-700 hover:bg-red-50"
+                                        className="rounded-xl cursor-pointer border border-red-300 px-2 py-1 text-xs text-red-700 hover:bg-red-50"
                                         title="Löschen"
                                     >
                                         Löschen
@@ -249,7 +249,7 @@ export default function AdminAnzeigenSeite() {
                     <span className="text-xs text-gray-600">Gesamt: {gesamtElemente}</span>
                     <div className="flex items-center gap-2">
                         <button
-                            className="rounded-lg border px-3 py-1 text-sm disabled:opacity-50"
+                            className="rounded-lg cursor-pointer border px-3 py-1 text-sm disabled:opacity-50"
                             disabled={seite <= 0}
                             onClick={() => setSeite(s => Math.max(0, s - 1))}
                         >
@@ -259,14 +259,14 @@ export default function AdminAnzeigenSeite() {
               Seite {seite + 1} / {Math.max(1, gesamtSeiten)}
             </span>
                         <button
-                            className="rounded-lg border px-3 py-1 text-sm disabled:opacity-50"
+                            className="rounded-lg cursor-pointer border px-3 py-1 text-sm disabled:opacity-50"
                             disabled={seite >= gesamtSeiten - 1}
                             onClick={() => setSeite(s => s + 1)}
                         >
                             Weiter
                         </button>
                         <select
-                            className="rounded-lg border px-2 py-1 text-sm"
+                            className="rounded-lg cursor-pointer border px-2 py-1 text-sm"
                             value={groesse}
                             onChange={e => { setSeite(0); setGroesse(parseInt(e.target.value, 10)); }}
                             title="Seitengröße"
@@ -306,13 +306,13 @@ export default function AdminAnzeigenSeite() {
                         <div className="flex justify-end gap-3">
                             <button
                                 onClick={bestaetigungSchliessen}
-                                className="rounded-xl border px-3 py-1.5 text-sm hover:bg-gray-50"
+                                className="rounded-xl cursor-pointer border px-3 py-1.5 text-sm hover:bg-gray-50"
                             >
                                 Abbrechen
                             </button>
                             <button
                                 onClick={loescheAnfrageEndgueltig}
-                                className="rounded-xl border border-red-200 bg-red-600 px-3 py-1.5 text-sm text-white hover:bg-red-700"
+                                className="rounded-xl cursor-pointer border border-red-200 bg-red-600 px-3 py-1.5 text-sm text-white hover:bg-red-700"
                             >
                                 Endgültig löschen
                             </button>

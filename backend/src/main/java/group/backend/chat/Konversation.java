@@ -5,6 +5,8 @@ import group.backend.anfrage.Anfrage;
 import group.backend.benutzer.Benutzer;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.time.LocalDateTime;
 
@@ -17,14 +19,17 @@ public class Konversation {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "anfrage_id")
+    @JoinColumn(name = "anfrage_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonIgnore
     private Anfrage anfrage;
-
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @ManyToOne(fetch = FetchType.LAZY) @JoinColumn(name = "teilnehmer_a_id", nullable = false)
+
     private Benutzer teilnehmerA;
 
     @ManyToOne(fetch = FetchType.LAZY) @JoinColumn(name = "teilnehmer_b_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Benutzer teilnehmerB;
 
     @Column(name = "erstellt_am", nullable = false)
