@@ -27,7 +27,7 @@ export default function Footer() {
 
             <div className="border-t py-2">
                 <p className="mx-auto max-w-6xl px-4 text-[11px] text-gray-500">
-                    © {aktuellesJahr} LocalConnect. Backtash, Volodymyr & Gabrielle.
+                    © {aktuellesJahr} LocalConnect. Backtash, Volodymyr & Gabriel.
                 </p>
             </div>
         </footer>

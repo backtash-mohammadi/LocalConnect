@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class BenutzerDienst {
@@ -74,18 +76,21 @@ public class BenutzerDienst {
 
     // test method,  to compute the karma points from creator and helper.
     @Transactional
-    public void rechnePunkte(long userId, Benutzer helfer) {
-        int currenKarmaPoints = this.repo.findById(userId).get().getKarma();
-
+    public void rechnePunkte(Benutzer helfer, int karmaPuntke) {
         if(helfer == null){
-            this.repo.findById(userId).get().setKarma(--currenKarmaPoints);
+//            this.repo.findById(userId).get().setKarma(--currenKarmaPoints);
             return;
         }
         long helferId = helfer.getId();
-        int helferKarmaPoints = helfer.getKarma();
+        int currenKarma = this.repo.findById(helferId).get().getKarma();
+        this.repo.findById(helferId).get().setKarma(currenKarma + karmaPuntke);
+    }
 
-        this.repo.findById(helferId).get().setKarma(++helferKarmaPoints);
-        this.repo.findById(userId).get().setKarma(--currenKarmaPoints);
-
+    public Benutzer findePerId(Long helferId) {
+        Optional<Benutzer> opt = this.repo.findById(helferId);
+        if(opt.isEmpty()){
+            throw new IllegalArgumentException("Benutzer nicht gefunden: " + helferId);
+        }
+        return opt.get();
     }
 }

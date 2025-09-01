@@ -153,16 +153,19 @@ public class AnfrageController {
         return ResponseEntity.ok(dto);
     }
 
-    @PutMapping("/anfrage/{id}/fertig")
+    @PutMapping("/anfrage/{id}/fertig/{karmaPunkte}")
 // @PreAuthorize("isAuthenticated()") // enable if you use auth
-    public ResponseEntity<Void> markiereAlsFertig(@PathVariable("id") Long id) {
+    public ResponseEntity<Void> markiereAlsFertig(@PathVariable("id") Long id, @PathVariable("karmaPunkte") int punkte) {
+        // long userId = anfrageService.findeAnfrage(id).getErsteller().getId();
+
         anfrageService.markiereAlsFertig(id);
 
-        // swap the points.
-        long userId = anfrageService.findeAnfrage(id).getErsteller().getId();
         Benutzer helfer = anfrageService.findeAnfrage(id).getHelfer();
-        benutzerDienst.rechnePunkte(userId, helfer);
-        //
+        if(helfer != null && punkte != 0){
+            benutzerDienst.rechnePunkte(helfer, punkte);
+        } else {
+            System.out.println("helfer objet ist null");
+        }
         return ResponseEntity.noContent().build();
     }
 
@@ -179,7 +182,7 @@ public class AnfrageController {
             @RequestParam(value = "kategorie", required = false) String kategorie,
             @RequestParam(value = "limit", required = false, defaultValue = "12") int limit
     ) {
-// Alles außer „fertig“ zeigen
+        // Alles außer „fertig“ zeigen
         final String FERTIG = "fertig";
 
         List<Anfrage> rohListe = (kategorie != null && !kategorie.isBlank())
@@ -187,7 +190,7 @@ public class AnfrageController {
                 : anfrageRepository.findTop100ByStatusNotIgnoreCaseOrderByErstelltAmDesc(FERTIG);
 
 
-// In DTOs abbilden und auf gewünschte Anzahl begrenzen
+        // In DTOs abbilden und auf gewünschte Anzahl begrenzen
         List<AnfrageErstellenDTO> dtoListe = new ArrayList<>();
         for (Anfrage a : rohListe) {
             if (dtoListe.size() >= Math.max(1, limit)) break;
@@ -242,6 +245,16 @@ public class AnfrageController {
             anfrageDTOs.add(dto);
         }
         return ResponseEntity.ok(anfrageDTOs);
+    }
+
+    @PutMapping("/anfrage/bearbeitung/{id}/{helferId}")
+    // @PreAuthorize("isAuthenticated()") // enable if you use auth
+    public ResponseEntity<Long> PutHelferIdUndStatusBearbeitung(@PathVariable("id") Long id, @PathVariable("helferId") Long helferId) {
+
+        Benutzer helfer = benutzerDienst.findePerId(helferId);
+        long helferIdDerAnfrage = anfrageService.markiereAlsBearbeitung(id, helfer);
+
+        return ResponseEntity.ok(helferIdDerAnfrage);
     }
 
 }

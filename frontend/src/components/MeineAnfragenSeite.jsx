@@ -12,8 +12,11 @@ export default function MeineAnfragenSeite(){
     const [laden, setLaden] = useState(true);
     const [fehler, setFehler] = useState('');
 
-    // ⚠️ NEU: Such-State
+    // NEU: Such-State
     const [suche, setSuche] = useState('');
+
+    const [karmaDialogId, setKarmaDialogId] = useState(null); // which row has the mini-menu open
+    const [karmaPunkteInput, setKarmaPunkteInput] = useState(''); // input value
 
     const navigate = useNavigate();
 
@@ -35,8 +38,8 @@ export default function MeineAnfragenSeite(){
             const daten = await apiGet(`/meine-anfragen?${parameter.toString()}`, token);
             if(Array.isArray(daten)){
                 daten.sort((a, b) => {
-                    if (a.status === "open" && b.status !== "open") return -1;
-                    if (b.status === "open" && a.status !== "open") return 1;
+                    if (a.status === "fertig" && b.status !== "fertig") return 1;
+                    if (b.status === "fertig" && a.status !== "fertig") return -1;
                     return 0;
                 });
             }
@@ -76,13 +79,10 @@ export default function MeineAnfragenSeite(){
     }
 
     // mark request as completed in the backend, then go back to list
-    async function markiereAlsFertig(id){
-        // Call backend to set status = "fertig", then navigate back
+    async function markiereAlsFertig(id, karmaPunkte){
 
-        // const id = e.target.value.post_id;
-        console.log("fertig id: " + id);
         try{
-            await apiPut(`/anfrage/${id}/fertig`, {}, token);
+            await apiPut(`/anfrage/${id}/fertig/${karmaPunkte}`, {}, token);
             await ladeDaten();
             // navigate('/meine-anfragen');
         }catch(err){
@@ -124,7 +124,7 @@ export default function MeineAnfragenSeite(){
                     {laden ? 'Aktualisiere…' : 'Aktualisieren'}
                 </button>
 
-                {/* ⚠️ NEU: Suchfeld neben „Aktualisieren“ */}
+                {/* Suchfeld neben „Aktualisieren“ */}
                 <input
                     type="search"
                     placeholder="Suchen (Titel, Text, Kategorie, Adresse)…"
@@ -171,7 +171,7 @@ export default function MeineAnfragenSeite(){
                             {/*{console.log("schl:  " + schlussel)}*/}
                             <div className="flex items-start justify-between gap-4">
                                 <div>
-                                    {/* ⚠️ NEU: Titel klickbar -> öffnet Detailseite */}
+                                    {/* ⚠ Titel klickbar -> öffnet Detailseite */}
                                     <button
                                         onClick={() => navigate(`/anfrage/${id}`)}
                                         className="text-left text-base font-semibold text-indigo-700 underline underline-offset-2 hover:text-indigo-900"
@@ -190,19 +190,73 @@ export default function MeineAnfragenSeite(){
                                     </div>
                                 </div>
                                 <div className="flex shrink-0 items-center gap-2">
-                                    <button
-                                        type="button"
-                                        onClick={() => markiereAlsFertig(id)}
-                                        disabled={istFertig}
-                                        aria-disabled={istFertig}
-                                        className={`rounded-xl bg-green-600  font-medium text-white hover:bg-green-700" ${
-                                            istFertig 
-                                                ? 'bg-green-300 text-xl cursor-not-allowed opacity-60' 
-                                                : 'bg-green-500 hover:bg-green-700 px-3 py-1.5 text-xs' 
-                                        }`}
-                                    >
-                                        {istFertig ? <FcOk /> : "Fertig"}
-                                    </button>
+                                    <div className="relative">
+                                        <button
+                                            type="button"
+                                            onClick={() => !istFertig && setKarmaDialogId(id)}
+                                            disabled={istFertig}
+                                            aria-disabled={istFertig}
+                                            className={`rounded-xl font-medium text-white ${
+                                                istFertig
+                                                    ? 'bg-green-300 text-xl cursor-not-allowed opacity-60'
+                                                    : 'bg-green-500 hover:bg-green-700 px-3 py-1.5 text-xs'
+                                            }`}
+                                        >
+                                            {istFertig ? <FcOk /> : 'Karma-Punkte & Fertig'}
+                                        </button>
+
+                                        {/* Mini menu / popover */}
+                                        {karmaDialogId === id && !istFertig && (
+                                            <div className="absolute right-0 mt-2 w-56 rounded-xl border bg-white p-3 shadow-lg z-10">
+                                                <label htmlFor={`karma-${id}`} className="block text-xs text-gray-600 mb-1">
+                                                    Karma-Punkte
+                                                </label>
+                                                <input
+                                                    id={`karma-${id}`}
+                                                    type="number"
+                                                    inputMode="numeric"
+                                                    min="0"
+                                                    step="1"
+                                                    className="w-full rounded-md border px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-600"
+                                                    value={karmaPunkteInput}
+                                                    onChange={(e) => setKarmaPunkteInput(e.target.value.replace(/[^\d]/g, ''))}
+                                                    onKeyDown={(e) => {
+                                                        if (e.key === 'Enter' && /^\d+$/.test(karmaPunkteInput)) {
+                                                            markiereAlsFertig(id, parseInt(karmaPunkteInput, 10));
+                                                            setKarmaDialogId(null);
+                                                            setKarmaPunkteInput('');
+                                                        }
+                                                    }}
+                                                />
+
+                                                <div className="mt-2 flex justify-end gap-2">
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => {
+                                                            setKarmaDialogId(null);
+                                                            setKarmaPunkteInput('');
+                                                        }}
+                                                        className="rounded-md border px-2 py-1 text-xs"
+                                                    >
+                                                        Abbrechen
+                                                    </button>
+
+                                                    <button
+                                                        type="button"
+                                                        disabled={!/^\d+$/.test(karmaPunkteInput)}
+                                                        onClick={() => {
+                                                            markiereAlsFertig(id, parseInt(karmaPunkteInput, 10));
+                                                            setKarmaDialogId(null);
+                                                            setKarmaPunkteInput('');
+                                                        }}
+                                                        className="rounded-md bg-green-600 px-2 py-1 text-xs text-white hover:bg-green-700 disabled:opacity-60"
+                                                    >
+                                                        Speichern
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
 
                                     {/*<button onClick={() => bearbeitenAnfrage(id)}*/}
                                     {/*        className="rounded-xl bg-amber-500 px-3 py-1.5 text-xs font-medium text-white hover:bg-amber-600">*/}

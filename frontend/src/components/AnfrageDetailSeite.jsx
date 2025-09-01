@@ -15,6 +15,7 @@ export default function AnfrageDetailSeite() {
     const [post, setPost] = useState(null);
     const [laden, setLaden] = useState(true);
     const [fehler, setFehler] = useState("");
+    const [postStatus, setPostStatus] = useState("");
 
     useEffect(() => {
         let on = true;
@@ -23,7 +24,9 @@ export default function AnfrageDetailSeite() {
             setLaden(true);
             try {
                 const data = await apiGet(`/anfrage/${id}`, token); // ggf. Endpoint anpassen
-                if (on) setPost(data || null);
+                if (on) {
+                    setPost(data || null);
+                }
             } catch (e) {
                 if (on) setFehler(e.message || "Fehler beim Laden");
             } finally {
@@ -33,6 +36,11 @@ export default function AnfrageDetailSeite() {
         load();
         return () => { on = false; };
     }, [id, token]);
+
+    useEffect(() => {
+
+        post && setPostStatus(post.status);
+    }, [post]);
 
     return (
         <div className="mx-auto max-w-3xl px-4 py-8">
@@ -100,7 +108,7 @@ export default function AnfrageDetailSeite() {
                     <h2 className="text-2xl font-thin text-gray-900 ">Kommentare</h2>
                 </div>
                 {/* embedded=true => CommentSection rendert ohne eigenen Außen-Wrapper */}
-                <CommentSection postId={id} embedded />
+                <CommentSection postId={id} embedded status={postStatus}/>
             </div>
         </div>
     );

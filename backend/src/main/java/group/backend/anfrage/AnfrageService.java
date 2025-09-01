@@ -116,4 +116,13 @@ public class AnfrageService {
 
         return anfrageList;
     }
+
+    @Transactional
+    public Long markiereAlsBearbeitung(Long id, Benutzer helfer) {
+        Anfrage a = findeAnfrage(id);
+        a.setStatus("bearbeitung");
+        a.setHelfer(helfer);
+
+        return a.getHelfer().getId();
+    }
 }

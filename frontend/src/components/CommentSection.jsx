@@ -1,17 +1,16 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthKontext";
-import { apiGet, apiPost } from "../lib/apiClient";
+import {apiGet, apiPost, apiPut} from "../lib/apiClient";
 import chooseButton from "../assets/chooseButton.svg";
-import ThickBox from "./ThickBox.jsx";
 
-
-export default function CommentSection({ postId, embedded = false, className = "" }) {
+export default function CommentSection({ postId, embedded = false, className = "", status }) {
     const { token, benutzer } = useAuth();
     const [comments, setComments] = useState([]);
     const [erstellerId, setErstellerId] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
     const [text, setText] = useState("");
+    const [anfrageStatus, setAnfrageStatus] = useState("");
 
     async function ladeKommentare() {
         try {
@@ -97,6 +96,34 @@ export default function CommentSection({ postId, embedded = false, className = "
         }
     }
 
+    // **********  Bereich für Bearbeitung-Status und helferId Einsetzung  *********************
+
+    // set the status only when the status received by paren is not empty.
+    useEffect(() => {
+        status && setAnfrageStatus(status);
+    }, [status]);
+
+    // set post status to "bearbeitung", so the buttons get deactivated.
+    // call the api function.
+    function onAlsBearbeitungMarkiert(comment, e) {
+        e.preventDefault();
+        setAnfrageStatus("bearbeitung");
+        const helferId = comment.user.id;
+        // console.log("test - function "  + postId + " " + helferId);
+        markiereAlsBearbeitung( postId, helferId);
+    }
+
+    // Call the backend api to set Anfragestatus to "bearbeitung" and set the helferId to the user who wrote the comment.
+    async function markiereAlsBearbeitung(anfrageId, helferId){
+        try {
+            await apiPut(`/anfrage/bearbeitung/${anfrageId}/${helferId}`);
+            // console.log("helfer id nach api call " + res);
+        } catch (err) {
+            console.log(err);
+        }
+    }
+    // ****************************************************************************
+
     return (
         <div className={"" + (className || "")}>
             {error && <div className="mb-2 rounded-lg border border-red-200 bg-red-50 p-2 text-red-700 text-sm">{error}</div>}
@@ -119,13 +146,22 @@ export default function CommentSection({ postId, embedded = false, className = "
                                     className="rounded-xl bg-blue-700 px-3 py-1 text-white disabled:opacity-50"
                                 >
                                     Privatchat
+
+                                {/* Button aktiviert nur mit "open" status und nur für andere Benutzern (nicht für Ersteller)) */}
                                 </button>
-
-                                <button className="ml-auto inline-flex h-10 w-10 items-center justify-center rounded-xl  hover:bg-blue-800 disabled:opacity-50">
-                                    <img src={chooseButton} alt="" aria-hidden className="h-11 w-11" />
+                                {(anfrageStatus === "open" && erstellerId !== c.user.id) ?
+                                <button
+                                    onClick={(e) => onAlsBearbeitungMarkiert(c, e)}
+                                    className="ml-auto inline-flex h-10 w-10 items-center justify-center rounded-xl  hover:bg-blue-800 disabled:opacity-50">
+                                    <img src={chooseButton} alt="" aria-hidden className="h-11 w-11" /><span></span>
                                 </button>
-
-
+                                 :
+                                <button
+                                    disabled
+                                    className="ml-auto inline-flex h-10 w-10 items-center justify-center rounded-xl  hover:bg-blue-800 disabled:opacity-50">
+                                    <img src={chooseButton} alt="" aria-hidden className="h-11 w-11" /><span></span>
+                                </button>
+                            }
                             </div>
                         )}
                     </li>
