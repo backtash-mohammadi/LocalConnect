@@ -175,11 +175,11 @@ export default function AnfrageBearbeitenSeite(){
 
                 <div className="flex items-center gap-3">
                     <button type="button" onClick={verwerfen}
-                            className="rounded-xl border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-800 hover:bg-gray-100">
+                            className="rounded-xl cursor-pointer border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-800 hover:bg-gray-100">
                         Änderungen verwerfen
                     </button>
                     <button disabled={laden} type="submit"
-                            className="rounded-xl bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-60">
+                            className="rounded-xl cursor-pointer bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-60">
                         {laden ? 'Speichere…' : 'Änderungen speichern'}
                     </button>
                     {ok && <span className="text-sm text-green-700">{ok}</span>}

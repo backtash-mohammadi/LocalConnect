@@ -23,6 +23,7 @@ import PrivatChatListeSeite from "./components/PrivatChatListeSeite.jsx";
 import HilfeSeite from "./components/HilfeSeite.jsx";
 import KontaktSeite from "./components/KontaktSeite.jsx";
 import DatenschutzSeite from "./components/DatenschutzSeite.jsx";
+import UeberUnsSeite from "./components/UeberUnsSeite.jsx";
 
 export function App() {
     return (
@@ -60,6 +61,7 @@ export function App() {
                                 <Route path="/hilfe" element={<HilfeSeite />} />
                                 <Route path="/kontakt" element={<KontaktSeite />} />
                                 <Route path="/datenschutz" element={<DatenschutzSeite />} />
+                                <Route path="/ueber-uns" element={<UeberUnsSeite />} />
 
                             </Routes>
                         </div>

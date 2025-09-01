@@ -139,38 +139,7 @@ export default function AdminAnzeigenSeite() {
                     <p className="text-sm text-gray-600">Verwalten, prüfen und entfernen.</p>
                 </div>
 
-                {/* Paging-Kopf */}
-                <div className="flex items-center gap-2">
-                    <span className="hidden text-sm text-gray-600 sm:inline">Gesamt: {gesamtElemente}</span>
-                    <button
-                        className="rounded-lg border px-3 py-1 text-sm disabled:opacity-50"
-                        disabled={seite <= 0}
-                        onClick={() => setSeite(s => Math.max(0, s - 1))}
-                        title="Zurück"
-                    >
-                        ←
-                    </button>
-                    <span className="text-xs text-gray-600">
-            Seite {seite + 1} / {Math.max(1, gesamtSeiten)}
-          </span>
-                    <button
-                        className="rounded-lg border px-3 py-1 text-sm disabled:opacity-50"
-                        disabled={seite >= gesamtSeiten - 1}
-                        onClick={() => setSeite(s => s + 1)}
-                        title="Weiter"
-                    >
-                        →
-                    </button>
 
-                    <select
-                        className="rounded-lg border px-2 py-1 text-sm"
-                        value={groesse}
-                        onChange={e => { setSeite(0); setGroesse(parseInt(e.target.value, 10)); }}
-                        title="Seitengröße"
-                    >
-                        {[10, 20, 50].map(n => <option key={n} value={n}>{n} / Seite</option>)}
-                    </select>
-                </div>
             </div>
 
             {fehler && (
@@ -189,7 +158,7 @@ export default function AdminAnzeigenSeite() {
                             <th className="px-3 py-3">ID</th>
                             <th className="px-3 py-3">Titel</th>
                             <th className="px-3 py-3">Kategorie</th>
-                            <th className="px-3 py-3">Beschreibung</th>
+                            {/*<th className="px-3 py-3">Beschreibung</th>*/}
                             <th className="px-3 py-3">Stadt</th>
                             <th className="px-3 py-3">PLZ</th>
                             <th className="px-3 py-3">Status</th>
@@ -223,21 +192,21 @@ export default function AdminAnzeigenSeite() {
                                 <td className="px-3 py-2 whitespace-nowrap">{a.id}</td>
 
                                 <td className="px-3 py-2">
-                                    <div className="max-w-[22rem] truncate font-medium" title={leseTitel(a)}>
+                                    <div className="max-w-[12rem] truncate font-medium" title={leseTitel(a)}>
                                         {leseTitel(a)}
                                     </div>
                                 </td>
 
                                 <td className="px-3 py-2 whitespace-nowrap">{a.kategorie || "-"}</td>
 
-                                <td className="px-3 py-2">
-                                    <div
-                                        className="max-w-[28rem] truncate text-gray-700"
-                                        title={a.beschreibung}
-                                    >
-                                        {a.beschreibung || "-"}
-                                    </div>
-                                </td>
+                                {/*<td className="px-3 py-2">*/}
+                                {/*    <div*/}
+                                {/*        className="max-w-[20rem] truncate text-gray-700"*/}
+                                {/*        title={a.beschreibung}*/}
+                                {/*    >*/}
+                                {/*        {a.beschreibung || "-"}*/}
+                                {/*    </div>*/}
+                                {/*</td>*/}
 
                                 <td className="px-3 py-2 whitespace-nowrap">{a.stadt || "-"}</td>
                                 <td className="px-3 py-2 whitespace-nowrap">{a.plz || "-"}</td>

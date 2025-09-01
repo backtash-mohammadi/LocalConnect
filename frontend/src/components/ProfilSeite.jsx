@@ -36,7 +36,7 @@ export default function ProfilSeite() {
 
     // Hilfswerte (de)
     const ERLAUBTE_TYPEN = new Set(["image/jpeg", "image/png", "image/webp"]);
-    const MAX_BYTES = 2 * 1024 * 1024; // 2 MB
+    const MAX_BYTES = 1024 * 1024; // 1 MB
 
     function bytesZuText(n) {
         if (n < 1024) return `${n} B`;
@@ -194,6 +194,7 @@ export default function ProfilSeite() {
 
             setHatKeinAvatar(false);
             setAvatarTs(Date.now()); // neu laden
+            window.dispatchEvent(new Event("avatar:changed"));
         } catch (err) {
             setFehler(err.message || "Hochladen fehlgeschlagen.");
         } finally {
@@ -267,7 +268,7 @@ export default function ProfilSeite() {
                                         <button
                                             type="button"
                                             onClick={() => fileInputRef.current?.click()}
-                                            className="rounded-xl bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700"
+                                            className="rounded-xl cursor-pointer bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700"
                                         >
                                             Datei wählen
                                         </button>
@@ -276,7 +277,7 @@ export default function ProfilSeite() {
                                             type="button"
                                             onClick={avatarSpeichern}
                                             disabled={!avatarDatei || !!ladeProzent}
-                                            className="rounded-xl bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-60"
+                                            className="rounded-xl cursor-pointer bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-60"
                                         >
                                             {ladeProzent ? `Lade ${ladeProzent}%` : "Avatar speichern"}
                                         </button>
@@ -324,7 +325,7 @@ export default function ProfilSeite() {
                         <div className="flex items-center gap-3">
                             <button
                                 type="submit"
-                                className="rounded-xl bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700"
+                                className="rounded-xl cursor-pointer bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700"
                             >
                                 Speichern
                             </button>

@@ -38,7 +38,27 @@ export default function Header() {
     const [anzahlAnzeigenGesamt, setAnzahlAnzeigenGesamt] = useState(null);
     const [anzahlMeine, setAnzahlMeine] = useState(null);
 
-    // Ungelesen-Badge
+
+    async function ladeAvatar() {
+        if (!token) {
+              if (avatarUrl) URL.revokeObjectURL(avatarUrl);
+              setAvatarUrl("");
+              return;
+            }
+        try {
+              const headers = { Authorization: `Bearer ${token}` };
+              const res = await fetch(`${BASIS_URL}/api/benutzer/me/avatar?ts=${Date.now()}`, { headers });
+              if (res.status === 404) { setHatKeinAvatar(true); setAvatarUrl(""); return; }
+              if (!res.ok) { setAvatarUrl(""); return; }
+              const blob = await res.blob();
+              const url = URL.createObjectURL(blob);
+              setAvatarUrl((old) => { if (old) URL.revokeObjectURL(old); return url; });
+            } catch {
+              setAvatarUrl("");
+            }
+        }
+
+    /// Ungelesen-Badge
     const [ungelesen, setUngelesen] = useState(0);
     useEffect(() => {
         let aktiv = true;
@@ -73,28 +93,17 @@ export default function Header() {
 
     // Avatar laden
     useEffect(() => {
-        if (!token || hatKeinAvatar) {
-            if (avatarUrl) URL.revokeObjectURL(avatarUrl);
-            setAvatarUrl("");
-            return;
-        }
-        let abbruch = false;
-        (async () => {
-            try {
-                const headers = { Authorization: `Bearer ${token}` };
-                const res = await fetch(`${BASIS_URL}/api/benutzer/me/avatar?ts=${Date.now()}`, { headers });
-                if (res.status === 404) { if (!abbruch) { setHatKeinAvatar(true); setAvatarUrl(""); } return; }
-                if (!res.ok) { if (!abbruch) setAvatarUrl(""); return; }
-                const blob = await res.blob();
-                if (abbruch) return;
-                const url = URL.createObjectURL(blob);
-                setAvatarUrl((old) => { if (old) URL.revokeObjectURL(old); return url; });
-            } catch {
-                if (!abbruch) setAvatarUrl("");
-            }
-        })();
-        return () => { abbruch = true; };
-    }, [token, benutzer?.name]);
+          ladeAvatar();
+        }, [token, benutzer?.id]);
+
+        useEffect(() => {
+              function onAvatarChanged() {
+                    setHatKeinAvatar(false);
+                    ladeAvatar();
+                  }
+              window.addEventListener("avatar:changed", onAvatarChanged);
+              return () => window.removeEventListener("avatar:changed", onAvatarChanged);
+            }, [token]);
 
     // Schließen bei Klick außerhalb
     useEffect(() => {
@@ -144,18 +153,18 @@ export default function Header() {
             }
         }
 
-        async function ladeMeine() {
-            if (!token) { setAnzahlMeine(null); return; }
-            try {
-                const res = await apiGet(`/meine-anfragen`, token);
-                if (!abbruch) setAnzahlMeine(Array.isArray(res) ? res.length : null);
-            } catch {
-                if (!abbruch) setAnzahlMeine(null);
-            }
-        }
+        // async function ladeMeine() {
+        //     if (!token) { setAnzahlMeine(null); return; }
+        //     try {
+        //         const res = await apiGet(`/meine-anfragen`, token);
+        //         if (!abbruch) setAnzahlMeine(Array.isArray(res) ? res.length : null);
+        //     } catch {
+        //         if (!abbruch) setAnzahlMeine(null);
+        //     }
+        // }
 
         ladeAdminAnzeigenGesamt();
-        ladeMeine();
+        // ladeMeine();
         return () => { abbruch = true; };
     }, [token, istAdmin]);
 
@@ -215,7 +224,7 @@ export default function Header() {
 
                 {/* Rechts: Badge + Profil / Login */}
                 <div className="ml-auto flex items-center gap-2">
-                    {/* 🔔 Nachrichten-Badge → на /chats */}
+                    {/* 🔔 Nachrichten-Badge → /chats */}
                     {benutzer && (
                         <button
                             onClick={() => navigate("/chats")}
@@ -238,7 +247,7 @@ export default function Header() {
                         <div className="relative" ref={dropdownRef}>
                             <button
                                 onClick={() => setMenueOffen((v) => !v)}
-                                className="inline-flex items-center gap-2 rounded-xl border-sky-200 px-2.5 py-1.5 text-md font-thin hover:bg-gray-50"
+                                className="inline-flex items-center gap-2 rounded-xl border-sky-200 px-2.5 py-1.5 text-md font-thin hover:bg-gray-50 cursor-pointer "
                             >
                                 {avatarUrl ? (
                                     <img

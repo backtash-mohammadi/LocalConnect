@@ -18,12 +18,6 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.core.annotation.Order;
 
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
-import java.util.List;
-
 @Configuration
 @EnableMethodSecurity
 public class SicherheitsKonfiguration {
@@ -134,6 +128,7 @@ public SecurityFilterChain sicherheitsFilterKette(
                                 .requestMatchers("/error", "/error/**").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/comments").permitAll()
                                 .requestMatchers(HttpMethod.GET,  "/comments/**").permitAll()
+                                .requestMatchers(HttpMethod.GET,  "/api/benutzer/*/avatar").permitAll()
                                 .requestMatchers(HttpMethod.GET,  "/api/anfragen/aktuell").permitAll()
                                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
