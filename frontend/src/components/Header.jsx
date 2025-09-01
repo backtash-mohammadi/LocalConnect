@@ -188,7 +188,7 @@ export default function Header() {
                     <nav className="flex items-center gap-2">
                         <Link
                             to="/karte"
-                            className="inline-flex items-center gap-2 rounded-xl px-3 py-2 text-lg font-thin text-gray-700 hover:bg-gray-100"
+                            className="inline-flex items-center gap-2 rounded-xl px-3 py-2 text-lg font-thin text-gray-700 hover:bg-sky-200"
                         >
                             <FaMapMarkedAlt className="opacity-80" />
                             Karte

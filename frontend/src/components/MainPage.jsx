@@ -83,11 +83,11 @@ export default function MainPage() {
             <section className="my-8 grid gap-12 rounded-xl border border-sky-200 bg-gradient-to-br from-sky-50 via-sky-100 to-white p-4 md:grid-cols-2">
                 <div className="space-y-6 md:space-y-8">
                     <h1 className="text-3xl font-thin text-gray-900">Nachbarschaftshilfe, fair & einfach</h1>
-                    <p className="text-sm text-gray-700 leading-5">
+                    <article className="text-sm text-gray-700 leading-5">
                         Frage nach Hilfe oder biete sie an. Sammle Karma-Punkte, wenn du hilfst!<br></br>
                         Und nutze Karma, wenn dir geholfen wird.
                         <p className="text-sm text-gray-700 italic text-right">Transparent, <strong>lo</strong>kal, <strong>co</strong>mmunity-getrieben.</p>
-                    </p>
+                    </article>
 
 
                     <div className="flex justify-around">
@@ -112,7 +112,7 @@ export default function MainPage() {
                                 <>
                                     <Link to="/erstellen" className="rounded-xl border px-4 py-2 text-sm hover:bg-white">Anfrage erstellen</Link>
                                     <Link to="/meine-anfragen" className="rounded-xl border px-4 py-2 text-sm hover:bg-white">Meine Anfragen</Link>
-                                    <Link to="/meine-akzeptierte-anfragen" className="rounded-xl border px-4 py-2 text-sm hover:bg-white">Akzeptierte</Link>
+                                    <Link to="/meine-akzeptierte-anfragen" className="rounded-xl border px-4 py-2 text-sm hover:bg-white">Akzeptierte Hilfsangebote</Link>
                                 </>
                             )}
                         </div>
