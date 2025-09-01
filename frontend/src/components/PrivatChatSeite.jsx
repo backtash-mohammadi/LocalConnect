@@ -15,6 +15,21 @@ export default function PrivatChatSeite() {
   const [text, setText] = useState("");
   const eingabeRef = useRef(null);
 
+  // Scroll-Referenzen
+  const listeRef = useRef(null);     // Container mit overflow-y-auto
+  const endeRef = useRef(null);      // unsichtbarer Anker am Ende
+
+  // Hilfsfunktion: zum Ende scrollen
+  function scrolleZumEnde(smooth = true) {
+    // Warten bis DOM gerendert ist
+    requestAnimationFrame(() => {
+      endeRef.current?.scrollIntoView({
+        behavior: smooth ? "smooth" : "auto",
+        block: "end"
+      });
+    });
+  }
+
   const { state } = useLocation();
   useEffect(() => {
     if (state?.partnerId) setPartnerId(state.partnerId);
@@ -67,9 +82,7 @@ export default function PrivatChatSeite() {
         if (pname && pname !== partnerName) setPartnerName(pname);
       }
 
-      try {
-        window.dispatchEvent(new CustomEvent("privatchat-read"));
-      } catch {}
+      try { window.dispatchEvent(new CustomEvent("privatchat-read")); } catch {}
     } catch (e) {
       setFehler(e?.message || "Unbekannter Fehler");
     } finally {
@@ -87,9 +100,11 @@ export default function PrivatChatSeite() {
       const res = await apiPost(`/privatchats/${konvId}/nachrichten`, { text: t }, token);
       setNachrichten((alt) => [...alt, res]);
       setText("");
+      // Nach dem Senden direkt nach unten scrollen
       setTimeout(() => {
+        scrolleZumEnde(true);
         eingabeRef.current?.focus?.();
-      }, 50);
+      }, 0);
     } catch (e) {
       setFehler(e?.message || "Senden fehlgeschlagen");
     }
@@ -112,10 +127,7 @@ export default function PrivatChatSeite() {
             `${BASIS_URL}/api/benutzer/${partnerId}/avatar?ts=${Date.now()}`,
             { headers: token ? { Authorization: `Bearer ${token}` } : {} }
         );
-        if (!res.ok) {
-          setPartnerAvatar(null);
-          return;
-        }
+        if (!res.ok) { setPartnerAvatar(null); return; }
         const blob = await res.blob();
         const url = URL.createObjectURL(blob);
         if (!abbruch) setPartnerAvatar(url);
@@ -124,18 +136,15 @@ export default function PrivatChatSeite() {
       }
     }
     ladeAvatar();
-    return () => {
-      abbruch = true;
-    };
+    return () => { abbruch = true; };
   }, [partnerId, token, BASIS_URL]);
 
   // Aufräumen blob-URL beim Unmount
   useEffect(() => {
-    return () => {
-      if (partnerAvatar) URL.revokeObjectURL(partnerAvatar);
-    };
+    return () => { if (partnerAvatar) URL.revokeObjectURL(partnerAvatar); };
   }, [partnerAvatar]);
 
+  // Partner-Metadaten über Liste ermitteln (Name/Id)
   useEffect(() => {
     let abbruch = false;
     async function ladeMeta() {
@@ -148,14 +157,21 @@ export default function PrivatChatSeite() {
           if (eintrag.partnerId && eintrag.partnerId !== partnerId) setPartnerId(eintrag.partnerId);
           if (eintrag.partnerName && eintrag.partnerName !== partnerName) setPartnerName(eintrag.partnerName);
         }
-      } catch {
-
-      }
+      } catch {}
     }
     ladeMeta();
     return () => { abbruch = true; };
   }, [konvId, token]);
 
+  // ✨ Autoscroll: beim ersten Laden — ohne Animation
+  useEffect(() => {
+    if (!laden) scrolleZumEnde(false);
+  }, [laden]);
+
+  // ✨ Autoscroll: bei neuen Nachrichten — weich scrollen
+  useEffect(() => {
+    if (!laden) scrolleZumEnde(true);
+  }, [nachrichten.length, laden]);
 
   return (
       <div className="mx-auto max-w-3xl p-4">
@@ -166,8 +182,8 @@ export default function PrivatChatSeite() {
                 <img src={partnerAvatar} alt="" className="h-9 w-9 rounded-full object-cover ring-2 ring-indigo-500/20" />
             ) : (
                 <span className="flex h-9 w-9 items-center justify-center rounded-full bg-indigo-600 text-sm font-semibold text-white">
-        {initialen(partnerName)}
-      </span>
+              {initialen(partnerName)}
+            </span>
             )}
             <div>
               <div className="text-xl font-medium text-gray-900">Privatchat mit {partnerName || "Nutzer"}</div>
@@ -187,23 +203,16 @@ export default function PrivatChatSeite() {
         ) : (
             <div className="rounded-xl border border-sky-200 bg-gradient-to-br from-sky-50 via-sky-100 to-white p-3 shadow-sm ring-1 ring-sky-100/60 ">
               {/* Nachrichtenliste */}
-              <div className="max-h-[60vh] space-y-2 overflow-y-auto p-4">
+              <div ref={listeRef} className="max-h-[60vh] space-y-2 overflow-y-auto p-4">
                 {nachrichten.map((n) => {
                   const istIch = n.absenderId === benutzer?.id;
                   return (
-                      <div
-                          key={n.id}
-                          className={`flex ${istIch ? "justify-end" : "justify-start"}`}
-                      >
+                      <div key={n.id} className={`flex ${istIch ? "justify-end" : "justify-start"}`}>
                         {/* Avatar links bei eingehenden Nachrichten */}
                         {!istIch && (
                             <div className="mr-2 mt-auto">
                               {partnerAvatar ? (
-                                  <img
-                                      src={partnerAvatar}
-                                      alt=""
-                                      className="h-6 w-6 rounded-full object-cover ring-2 ring-indigo-500/20"
-                                  />
+                                  <img src={partnerAvatar} alt="" className="h-6 w-6 rounded-full object-cover ring-2 ring-indigo-500/20" />
                               ) : (
                                   <span className="flex h-6 w-6 items-center justify-center rounded-full bg-indigo-600 text-[10px] font-semibold text-white">
                           {initialen(partnerName)}
@@ -212,11 +221,7 @@ export default function PrivatChatSeite() {
                             </div>
                         )}
 
-                        <div
-                            className={`max-w-[80%] rounded-xl px-3 py-2 text-sm ${
-                                istIch ? "bg-blue-400 text-white" : "bg-green-200"
-                            }`}
-                        >
+                        <div className={`max-w-[80%] rounded-xl px-3 py-2 text-sm ${istIch ? "bg-blue-400 text-white" : "bg-green-200"}`}>
                           <div className="whitespace-pre-wrap break-words">{n.text}</div>
                           <div className="mt-1 text-[11px] text-gray-800">
                             {new Date(n.erstelltAm).toLocaleString("de-DE")}
@@ -226,6 +231,8 @@ export default function PrivatChatSeite() {
                       </div>
                   );
                 })}
+                {/* unsichtbarer Anker fürs Scrollen ans Ende */}
+                <div ref={endeRef} />
                 {nachrichten.length === 0 && (
                     <div className="text-sm text-gray-500">Noch keine Nachrichten.</div>
                 )}
@@ -242,7 +249,7 @@ export default function PrivatChatSeite() {
                 />
                 <button
                     type="submit"
-                    className="rounded-xl bg-blue-700 px-4 py-2 text-white disabled:opacity-90"
+                    className="rounded-xl cursor-pointer bg-blue-700 px-4 py-2 text-white disabled:opacity-90"
                     disabled={!text.trim()}
                 >
                   Senden

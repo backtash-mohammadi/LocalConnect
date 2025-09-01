@@ -246,7 +246,7 @@ export default function Header() {
                         <div className="relative" ref={dropdownRef}>
                             <button
                                 onClick={() => setMenueOffen((v) => !v)}
-                                className="inline-flex items-center gap-2 rounded-xl border-sky-200 px-2.5 py-1.5 text-md font-thin hover:bg-gray-50"
+                                className="inline-flex items-center gap-2 rounded-xl border-sky-200 px-2.5 py-1.5 text-md font-thin hover:bg-gray-50 cursor-pointer "
                             >
                                 {avatarUrl ? (
                                     <img
