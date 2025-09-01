@@ -7,7 +7,13 @@ export default function TopBenutzern() {
     const [laden, setLaden] = useState(true);
     const [fehler, setFehler] = useState("");
 
-    // Optional: put a local asset at /public/avatar-default.png or adjust the path
+
+    const top3Colors = [
+        "border-pink-200 from-white via-yellow-100 to-green-50",
+        "border-sky-50 from-green-50 via-emerald-100 to-pink-50",
+        "border-blue-200 from-pink-50 via-violet-150 to-sky-100",
+    ];
+
     // const DEFAULT_AVATAR_SRC =
     //     "data:image/svg+xml;utf8," +
     //     encodeURIComponent(`
@@ -56,11 +62,13 @@ export default function TopBenutzern() {
                 <p className="text-sm text-gray-600">Keine Benutzer gefunden.</p>
             )}
 
-            {top3.map((b) => (
+            {top3.map((b, idx) => (
+
                 <div
-                    key={b.id}
-                    className="flex justify-between rounded-xl px-4 py-2 border border-sky-100 bg-gradient-to-br from-white via-yellow-100 to-sky-50 p-2 shadow-sm"
-                >
+                    key={idx}
+                    className={`flex justify-between rounded-xl px-4 py-2 p-2 shadow-sm bg-gradient-to-br ${top3Colors[idx]}`}
+
+                    >
                     {/* Avatar on the right */}
                     <img
                         src={getAvatarSrc(b.avatarBytes, b.avatarContentType)}
@@ -68,7 +76,6 @@ export default function TopBenutzern() {
                         className="h-12 w-12 shrink-0 rounded-full object-cover opacity-80"
                     />
                     {/* Name on the left */}
-
                     <div className="min-w-0">
                         <p className="truncate text-base font-semibold text-gray-900">
                             {b.name}
