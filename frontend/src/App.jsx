@@ -22,6 +22,7 @@ import PrivatChatSeite from "./components/PrivatChatSeite.jsx";
 import PrivatChatListeSeite from "./components/PrivatChatListeSeite.jsx";
 import HilfeSeite from "./components/HilfeSeite.jsx";
 import KontaktSeite from "./components/KontaktSeite.jsx";
+import DatenschutzSeite from "./components/DatenschutzSeite.jsx";
 
 export function App() {
     return (
@@ -58,6 +59,7 @@ export function App() {
                                 <Route path="/chat/:id" element={<PrivatChatSeite/>} />
                                 <Route path="/hilfe" element={<HilfeSeite />} />
                                 <Route path="/kontakt" element={<KontaktSeite />} />
+                                <Route path="/datenschutz" element={<DatenschutzSeite />} />
 
                             </Routes>
                         </div>

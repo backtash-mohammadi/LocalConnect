@@ -19,7 +19,7 @@ export default function Footer() {
                     <ul className="flex flex-wrap justify-end gap-x-4 gap-y-1 text-xs text-gray-700">
                         <li><a className="hover:text-indigo-700" href="#">Über uns</a></li>
                         <li><a className="hover:text-indigo-700" href="/kontakt">Kontakt</a></li>
-                        <li><a className="hover:text-indigo-700" href="#">Datenschutz</a></li>
+                        <li><a className="hover:text-indigo-700" href="/datenschutz">Datenschutz</a></li>
                         <li><a className="hover:text-indigo-700" href="/hilfe">Hilfe</a></li>
                     </ul>
                 </div>
