@@ -36,7 +36,13 @@ export default function PrivatChatListeSeite(){
                 <div className="font-medium">{e.partnerName || "Nutzer"} {e.ungelesen > 0 && <span className="ml-2 rounded-full bg-red-600 px-2 py-0.5 text-xs text-white">{e.ungelesen}</span>}</div>
                 {e.anfrageId && <div className="text-xs text-gray-500">Anfrage #{e.anfrageId}</div>}
               </div>
-              <Link to={`/chat/${e.id}`} className="rounded-lg border px-3 py-1.5 text-sm hover:bg-gray-50">Öffnen</Link>
+              <Link
+                to={`/chat/${e.id}`}
+                state={{ partnerId: e.partnerId, partnerName: e.partnerName }}
+                className="rounded-lg border px-3 py-1.5 text-sm hover:bg-gray-50"
+              >
+                Öffnen
+              </Link>
             </li>
           ))}
           {eintraege.length === 0 && <li className="text-sm text-gray-500">Keine Konversationen.</li>}
