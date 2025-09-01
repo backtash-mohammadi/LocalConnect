@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { apiGet } from "../lib/apiClient.js";
-import { FaUserCircle } from "react-icons/fa";
-import userAvatar from "../assets/user-avatar-filled.svg";
+import userAvatar from "../assets/userAvatarFilled.svg";
 
 export default function TopBenutzern() {
     const [top3, setTop3] = useState([]);

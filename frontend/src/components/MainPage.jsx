@@ -9,8 +9,7 @@ import AktuelleAnzeigen from "./AktuelleAnzeigen.jsx";
 import {useEffect, useState} from "react";
 import {apiGet} from "../lib/apiClient.js";
 import TopBenutzern from "./TopBenutzern.jsx";
-import award from "../assets/gold_award.svg";
-import gold_ribbon from "../assets/gold_medal_ribbon.svg";
+import award from "../assets/goldAward.svg";
 // function AnzeigeKarte({ titel, kategorie, ort, karmaKosten }) {
 //     return (
 //         <article className="rounded-2xl border p-4 shadow-sm transition hover:shadow">
