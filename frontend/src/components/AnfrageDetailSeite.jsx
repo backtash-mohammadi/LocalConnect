@@ -1,5 +1,4 @@
 // src/components/AnfrageDetailSeite.jsx
-// THE STYLING FOR COMMENT SECTION HAPPENS HERE
 
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";

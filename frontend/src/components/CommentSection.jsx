@@ -189,8 +189,8 @@ export default function CommentSection({ postId, embedded = false, className = "
                                         />
                                     ) : (
                                         <span className="flex h-6 w-6 items-center justify-center rounded-full bg-indigo-600 text-[10px] font-semibold text-white">
-          {initialen(c.user?.name)}
-        </span>
+                                          {initialen(c.user?.name)}
+                                        </span>
                                     )
                                 ) : (
                                     <span className="flex h-6 w-6 items-center justify-center rounded-full bg-indigo-600 text-[10px] font-semibold text-white">
@@ -210,7 +210,7 @@ export default function CommentSection({ postId, embedded = false, className = "
                                     onClick={() => startePrivatchat(c.id)}
                                     aria-label="Privatchat"
                                     title="Privatchat"
-                                    className="rounded-xl bg-blue-700 px-3 py-1 text-white disabled:opacity-50"
+                                    className="rounded-xl bg-blue-700 px-3 py-1 text-white cursor-pointer disabled:opacity-50"
                                 >
                                     Privatchat
 
@@ -220,13 +220,13 @@ export default function CommentSection({ postId, embedded = false, className = "
                                 {(anfrageStatus === "open" && erstellerId !== c.user.id) ?
                                 <button
                                     onClick={(e) => onAlsBearbeitungMarkiert(c, e)}
-                                    className="ml-auto inline-flex h-10 w-10 items-center justify-center rounded-xl  hover:bg-blue-800 disabled:opacity-50">
+                                    className="ml-auto inline-flex h-10 w-10 items-center justify-center rounded-xl  hover:bg-blue-800 disabled:opacity-50 cursor-pointer">
                                     <img src={chooseButton} alt="" aria-hidden className="h-11 w-11" /><span></span>
                                 </button>
                                  :
                                 <button
                                     disabled
-                                    className="ml-auto inline-flex h-10 w-10 items-center justify-center rounded-xl  hover:bg-blue-800 disabled:opacity-50">
+                                    className="ml-auto inline-flex h-10 w-10 items-center justify-center rounded-xl  hover:bg-blue-800 disabled:opacity-50 cursor-pointer">
                                     <img src={chooseButton} alt="" aria-hidden className="h-11 w-11" /><span></span>
                                 </button>
                             }

@@ -118,7 +118,7 @@ export default function MainPage() {
                         </div>
                         {benutzer ?
                         <div className="flex flex-col align-middle text-xl font-thin text-gray-900">
-                            <p className="mb-4"><span>Dein Karma: </span><span className="text-xl font-medium text-gray-900">{benutzer.karma}</span></p>
+                            <p className="mb-4"><span>Dein Karma: </span><span className="text-xl font-medium text-gray-900">{form.karma}</span></p>
                            <img src={ribbon} alt="gold award karma" className="w-24 h-32 opacity-60"></img>
                         </div> :
                             <></>
