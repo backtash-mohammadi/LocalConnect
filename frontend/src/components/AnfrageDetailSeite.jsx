@@ -1,6 +1,6 @@
 // src/components/AnfrageDetailSeite.jsx
 
-import { useEffect, useState } from "react";
+import {use, useEffect, useState} from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthKontext";
 import { apiGet } from "../lib/apiClient";
@@ -15,6 +15,7 @@ export default function AnfrageDetailSeite() {
     const [laden, setLaden] = useState(true);
     const [fehler, setFehler] = useState("");
     const [postStatus, setPostStatus] = useState("");
+    const [postHelperId, setPostHelperId] = useState(null);
 
     useEffect(() => {
         let on = true;
@@ -37,7 +38,7 @@ export default function AnfrageDetailSeite() {
     }, [id, token]);
 
     useEffect(() => {
-
+        post && setPostHelperId(post.helperId);
         post && setPostStatus(post.status);
     }, [post]);
 
@@ -107,7 +108,7 @@ export default function AnfrageDetailSeite() {
                     <h2 className="text-2xl font-thin text-gray-900 ">Kommentare</h2>
                 </div>
                 {/* embedded=true => CommentSection rendert ohne eigenen Außen-Wrapper */}
-                <CommentSection postId={id} embedded status={postStatus}/>
+                <CommentSection postId={id} embedded status={postStatus} helferId={postHelperId}/>
             </div>
         </div>
     );

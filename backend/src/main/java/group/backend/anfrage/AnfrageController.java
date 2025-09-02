@@ -113,6 +113,13 @@ public class AnfrageController {
 // @PreAuthorize("isAuthenticated()")
     public ResponseEntity<AnfrageErstellenDTO> holeAnfrage(@PathVariable("id") Long id){
         Anfrage a = anfrageService.findeAnfrage(id);
+
+        long helperId = 0L;
+
+        if(a.getHelfer() != null && a.getHelfer().getId() != null){
+            helperId = a.getHelfer().getId();
+        }
+
         AnfrageErstellenDTO dto = new AnfrageErstellenDTO(
                 a.getId(),
                 a.getTitel(),
@@ -122,7 +129,7 @@ public class AnfrageController {
                 a.getStrasse(),
                 a.getPlz(),
                 a.getErsteller().getId(),
-                0,
+                helperId,
                 a.getStatus(),
                 a.getLat(),
                 a.getLon()

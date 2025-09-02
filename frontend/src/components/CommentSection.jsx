@@ -2,8 +2,10 @@ import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthKontext";
 import {apiGet, apiPost, apiPut} from "../lib/apiClient";
 import chooseButton from "../assets/chooseButton.svg";
+import { FcOk } from "react-icons/fc";
+import { GoBlocked } from "react-icons/go";
 
-export default function CommentSection({ postId, embedded = false, className = "", status }) {
+export default function CommentSection({ postId, embedded = false, className = "", status, helferId }) {
     const { token, benutzer } = useAuth();
     const BASIS_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
     const [comments, setComments] = useState([]);
@@ -145,7 +147,7 @@ export default function CommentSection({ postId, embedded = false, className = "
 
     // **********  Bereich für Bearbeitung-Status und helferId Einsetzung  *********************
 
-    // set the status only when the status received by paren is not empty.
+    // set der Status status nur ween Status von Parent Komponent erhalten nicht leer ist.
     useEffect(() => {
         status && setAnfrageStatus(status);
     }, [status]);
@@ -170,6 +172,7 @@ export default function CommentSection({ postId, embedded = false, className = "
         }
     }
     // ****************************************************************************
+    // console.log(helferId);
 
     return (
         <div className={"" + (className || "")}>
@@ -194,10 +197,17 @@ export default function CommentSection({ postId, embedded = false, className = "
                                     )
                                 ) : (
                                     <span className="flex h-6 w-6 items-center justify-center rounded-full bg-indigo-600 text-[10px] font-semibold text-white">
-        {initialen(c.user?.name)}
-      </span>
+                                        {initialen(c.user?.name)}
+                                    </span>
                                 )}
                                 <div className="font-medium">{c.user?.name || "Nutzer"}</div>
+                                {
+                                    helferId && helferId === c.user.id ? (
+                                        <span><FcOk /></span>
+                                    ) : (
+                                        <span><GoBlocked /></span>
+                                    )
+                                }
                             </div>
                             <div>{formatDateTime(c.createdAt)}</div>
                         </div>
