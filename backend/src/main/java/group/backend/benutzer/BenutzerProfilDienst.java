@@ -67,7 +67,7 @@ public class BenutzerProfilDienst {
             net.coobird.thumbnailator.Thumbnails.of(in)
                     .size(512, 512)
                     .outputQuality(0.9)
-                    // Ausgabeformat passend machen (jpeg для универсальности)
+                    // Ausgabeformat passend machen
                     .outputFormat("jpeg")
                     .toOutputStream(out);
 

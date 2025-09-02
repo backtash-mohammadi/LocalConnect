@@ -29,7 +29,7 @@ public class VerifikationsDienst {
 
     @Transactional
     public void sendeCode(Benutzer benutzer, VerifikationsTyp typ) {
-        // старые коды этого типа удаляем
+
         verifikationsCodeRepo.deleteByBenutzer_IdAndTyp(benutzer.getId(), typ);
 
         String code = erzeuge6stelligenCode();

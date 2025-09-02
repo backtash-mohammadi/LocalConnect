@@ -244,7 +244,7 @@ export default function AdminAnzeigenSeite() {
                     </table>
                 </div>
 
-                {/* Fußleiste mit Paging (дублируем снизу) */}
+                {/* Fußleiste mit Paging */}
                 <div className="flex items-center justify-between border-t bg-gray-50 px-3 py-2">
                     <span className="text-xs text-gray-600">Gesamt: {gesamtElemente}</span>
                     <div className="flex items-center gap-2">

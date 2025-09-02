@@ -96,8 +96,8 @@ public class JwtFilter extends OncePerRequestFilter {
             "/erstellen",
             "/meine-anfragen",
             "/api/geocode/**",
-            "/error",            // полезно пропустить страницы ошибок
-            "/favicon.ico"       // и статику по мелочи
+            "/error",
+            "/favicon.ico"
     );
 
     public JwtFilter(JwtDienst jwtDienst, BenutzerDetailsDienst benutzerDetailsDienst) {
@@ -105,7 +105,7 @@ public class JwtFilter extends OncePerRequestFilter {
         this.benutzerDetailsDienst = benutzerDetailsDienst;
     }
 
-    // ❕ Filter überspringen на публичных путях и для OPTIONS
+    // Filter überspringen
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         if ("OPTIONS".equalsIgnoreCase(request.getMethod())) return true;
@@ -124,7 +124,6 @@ public class JwtFilter extends OncePerRequestFilter {
 
         final String authHeader = request.getHeader("Authorization");
 
-        // 🧾 Kein Bearer-Token → просто пропускаем дальше (пусть решает Security config)
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;
@@ -136,7 +135,7 @@ public class JwtFilter extends OncePerRequestFilter {
         try {
             email = jwtDienst.extrahiereBenutzername(token);
         } catch (Exception ignored) {
-            // Невалидный токен → не аутентифицируем, просто идём дальше.
+
             filterChain.doFilter(request, response);
             return;
         }

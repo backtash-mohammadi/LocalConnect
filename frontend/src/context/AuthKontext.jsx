@@ -19,7 +19,7 @@ export function AuthProvider({ children }) {
                 setBenutzer(b);
                 localStorage.setItem("lc_benutzer", JSON.stringify(b));
             } catch {
-                // токен протух/невалиден
+
                 setBenutzer(null);
                 setToken(null);
                 localStorage.removeItem("lc_benutzer");
@@ -40,7 +40,7 @@ export function AuthProvider({ children }) {
 
     // === Registrierung ===
     async function registrieren(daten) {
-        // Ожидаем, что бэкенд вернёт 202 + {status:"VERIFIKATION_ERFORDERLICH"} или просто 202
+        // {status:"VERIFIKATION_ERFORDERLICH"}
         const r = await apiPost("/api/auth/registrierung/start", daten);
         return { verifikationErforderlich: true, ...r };
     }
@@ -53,25 +53,25 @@ export function AuthProvider({ children }) {
     async function starteLogin(emailAdresse, passwort) {
         const geraeteHash = holeOderErzeugeGeraeteId();
         try {
-            // 200 => сразу получаем token, 202 => требуется 2FA
+            // 200 => token, 202 => 2FA
             const resp = await apiPost("/api/auth/login/start", {
                 emailAdresse, passwort,
                 geraeteHash, geraeteName: geraeteName()
             });
 
-            // Если сервер вернул сразу токен/пользователя
+
             if (resp?.token && resp?.benutzer) {
                 setzeAngemeldet(resp.token, resp.benutzer);
                 return { zweiFaktor: false };
             }
 
-            // 202 Accepted (или просто тело без токена) => требуется код
+            // 202 Accepted  => Code erforderlich
             return { zweiFaktor: true, emailAdresse, geraeteHash };
 
         } catch (err) {
-            // Если почта не подтверждена – сервер отдаёт 403
+
             if (err.status === 403 && ("" + err.message).toLowerCase().includes("bestätigt")) {
-                // Пусть компонент решит, что делать (переход на /verifizieren)
+
                 const e = new Error("E-Mail ist noch nicht bestätigt");
                 e.status = 403;
                 throw e;

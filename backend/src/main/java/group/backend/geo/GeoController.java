@@ -14,7 +14,7 @@ public class GeoController {
     public GeoController(WebClient.Builder builder) {
         this.webClient = builder
                 .baseUrl("https://nominatim.openstreetmap.org")
-                // 👇 Укажи реальный контакт (почта или URL проекта)
+
                 .defaultHeader(HttpHeaders.USER_AGENT, "LocalConnect/1.0 (contact: you@example.com)")
                 .defaultHeader(HttpHeaders.ACCEPT, "application/json")
                 .build();
@@ -36,7 +36,7 @@ public class GeoController {
                         .queryParam("limit", limit)
                         .queryParam("q", q)
                         .build())
-                // Мягкая обработка 403/429 от Nominatim → не роняем UI
+
                 .exchangeToMono(resp -> {
                     int code = resp.statusCode().value();
                     if (code == 403 || code == 429) {

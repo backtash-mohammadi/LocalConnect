@@ -10,6 +10,7 @@ import {useEffect, useState} from "react";
 import {apiGet} from "../lib/apiClient.js";
 import TopBenutzern from "./TopBenutzern.jsx";
 import  ribbon from "../assets/gold_medal_ribbon2.svg";
+import {FiCheckCircle, FiClipboard, FiPlusCircle} from "react-icons/fi";
 
 // function AnzeigeKarte({ titel, kategorie, ort, karmaKosten }) {
 //     return (
@@ -110,9 +111,29 @@ export default function MainPage() {
 
                             {benutzer && (
                                 <>
-                                    <Link to="/erstellen" className="rounded-xl border px-4 py-2 text-sm hover:bg-white">Anfrage erstellen</Link>
-                                    <Link to="/meine-anfragen" className="rounded-xl border px-4 py-2 text-sm hover:bg-white">Meine Anfragen</Link>
-                                    <Link to="/meine-akzeptierte-anfragen" className="rounded-xl border px-4 py-2 text-sm hover:bg-white">Akzeptierte Hilfsangebote</Link>
+                                    <Link
+                                        to="/erstellen"
+                                        className="rounded-xl border px-4 py-2 text-sm hover:bg-white inline-flex items-center gap-2"
+                                    >
+                                        <FiPlusCircle className="h-4 w-4 shrink-0" aria-hidden="true" />
+                                        <span>Anfrage erstellen</span>
+                                    </Link>
+
+                                    <Link
+                                        to="/meine-anfragen"
+                                        className="rounded-xl border px-4 py-2 text-sm hover:bg-white inline-flex items-center gap-2"
+                                    >
+                                        <FiClipboard className="h-4 w-4 shrink-0" aria-hidden="true" />
+                                        <span>Meine Anfragen</span>
+                                    </Link>
+
+                                    <Link
+                                        to="/meine-akzeptierte-anfragen"
+                                        className="rounded-xl border px-4 py-2 text-sm hover:bg-white inline-flex items-center gap-2"
+                                    >
+                                        <FiCheckCircle className="h-4 w-4 shrink-0" aria-hidden="true" />
+                                        <span>Akzeptierte Hilfsangebote</span>
+                                    </Link>
                                 </>
                             )}
                         </div>

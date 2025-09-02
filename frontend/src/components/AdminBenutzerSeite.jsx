@@ -4,7 +4,7 @@ import { useAuth } from "../context/AuthKontext";
 
 
 const AVATAR_CACHE = new Map();   // key: string(id) -> blobURL
-const AVATAR_404 = new Set();     // key: string(id) с 404
+const AVATAR_404 = new Set();     // key: string(id) 404
 
 export default function AdminBenutzerSeite() {
     const { token } = useAuth();
@@ -31,7 +31,7 @@ export default function AdminBenutzerSeite() {
     const [zuLoeschen, setZuLoeschen] = useState(null);
     const [busy, setBusy] = useState(false);
 
-    const [avatarVersion, setAvatarVersion] = useState(0); // просто счётчик для force-update
+    const [avatarVersion, setAvatarVersion] = useState(0);
 
     // ---------- Suche (entprellt) ----------
     useEffect(() => {
@@ -347,7 +347,7 @@ export default function AdminBenutzerSeite() {
                 </div>
             </div>
 
-            {/* Lösch-Бестätigung (инлайн) */}
+            {/* Lösch-Bestätigung */}
             {zuLoeschen && (
                 <div className="fixed inset-0 z-50 grid place-items-center bg-black/30 p-4">
                     <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">

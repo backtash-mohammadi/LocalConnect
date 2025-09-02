@@ -11,7 +11,7 @@ spring:
     driver-class-name: org.mariadb.jdbc.Driver
   jpa:
     hibernate:
-      ddl-auto: update  # dev only; в проде поменяй
+      ddl-auto: update  # dev only;
     show-sql: true
     properties:
       hibernate:

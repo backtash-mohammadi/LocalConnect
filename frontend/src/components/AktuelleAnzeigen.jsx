@@ -40,7 +40,7 @@ function AnzeigeKarte({ id, titel, kategorie, stadt, plz, beschreibung }) {
                 <h3 className="text-base font-semibold text-gray-900">{titel}</h3>
             </div>
 
-            {/* vollständige Beschreibung – nimmt Resthöhe ein, скролл без полос */}
+            {/* vollständige Beschreibung – nimmt Resthöhe ein */}
             <div className="min-h-0 flex-1 overflow-y-auto ohne-scrollbar">
                 <p className="text-sm text-gray-700 whitespace-pre-line">
                     {beschreibung}
@@ -71,7 +71,7 @@ function Karussell3D({
 
     const n = Math.max(1, elemente.length);
     const winkelProKarte = 360 / n;
-    const index = ((Math.round(schritt) % n) + n) % n; // актив для ховера/клика
+    const index = ((Math.round(schritt) % n) + n) % n;
 
     const [radius, setRadius] = useState(420);
 
@@ -133,7 +133,7 @@ function Karussell3D({
         const dx = e.clientX - dragRef.current.startX;
         dragRef.current.letzterDx = dx;
 
-        if (Math.abs(dx) < dragSchwellePx) return; // ещё клик, не драг
+        if (Math.abs(dx) < dragSchwellePx) return;
         dragRef.current.hatGezogen = true;
         e.preventDefault();
 

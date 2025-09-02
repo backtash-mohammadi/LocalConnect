@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 export default function PasswortAendernSeite() {
     const { token, ausloggen } = useAuth();
     const navigate = useNavigate();
-    const LOGIN_PFAD = "/login"; // при необходимости поменяй
+    const LOGIN_PFAD = "/login";
 
     // Felder & UI
     const [felder, setFelder] = useState({

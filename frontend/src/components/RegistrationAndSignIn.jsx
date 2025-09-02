@@ -34,7 +34,7 @@ export default function RegistrationAndSignIn() {
                 if (passwort !== daten.passwortWiederholen)
                     throw new Error("Die Passwörter stimmen nicht überein.");
 
-                // Schritt 1: Registrierung starten (отправляем код на почту)
+                // Schritt 1: Registrierung starten
                 await registrieren({ name, emailAdresse, passwort });
 
 

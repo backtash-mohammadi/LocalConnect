@@ -37,7 +37,7 @@ export default function OpenStreetMap() {
             } catch { /* ignorieren */ }
         })();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [params]); // handleSelectAddress уже стабилен (useCallback)
+    }, [params]);
 
     const handleSelectAddress = useCallback(async (lat, lon, stadtVomPick) => {
         const neu = [Number(lat), Number(lon)]

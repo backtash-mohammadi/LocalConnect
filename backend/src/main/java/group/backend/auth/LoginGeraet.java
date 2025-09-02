@@ -22,7 +22,7 @@ public class LoginGeraet {
     @Column(name = "geraete_hash", nullable = false, length = 128)
     private String geraeteHash;
 
-    // ⬇️ ЯВНО ограничим длину колонки
+
     @Column(name = "bezeichnung", nullable = false, length = 255)
     private String bezeichnung;
 
