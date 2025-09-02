@@ -130,7 +130,7 @@ export default function MainPage() {
                 <div className="grid gap-3">
                     <div>
                         <div className="text-2xl text-center font-normal mb-2">Los LoCos</div>
-                        <div className="text-sm leading-5 text-gray-600">Die <strong>Top 3</strong>, die ihrer Nachbarschaft helfern und Gemeinschaftsgefühl fördern</div>
+                        <div className="text-sm leading-5 text-gray-600"><strong>Top 3</strong>, die der Nachbarschaft helfern & Gemeinschaftsgefühl fördern & führen</div>
                     </div>
                     <TopBenutzern />
                     {/*{kategorien.map((kat) => (*/}

@@ -101,7 +101,7 @@ export default function MeineAnfragenSeite(){
         );
     }
 
-    // ⚠️ NEU: Clientseitige Filterung
+    // Clientseitige Filterung
     const gefiltert = anfragen.filter((a) => {
         if (!suche.trim()) return true;
         const q = suche.toLowerCase();
@@ -208,7 +208,7 @@ export default function MeineAnfragenSeite(){
                                         {/* Mini menu / popover */}
                                         {karmaDialogId === id && !istFertig && (
                                             <div className="absolute right-0 mt-2 w-56 rounded-xl border bg-white p-3 shadow-lg z-10">
-                                                <label htmlFor={`karma-${id}`} className="block text-xs text-gray-600 mb-1">
+                                                <label htmlFor={`karma-${id}`} className="block text-lg text-center text-gray-800 mb-1">
                                                     Karma-Punkte
                                                 </label>
                                                 <input
@@ -236,7 +236,7 @@ export default function MeineAnfragenSeite(){
                                                             setKarmaDialogId(null);
                                                             setKarmaPunkteInput('');
                                                         }}
-                                                        className="rounded-md border px-2 py-1 text-xs"
+                                                        className="rounded-xl border px-2 py-1 text-sm text-white cursor-pointer bg-red-500 hover:bg-red-600 disabled:opacity-60"
                                                     >
                                                         Abbrechen
                                                     </button>
@@ -249,7 +249,7 @@ export default function MeineAnfragenSeite(){
                                                             setKarmaDialogId(null);
                                                             setKarmaPunkteInput('');
                                                         }}
-                                                        className="rounded-md bg-green-600 px-2 py-1 text-xs text-white hover:bg-green-700 disabled:opacity-60"
+                                                        className="rounded-xl bg-green-500 px-3 py-1.5 text-xs text-white hover:bg-green-700 cursor-pointer"
                                                     >
                                                         Speichern
                                                     </button>

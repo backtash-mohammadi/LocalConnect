@@ -9,12 +9,12 @@ export default function TopBenutzern() {
 
 
     const top3Colors = [
-        "border-pink-200 from-white via-yellow-100 to-green-50",
-        "border-sky-50 from-green-50 via-emerald-100 to-pink-50",
-        "border-blue-200 from-pink-50 via-violet-150 to-sky-100",
+        "border-sky-200 from-yellow-200 via-white to-amber-50",
+        "border-sky-200 from-amber-50 via-white to-pink-100",
+        "border-sky-200 from-pink-100 via-white to-sky-50",
     ];
 
-    // const DEFAULT_AVATAR_SRC =
+    // const DEFAULT_AVATAR =
     //     "data:image/svg+xml;utf8," +
     //     encodeURIComponent(`
     //   <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'>
