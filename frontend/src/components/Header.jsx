@@ -71,7 +71,7 @@ export default function Header() {
             } catch {}
         }
         poll();
-        const iv = setInterval(poll, 10000);
+        const iv = setInterval(poll, 2000);
         return () => { aktiv = false; clearInterval(iv); };
     }, [token]);
 

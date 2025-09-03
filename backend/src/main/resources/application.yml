@@ -43,3 +43,14 @@ logging:
   level:
     group.backend.mail: DEBUG
     group.backend.auth: DEBUG
+    org.hibernate: warn
+    org.hibernate.SQL: OFF
+    # Hibernate 5:
+    org.hibernate.type: OFF
+    org.hibernate.type.descriptor.sql.BasicBinder: OFF
+    # Hibernate 6:
+    org.hibernate.orm.jdbc.bind: OFF
+    org.hibernate.orm.jdbc.extract: OFF
+    org.hibernate.stat: OFF
+    org.springframework.jdbc.core.JdbcTemplate: OFF
+    org.springframework.jdbc.core.StatementCreatorUtils: OFF

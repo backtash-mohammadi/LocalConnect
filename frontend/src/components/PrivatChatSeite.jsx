@@ -113,7 +113,7 @@ export default function PrivatChatSeite() {
   // Polling
   useEffect(() => {
     lade(true);
-    const iv = setInterval(() => lade(true), 8000);
+    const iv = setInterval(() => lade(true), 2000);
     return () => clearInterval(iv);
   }, [konvId]);
 
