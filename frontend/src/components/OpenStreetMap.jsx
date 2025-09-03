@@ -133,8 +133,8 @@ export default function OpenStreetMap() {
 
 
     return (
-        <main className="app max-w-6xl mx-auto px-4 my-8">
-            <div className="search-wrap mx-auto w-full md:w-4/5 lg:w-3/4">
+        <main className="app max-w-6xl mx-auto px-4 my-8 ">
+            <div className="search-wrap mx-auto w-full md:w-4/5 lg:w-3/4 ">
                 <AddressSearch onSelect={handleSelectAddress} />
             </div>
 
@@ -142,7 +142,7 @@ export default function OpenStreetMap() {
             {/*<div>*/}
 
             {/*</div>*/}
-            <div className="mx-auto w-full md:w-4/5 lg:w-3/4">
+            <div className="mx-auto w-full md:w-4/5 lg:w-3/4 ">
                 <RadiusMap
                     center={center}
                     posts={anfragen}

@@ -186,7 +186,7 @@ export default function AdminBenutzerSeite() {
 
     // ---------- Darstellung ----------
     return (
-        <div className="admin-benutzer-seite mx-auto max-w-6xl px-4 py-6">
+        <div className="admin-benutzer-seite mx-auto max-w-6xl px-4 py-6 ">
             {/* Kopf */}
             <div className="kopf mb-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>

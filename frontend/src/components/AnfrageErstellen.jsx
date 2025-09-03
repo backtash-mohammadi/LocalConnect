@@ -105,7 +105,7 @@ export default function AnfrageErstellenSeite(){
             <h1 className="mb-4 text-3xl font-thin">Anfrage erstellen</h1>
 
             <form onSubmit={submit} className="space-y-5">
-                <div className="grid gap-4 rounded-2xl border bg-white p-4">
+                <div className="grid gap-4 rounded-2xl rounded-xl border border-sky-200 bg-gradient-to-br from-sky-50 via-sky-100 to-white p-3 shadow-sm ring-1 ring-sky-100/60 p-4">
                     <div>
                         <label className="block text-sm font-medium text-gray-900">
                             Titel<span className="text-red-600">*</span>
@@ -116,18 +116,18 @@ export default function AnfrageErstellenSeite(){
                             onChange={change}
                             required
                             maxLength={150}
-                            className="mt-1 w-full rounded-lg border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-600"
+                            className="mt-1 w-full  px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-600 rounded-xl border border-sky-600 bg-gradient-to-br from-sky-50 via-sky-100 to-white p-3 shadow-sm ring-1 ring-sky-100/60"
                         />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-900">Beschreibung</label>
+                        <label className="block text-sm font-medium text-gray-900 ">Beschreibung</label>
                         <textarea
                             name="beschreibung"
                             value={form.beschreibung}
                             onChange={change}
                             rows={4}
                             placeholder="Beschreibe kurz, wobei du Hilfe brauchst…"
-                            className="mt-1 w-full rounded-lg border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-600"
+                            className="mt-1 w-full  px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-600 rounded-xl border border-sky-600 bg-gradient-to-br from-sky-50 via-sky-100 to-white p-3 shadow-sm ring-1 ring-sky-100/60"
                         />
                     </div>
                     <div>
@@ -136,18 +136,18 @@ export default function AnfrageErstellenSeite(){
                             name="kategorie"
                             value={form.kategorie}
                             onChange={change}
-                            className="mt-1 w-full rounded-lg border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-600"
+                            className="mt-1 w-full rounded-lg border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-600  rounded-xl border border-sky-600 bg-gradient-to-br from-sky-50 via-sky-100 to-white p-3 shadow-sm ring-1 ring-sky-100/60"
                         >
                             {KATEGORIEN.map(k => <option key={k} value={k}>{k}</option>)}
                         </select>
                     </div>
                 </div>
 
-                <div className="grid gap-4 rounded-2xl border bg-white p-4">
+                <div className="grid gap-4 rounded-2xl border bg-white p-4  rounded-xl border border-sky-200 bg-gradient-to-br from-sky-50 via-sky-100 to-white p-3 shadow-sm ring-1 ring-sky-100/60">
                     <h2 className="text-sm font-semibold text-gray-900">
                         Adresse<span className="text-red-600">*</span>
                     </h2>
-                    <div className="grid gap-4 sm:grid-cols-2">
+                    <div className="grid gap-4 sm:grid-cols-2 ">
                         <div>
                             <label className="block text-sm font-medium text-gray-900">Stadt</label>
                             <input
@@ -155,7 +155,7 @@ export default function AnfrageErstellenSeite(){
                                 value={form.stadt}
                                 onChange={change}
                                 required
-                                className="mt-1 w-full rounded-lg border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-600"
+                                className="mt-1 w-full  px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-600  rounded-xl border border-sky-600 bg-gradient-to-br from-sky-50 via-sky-100 to-white p-3 shadow-sm ring-1 ring-sky-100/60"
                             />
                         </div>
                         <div>
@@ -166,7 +166,7 @@ export default function AnfrageErstellenSeite(){
                                 onChange={change}
                                 required
                                 pattern="^[0-9]{4,10}$"
-                                className="mt-1 w-full rounded-lg border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-600"
+                                className="mt-1 w-full  px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-600  rounded-xl border border-sky-600 bg-gradient-to-br from-sky-50 via-sky-100 to-white p-3 shadow-sm ring-1 ring-sky-100/60"
                             />
                         </div>
                     </div>
@@ -177,7 +177,7 @@ export default function AnfrageErstellenSeite(){
                             value={form.strasse}
                             onChange={change}
                             required
-                            className="mt-1 w-full rounded-lg border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-600"
+                            className="mt-1 w-full  px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-600  rounded-xl border border-sky-600 bg-gradient-to-br from-sky-50 via-sky-100 to-white p-3 shadow-sm ring-1 ring-sky-100/60"
                         />
                     </div>
                     <p className="text-xs text-gray-600">

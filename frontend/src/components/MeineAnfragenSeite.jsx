@@ -130,18 +130,18 @@ export default function MeineAnfragenSeite(){
                     placeholder="Suchen (Titel, Text, Kategorie, Adresse)…"
                     value={suche}
                     onChange={(e) => setSuche(e.target.value)}
-                    className="flex-1 rounded-xl border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-600"
+                    className="flex-1 rounded-xl border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-600  rounded-xl border border-sky-600 bg-gradient-to-br from-sky-50 via-sky-100 to-white p-3 shadow-sm ring-1 ring-sky-100/60"
                 />
 
                 {fehler && <span className="text-sm text-red-700">{fehler}</span>}
             </div>
 
             {laden && (
-                <div className="rounded-2xl border bg-white p-4 text-sm text-gray-700">Lade…</div>
+                <div className="rounded-2xl border bg-white p-4 text-sm text-gray-700 ">Lade…</div>
             )}
 
             {!laden && gefiltert.length === 0 && !fehler && (
-                <div className="rounded-2xl border bg-white p-4 text-sm text-gray-700">
+                <div className="rounded-2xl border bg-white p-4 text-sm text-gray-700 ">
                     Keine Anfragen gefunden{suche.trim() ? ' – Suchbegriff anpassen?' : '.'}
                 </div>
             )}
@@ -167,7 +167,7 @@ export default function MeineAnfragenSeite(){
 
 
                     return (
-                        <li key={id} className="rounded-2xl border bg-white p-4">
+                        <li key={id} className=" rounded-xl border border-sky-600 bg-gradient-to-br from-sky-50 via-sky-100 to-white p-3 shadow-sm ring-1 ring-sky-100/60 p-4">
                             {/*{console.log("schl:  " + schlussel)}*/}
                             <div className="flex items-start justify-between gap-4">
                                 <div>
